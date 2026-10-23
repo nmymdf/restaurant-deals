@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths-ignore:
       - 'data.json'
+      - 'index.html'
   workflow_dispatch:
 
 permissions:

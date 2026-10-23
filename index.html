@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>餐廳優惠日報</title>
+<style>
+:root{--bg:#fff;--fg:#111;--sub:#666;--mute:#999;--line:#e6e6e6;--chip:#bbb;--red:#c62828;--gold:#C9A227}
+@media(prefers-color-scheme:dark){:root{--bg:#161616;--fg:#f2f2f2;--sub:#aaa;--mute:#888;--line:#333;--chip:#555;--red:#ef5350}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.wrap{max-width:560px;margin:0 auto}
+header{padding:14px 16px 8px}
+.top{display:flex;align-items:center;justify-content:space-between}
+h1{font-size:20px;margin:0;font-weight:700}
+button{font:inherit;color:inherit;background:none;cursor:pointer}
+.refresh{font-size:13px;color:var(--sub);border:1px solid var(--chip);border-radius:18px;padding:5px 12px}
+#info{font-size:12px;color:var(--sub);margin-top:2px}
+.credit{font-size:12px;font-style:italic;color:var(--gold)}
+.row{display:flex;gap:8px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none}
+.row::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:13px;border:1px solid var(--chip);border-radius:18px;padding:5px 14px}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.dchip{flex:none;font-size:12px;border:1px solid var(--chip);border-radius:14px;padding:4px 11px}
+.dchip.on{border:2px solid var(--fg);font-weight:700;padding:3px 10px}
+#dlabel{font-size:11px;color:var(--mute);padding:0 16px 4px}
+.tabs{display:flex;gap:18px;padding:0 16px 6px}
+.tab{font-size:13px;color:var(--sub);padding:6px 0}
+.tab.on{color:var(--fg);font-weight:700;border-bottom:2px solid var(--fg)}
+.deal{display:block;border-top:1px solid var(--line);padding:12px 16px;color:inherit;text-decoration:none}
+.deal:hover{background:rgba(127,127,127,.08)}
+.d1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.brand{font-weight:700}
+.left{font-size:12px;color:var(--sub);flex:none}
+.left.warn{color:var(--red)}
+.offer{font-size:13px;margin-top:3px}
+.meta{font-size:12px;color:var(--sub);margin-top:3px}
+.empty,.hint{text-align:center;color:var(--mute);font-size:13px;padding:36px 16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="top"><h1>餐廳優惠日報</h1><button class="refresh" id="refresh">重新整理</button></div>
+<div id="info"></div>
+<div class="credit">作者：ArchieKUO　v0.2</div>
+</header>
+<div class="row" id="regions"></div>
+<div id="dlabel">區域（可左右滑動）</div>
+<div class="row" id="districts"></div>
+<div class="tabs" id="tabs"></div>
+<div id="list"></div>
+</div>
+<script>
+var TAIPEI=["中正區","大同區","中山區","松山區","大安區","萬華區","信義區","士林區","北投區","內湖區","南港區","文山區"];
+var NEWTP=["板橋區","三重區","中和區","永和區","新莊區","新店區","土城區","蘆洲區","汐止區","樹林區","淡水區","鶯歌區","三峽區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區","瑞芳區"];
+var state={region:"全台",district:"全部",tab:"即將到期",deals:[],updated:""};
+try{var s=JSON.parse(localStorage.getItem("deals-ui")||"{}");if(s.region)state.region=s.region;if(s.tab)state.tab=s.tab}catch(e){}
+function save(){try{localStorage.setItem("deals-ui",JSON.stringify({region:state.region,tab:state.tab}))}catch(e){}}
+function today(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+function parse(s){var p=(s||"").split("-");return p.length==3?new Date(+p[0],+p[1]-1,+p[2]):null}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function visible(){
+  var t=today();
+  var l=state.deals.filter(function(d){return d._until&&d._until>=t});
+  if(state.region!="全台")l=l.filter(function(d){return d.region==state.region||d.region=="全台"});
+  if(state.region!="全台"&&state.district!="全部")l=l.filter(function(d){var ds=d.districts||[];return d.region=="全台"||!ds.length||ds.indexOf(state.district)>=0});
+  if(state.tab=="吃到飽")l=l.filter(function(d){return (d.tags||[]).indexOf("吃到飽")>=0});
+  if(state.tab=="壽星")l=l.filter(function(d){return (d.tags||[]).indexOf("壽星")>=0});
+  if(state.tab=="最新")l.sort(function(a,b){return (b.added||"").localeCompare(a.added||"")});
+  else l.sort(function(a,b){return a._until-b._until});
+  return l;
+}
+function render(){
+  var t=today(),total=state.deals.filter(function(d){return d._until&&d._until>=t}).length,vis=visible();
+  var scope=state.region=="全台"?"":(state.district=="全部"?state.region+" · ":state.region+" · "+state.district+" · ");
+  document.getElementById("info").textContent=(state.updated?state.updated+" 更新 · ":"")+(scope?scope+vis.length+" 筆":"共 "+total+" 筆");
+  var r=document.getElementById("regions");r.textContent="";
+  ["全台","台北","新北"].forEach(function(n){var b=el("button","chip"+(n==state.region?" on":""),n);b.onclick=function(){if(state.region!=n)state.district="全部";state.region=n;save();render()};r.appendChild(b)});
+  var names=state.region=="台北"?TAIPEI:state.region=="新北"?NEWTP:[];
+  document.getElementById("dlabel").style.display=names.length?"":"none";
+  var dr=document.getElementById("districts");dr.style.display=names.length?"":"none";dr.textContent="";
+  ["全部"].concat(names).forEach(function(n){var b=el("button","dchip"+(n==state.district?" on":""),n);b.onclick=function(){state.district=n;render()};dr.appendChild(b)});
+  var tb=document.getElementById("tabs");tb.textContent="";
+  ["即將到期","最新","吃到飽","壽星"].forEach(function(n){var b=el("button","tab"+(n==state.tab?" on":""),n);b.onclick=function(){state.tab=n;save();render()};tb.appendChild(b)});
+  var box=document.getElementById("list");box.textContent="";
+  if(!vis.length){box.appendChild(el("div","empty","目前沒有符合的優惠"));return}
+  vis.forEach(function(d){
+    var days=Math.round((d._until-t)/864e5);
+    var a=el("a","deal");if(d.url){a.href=d.url;a.target="_blank";a.rel="noopener"}
+    var top=el("div","d1");top.appendChild(el("span","brand",d.brand));
+    top.appendChild(el("span","left"+(days<=7?" warn":""),days==0?"今天到期":"剩 "+days+" 天"));
+    a.appendChild(top);a.appendChild(el("div","offer",d.offer));
+    var m=(d.region=="全台"?"全台連鎖":d.region)+((d.districts||[]).length?" · "+d.districts.join("、"):"")+" · 到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()+(d.note?" · "+d.note:"");
+    a.appendChild(el("div","meta",m));box.appendChild(a);
+  });
+  box.appendChild(el("div","hint","點一筆開啟原始頁面"));
+}
+function load(manual){
+  fetch("data.json?t="+Date.now()).then(function(r){return r.json()}).then(function(j){
+    state.updated=j.updated||"";state.deals=(j.deals||[]).map(function(d){d._until=parse(d.until);return d});render();
+  }).catch(function(){if(manual)alert("無法更新，請檢查網路")});
+}
+document.getElementById("refresh").onclick=function(){load(true)};
+render();load(false);
+</script>
+</body>
+</html>
