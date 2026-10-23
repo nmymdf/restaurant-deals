@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -24,6 +25,7 @@ data class Deal(
     val brand: String,
     val offer: String,
     val region: String,
+    val districts: List<String>,
     val until: LocalDate,
     val added: LocalDate,
     val tags: List<String>,
@@ -36,9 +38,19 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val DATA_URL = "https://raw.githubusercontent.com/nmymdf/restaurant-deals/main/data.json"
         const val GOLD = "#C9A227"
-        const val VERSION = "v0.1"
+        const val VERSION = "v0.2"
+        val TAIPEI = listOf(
+            "中正區", "大同區", "中山區", "松山區", "大安區", "萬華區",
+            "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"
+        )
+        val NEW_TAIPEI = listOf(
+            "板橋區", "三重區", "中和區", "永和區", "新莊區", "新店區", "土城區", "蘆洲區", "汐止區", "樹林區",
+            "淡水區", "鶯歌區", "三峽區", "五股區", "泰山區", "林口區", "深坑區", "石碇區", "坪林區", "三芝區",
+            "石門區", "八里區", "平溪區", "雙溪區", "貢寮區", "金山區", "萬里區", "烏來區", "瑞芳區"
+        )
     }
 
+    private var district = "全部"
     private var region = "全台"
     private var tab = "即將到期"
     private var deals: List<Deal> = emptyList()
@@ -46,6 +58,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var infoText: TextView
     private lateinit var chipRow: LinearLayout
+    private lateinit var districtLabel: TextView
+    private lateinit var districtScroll: HorizontalScrollView
+    private lateinit var districtRow: LinearLayout
     private lateinit var tabRow: LinearLayout
     private lateinit var listBox: LinearLayout
 
@@ -113,6 +128,20 @@ class MainActivity : AppCompatActivity() {
         }
         root.addView(chipRow)
 
+        districtLabel = TextView(this).apply {
+            text = "區域（可左右滑動）"
+            textSize = 11f
+            setTextColor(Color.parseColor("#999999"))
+            setPadding(dp(16), 0, dp(16), dp(4))
+        }
+        root.addView(districtLabel)
+        districtScroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
+        districtRow = LinearLayout(this).apply {
+            setPadding(dp(16), 0, dp(16), dp(10))
+        }
+        districtScroll.addView(districtRow)
+        root.addView(districtScroll)
+
         tabRow = LinearLayout(this).apply {
             setPadding(dp(16), 0, dp(16), dp(6))
         }
@@ -142,11 +171,14 @@ class MainActivity : AppCompatActivity() {
             val tags = ArrayList<String>()
             val ta = d.optJSONArray("tags")
             if (ta != null) for (j in 0 until ta.length()) tags.add(ta.getString(j))
+            val dists = ArrayList<String>()
+            val da = d.optJSONArray("districts")
+            if (da != null) for (j in 0 until da.length()) dists.add(da.getString(j))
             val until = runCatching { LocalDate.parse(d.getString("until")) }.getOrNull() ?: continue
             val added = runCatching { LocalDate.parse(d.optString("added")) }.getOrDefault(until)
             out.add(
                 Deal(
-                    d.optString("brand"), d.optString("offer"), d.optString("region", "全台"),
+                    d.optString("brand"), d.optString("offer"), d.optString("region", "全台"), dists,
                     until, added, tags, d.optString("note"), d.optString("url")
                 )
             )
@@ -182,6 +214,9 @@ class MainActivity : AppCompatActivity() {
         val today = LocalDate.now()
         var list = deals.filter { !it.until.isBefore(today) }
         if (region != "全台") list = list.filter { it.region == region || it.region == "全台" }
+        if (region != "全台" && district != "全部") {
+            list = list.filter { it.region == "全台" || it.districts.isEmpty() || district in it.districts }
+        }
         list = when (tab) {
             "吃到飽" -> list.filter { "吃到飽" in it.tags }
             "壽星" -> list.filter { "壽星" in it.tags }
@@ -196,7 +231,14 @@ class MainActivity : AppCompatActivity() {
     private fun render() {
         val today = LocalDate.now()
         val total = deals.count { !it.until.isBefore(today) }
-        infoText.text = (if (updated.isNotEmpty()) "$updated 更新 · " else "") + "共 $total 筆"
+        val shown = visibleDeals().size
+        val scope = when {
+            region == "全台" -> ""
+            district == "全部" -> "$region · "
+            else -> "$region · $district · "
+        }
+        infoText.text = (if (updated.isNotEmpty()) "$updated 更新 · " else "") +
+            if (scope.isEmpty()) "共 $total 筆" else "${scope}${shown} 筆"
 
         chipRow.removeAllViews()
         for (r in listOf("全台", "台北", "新北")) {
@@ -207,11 +249,44 @@ class MainActivity : AppCompatActivity() {
                 setPadding(dp(14), dp(6), dp(14), dp(6))
                 setTextColor(if (sel) Color.WHITE else Color.BLACK)
                 background = pill(if (sel) Color.BLACK else Color.WHITE, if (sel) Color.BLACK else Color.parseColor("#BBBBBB"))
-                setOnClickListener { region = r; render() }
+                setOnClickListener {
+                    if (region != r) district = "全部"
+                    region = r
+                    render()
+                }
             }
             val lp = LinearLayout.LayoutParams(-2, -2)
             lp.rightMargin = dp(8)
             chipRow.addView(chip, lp)
+        }
+
+        val names = when (region) {
+            "台北" -> TAIPEI
+            "新北" -> NEW_TAIPEI
+            else -> emptyList()
+        }
+        val vis = if (names.isEmpty()) View.GONE else View.VISIBLE
+        districtLabel.visibility = vis
+        districtScroll.visibility = vis
+        districtRow.removeAllViews()
+        for (n in listOf("全部") + names) {
+            val sel = n == district
+            val chip = TextView(this).apply {
+                text = n
+                textSize = 12f
+                setPadding(dp(11), dp(4), dp(11), dp(4))
+                setTextColor(Color.BLACK)
+                if (sel) setTypeface(null, Typeface.BOLD)
+                background = GradientDrawable().apply {
+                    setColor(Color.WHITE)
+                    cornerRadius = dp(14).toFloat()
+                    setStroke(if (sel) dp(2) else dp(1), if (sel) Color.BLACK else Color.parseColor("#BBBBBB"))
+                }
+                setOnClickListener { district = n; render() }
+            }
+            val lp = LinearLayout.LayoutParams(-2, -2)
+            lp.rightMargin = dp(6)
+            districtRow.addView(chip, lp)
         }
 
         tabRow.removeAllViews()
@@ -282,7 +357,8 @@ class MainActivity : AppCompatActivity() {
             setPadding(0, dp(3), 0, 0)
         })
         val meta = buildString {
-            append(d.region)
+            append(if (d.region == "全台") "全台連鎖" else d.region)
+            if (d.districts.isNotEmpty()) append(" · ").append(d.districts.joinToString("、"))
             append(" · 到 ")
             append("${d.until.monthValue}/${d.until.dayOfMonth}")
             if (d.note.isNotEmpty()) append(" · ").append(d.note)
