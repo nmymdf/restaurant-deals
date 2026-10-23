@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-23 08:00",
+  "updated": "2026-10-24 07:53",
   "deals": [
     {
       "id": "wp-steak-1031",
@@ -203,6 +203,52 @@
       "districts": [
         "板橋區"
       ]
+    },
+    {
+      "id": "jr-prelian-bday-1230",
+      "brand": "JR東日本大飯店台北 鉑麗安",
+      "offer": "當月壽星午餐或晚餐 4 人同行，壽星 1 人免費（平日 1,480 元、假日 1,680 元）",
+      "region": "台北",
+      "until": "2026-12-30",
+      "added": "2026-10-24",
+      "tags": [
+        "吃到飽",
+        "壽星"
+      ],
+      "note": "壽星仍需付 10% 服務費；限午餐、晚餐",
+      "url": "https://supertaste.tvbs.com.tw/pack/358807",
+      "districts": [
+        "中山區"
+      ]
+    },
+    {
+      "id": "sunny-buffet-bday-1231",
+      "brand": "茹曦酒店 Sunny Buffet",
+      "offer": "當月壽星平日午晚餐，2 位成人同行 1 人半價、4 人同行 1 人免費（平日 1,180 元）",
+      "region": "台北",
+      "until": "2026-12-31",
+      "added": "2026-10-24",
+      "tags": [
+        "吃到飽",
+        "壽星"
+      ],
+      "note": "限平日；折扣不含服務費",
+      "url": "https://supertaste.tvbs.com.tw/pack/358807",
+      "districts": [
+        "松山區"
+      ]
+    },
+    {
+      "id": "kfc-double11-1116",
+      "brand": "肯德基",
+      "offer": "雙11 299 元分享餐：咔啦脆雞 6 塊＋原味蛋撻 2 顆等",
+      "region": "全台",
+      "until": "2026-11-16",
+      "added": "2026-10-24",
+      "tags": [],
+      "note": "10/27 起；詳細品項依門市公告",
+      "url": "https://www.ctee.com.tw/news/20261022700737-431401",
+      "districts": []
     }
   ]
 }
