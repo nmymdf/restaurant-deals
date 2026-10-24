@@ -11,7 +11,8 @@
       "tags": [],
       "note": "",
       "url": "https://www.storm.mg/lifestyle/11174210",
-      "districts": []
+      "districts": [],
+      "category": "牛排西餐"
     },
     {
       "id": "umai-a5-1031",
@@ -23,7 +24,8 @@
       "tags": [],
       "note": "",
       "url": "https://www.storm.mg/lifestyle/11174210",
-      "districts": []
+      "districts": [],
+      "category": "燒肉"
     },
     {
       "id": "tasty-bday-1031",
@@ -37,7 +39,8 @@
       ],
       "note": "王品瘋美食 APP 領券",
       "url": "https://happybirthday.com.tw/list/restaurant/taipei",
-      "districts": []
+      "districts": [],
+      "category": "牛排西餐"
     },
     {
       "id": "chamonix-bday-1031",
@@ -51,7 +54,8 @@
       ],
       "note": "王品瘋美食 APP 領券",
       "url": "https://happybirthday.com.tw/list/restaurant/taichung",
-      "districts": []
+      "districts": [],
+      "category": "牛排西餐"
     },
     {
       "id": "rooz-bday-1031",
@@ -66,7 +70,8 @@
       ],
       "note": "王品瘋美食 APP 領券",
       "url": "https://happybirthday.com.tw/list/restaurant/taichung",
-      "districts": []
+      "districts": [],
+      "category": "燒肉"
     },
     {
       "id": "onepot-id-1031",
@@ -78,7 +83,8 @@
       "tags": [],
       "note": "",
       "url": "https://pinje1225.pixnet.net/blog/posts/8230022556",
-      "districts": []
+      "districts": [],
+      "category": "火鍋"
     },
     {
       "id": "coco-1031",
@@ -90,7 +96,8 @@
       "tags": [],
       "note": "",
       "url": "https://pinje1225.pixnet.net/blog/posts/8230022556",
-      "districts": []
+      "districts": [],
+      "category": "飲料甜點"
     },
     {
       "id": "royal-lecafe-1231",
@@ -106,7 +113,8 @@
       "url": "https://travel.ettoday.net/article/3243640.htm",
       "districts": [
         "中山區"
-      ]
+      ],
+      "category": "自助餐"
     },
     {
       "id": "garden-buffet-1031",
@@ -120,7 +128,8 @@
       ],
       "note": "",
       "url": "https://travel.ettoday.net/article/3243640.htm",
-      "districts": []
+      "districts": [],
+      "category": "自助餐"
     },
     {
       "id": "sheraton-1031",
@@ -136,7 +145,8 @@
       "url": "https://tw.eztable.com/channel/3227",
       "districts": [
         "中正區"
-      ]
+      ],
+      "category": "自助餐"
     },
     {
       "id": "feg-cafe-bday-1031",
@@ -153,7 +163,8 @@
       "url": "https://life.applealmond.com/posts/3308/",
       "districts": [
         "大安區"
-      ]
+      ],
+      "category": "自助餐"
     },
     {
       "id": "feasthall-banqiao-1231",
@@ -169,7 +180,8 @@
       "url": "https://tw.eztable.com/restaurant/15230",
       "districts": [
         "板橋區"
-      ]
+      ],
+      "category": "自助餐"
     },
     {
       "id": "lehamburger-bday-1031",
@@ -186,7 +198,8 @@
       "districts": [
         "板橋區",
         "新莊區"
-      ]
+      ],
+      "category": "速食"
     },
     {
       "id": "yamazaki-bday-1031",
@@ -202,7 +215,8 @@
       "url": "https://info.talk.tw/2026birthday/",
       "districts": [
         "板橋區"
-      ]
+      ],
+      "category": "早午餐咖啡"
     },
     {
       "id": "jr-prelian-bday-1230",
@@ -219,7 +233,8 @@
       "url": "https://supertaste.tvbs.com.tw/pack/358807",
       "districts": [
         "中山區"
-      ]
+      ],
+      "category": "自助餐"
     },
     {
       "id": "sunny-buffet-bday-1231",
@@ -236,7 +251,8 @@
       "url": "https://supertaste.tvbs.com.tw/pack/358807",
       "districts": [
         "松山區"
-      ]
+      ],
+      "category": "自助餐"
     },
     {
       "id": "kfc-double11-1116",
@@ -248,7 +264,8 @@
       "tags": [],
       "note": "10/27 起；詳細品項依門市公告",
       "url": "https://www.ctee.com.tw/news/20261022700737-431401",
-      "districts": []
+      "districts": [],
+      "category": "速食"
     }
   ]
 }

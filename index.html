@@ -14,6 +14,9 @@ html{background:var(--pg)}
 body{margin:0;background:var(--pg);color:var(--tx);font:15px/1.5 -apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
 .wrap{max-width:560px;margin:0 auto;padding:14px 14px 28px}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#splash{position:fixed;inset:0;z-index:100;background:#000 url(splash.jpg) center/cover no-repeat;transition:opacity .35s ease}
+#splash.out{opacity:0;pointer-events:none}
+#splash .ver{position:absolute;left:0;right:0;bottom:5%;text-align:center;font-size:13px;font-style:italic;letter-spacing:2px;color:#C9A227}
 .head{display:flex;align-items:center;gap:10px}
 .logo{width:38px;height:38px;border-radius:10px;flex:none}
 .ttl{flex:1;min-width:0}
@@ -29,11 +32,18 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .drow::-webkit-scrollbar{display:none}
 .dchip{flex:none;font-size:12px;padding:5px 12px;border-radius:15px;background:var(--ch);color:var(--sb)}
 .dchip.on{background:var(--gold);color:var(--ink);font-weight:700}
+.catbtn{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:10px;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:10px 12px 10px 14px;font-size:13px;text-align:left}
+.catbtn.open{border:1px solid var(--gold)}
+.catbtn span{color:var(--sb)}
+.catbtn i{font-style:normal;color:var(--sb)}
+#catpanel{display:none;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;margin-top:4px;padding:4px 0}
+#catpanel button{display:flex;justify-content:space-between;width:100%;text-align:left;padding:10px 14px;font-size:13px}
+#catpanel button.on{background:var(--ch);font-weight:700;color:var(--hi)}
 .tabs{display:flex;gap:20px;margin:10px 4px 8px}
 .tab{font-size:13px;color:var(--sb);padding:4px 0 3px;border-bottom:2px solid transparent}
 .tab.on{color:var(--tx);font-weight:700;border-bottom-color:var(--gold)}
-.card{display:block;background:var(--cd);border:.5px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:10px;color:inherit;text-decoration:none}
-.card:hover{border-color:var(--gold)}
+.card{display:block;background:var(--cd);border:.5px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:10px;color:inherit;cursor:pointer}
+.card:hover,.card:focus{border-color:var(--gold);outline:0}
 .r1{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .brand{font-size:15px;font-weight:700}
 .badge{font-size:11px;padding:2px 8px;border-radius:9px;background:var(--ch);color:var(--sb);flex:none}
@@ -43,30 +53,63 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .tag{font-size:11px;padding:2px 8px;border-radius:9px;background:var(--ch);color:var(--sb)}
 .until{margin-left:auto;font-size:12px;color:var(--sb)}
-.note{font-size:12px;color:var(--sb);margin-top:6px}
 .empty{text-align:center;color:var(--sb);font-size:14px;padding:48px 16px}
 .hint{text-align:center;color:var(--sb);font-size:12px;padding:8px}
+#detail{position:fixed;inset:0;z-index:40;background:var(--pg);overflow-y:auto;display:none}
+#detail .wrap{padding-bottom:40px}
+.bar{display:flex;align-items:center;justify-content:space-between}
+.back{font-size:26px;line-height:1;padding:2px 14px 2px 0}
+.dtitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 8px}
+.dtitle h2{font-size:22px;margin:0;font-weight:700;line-height:1.3}
+.dtags{display:flex;flex-wrap:wrap;gap:6px}
+.box{background:var(--cd);border:.5px solid var(--ln);border-radius:14px;padding:12px 14px;margin-top:12px}
+.box .lb{font-size:11px;color:var(--sb)}
+.box .big{font-size:15px;line-height:1.6;margin-top:4px}
+.box .big b{color:var(--hi);font-weight:700}
+.info{padding:2px 14px;margin-top:10px}
+.irow{display:block;width:100%;text-align:left;padding:10px 0;border-bottom:.5px solid var(--ln)}
+.irow:last-child{border-bottom:0}
+.irow .lb{font-size:11px;color:var(--sb)}
+.irow .v{font-size:14px;margin-top:2px}
+.irow.tap .v{color:var(--hi);font-weight:700}
+.btns{display:flex;gap:8px;margin-top:14px}
+.btns a,.btns button{flex:1;text-align:center;text-decoration:none;color:var(--tx);background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:11px 0;font-size:14px}
+.btns .g{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
+#sheet{position:fixed;inset:0;z-index:60;display:none}
+#sheet .bk{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+#sheet .pn{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;background:var(--cd);border-radius:18px 18px 0 0;padding:10px 10px 18px}
+#sheet .pn .t{font-size:12px;color:var(--sb);text-align:center;padding:4px 0 8px}
+#sheet .pn a,#sheet .pn button{display:block;width:100%;text-align:center;text-decoration:none;color:var(--tx);padding:13px 0;font-size:15px;border-top:.5px solid var(--ln)}
+#toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%);background:#1F1B16;color:#F2EEE4;font-size:13px;padding:8px 16px;border-radius:18px;z-index:90;display:none}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div id="splash"><div class="ver">v0.5</div></div>
+<div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.4</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.5</div></div>
 <button class="refresh" id="refresh" aria-label="重新整理">↻</button>
 </div>
 <div id="info"></div>
 <div class="seg" id="regions"></div>
 <div id="dlabel">區域（可左右滑動）</div>
 <div class="drow" id="districts"></div>
+<button class="catbtn" id="catbtn"></button>
+<div id="catpanel"></div>
 <div class="tabs" id="tabs"></div>
 <div id="list"></div>
 </div>
+<div id="detail"><div class="wrap" id="dwrap"></div></div>
+<div id="sheet"><div class="bk" id="sheetbk"></div><div class="pn" id="sheetpn"></div></div>
+<div id="toast"></div>
 <script>
+var VER="v0.5";
 var TAIPEI=["中正區","大同區","中山區","松山區","大安區","萬華區","信義區","士林區","北投區","內湖區","南港區","文山區"];
 var NEWTP=["板橋區","三重區","中和區","永和區","新莊區","新店區","土城區","蘆洲區","汐止區","樹林區","淡水區","鶯歌區","三峽區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區","瑞芳區"];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
-var state={region:"全台",district:"全部",tab:"即將到期",deals:[],updated:""};
+var ALL="全部類別";
+var state={region:"全台",district:"全部",category:ALL,catOpen:false,tab:"即將到期",deals:[],updated:""};
 try{var s=JSON.parse(localStorage.getItem("deals-ui")||"{}");if(s.region)state.region=s.region;if(s.tab)state.tab=s.tab}catch(e){}
 function save(){try{localStorage.setItem("deals-ui",JSON.stringify({region:state.region,tab:state.tab}))}catch(e){}}
 function today(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
@@ -81,55 +124,138 @@ function hl(box,text){
   }
   if(last<text.length)box.appendChild(document.createTextNode(text.slice(last)));
 }
+function toast(t){var e=document.getElementById("toast");e.textContent=t;e.style.display="block";clearTimeout(toast._t);toast._t=setTimeout(function(){e.style.display="none"},1800)}
+function live(){var t=today();return state.deals.filter(function(d){return d._until&&d._until>=t})}
+function categories(){
+  var c={};live().forEach(function(d){c[d.category]=(c[d.category]||0)+1});
+  var l=Object.keys(c).filter(function(k){return c[k]>=2});
+  if(state.category!=ALL&&l.indexOf(state.category)<0)l.push(state.category);
+  l.sort(function(a,b){if((a=="其他")!=(b=="其他"))return a=="其他"?1:-1;return (c[b]||0)-(c[a]||0)||(a<b?-1:1)});
+  return l;
+}
 function visible(){
-  var t=today();
-  var l=state.deals.filter(function(d){return d._until&&d._until>=t});
+  var l=live();
   if(state.region!="全台")l=l.filter(function(d){return d.region==state.region||d.region=="全台"});
   if(state.region!="全台"&&state.district!="全部")l=l.filter(function(d){var ds=d.districts||[];return d.region=="全台"||!ds.length||ds.indexOf(state.district)>=0});
+  if(state.category!=ALL)l=l.filter(function(d){return d.category==state.category});
   if(state.tab=="吃到飽")l=l.filter(function(d){return (d.tags||[]).indexOf("吃到飽")>=0});
   if(state.tab=="壽星")l=l.filter(function(d){return (d.tags||[]).indexOf("壽星")>=0});
   if(state.tab=="最新")l.sort(function(a,b){return (b.added||"").localeCompare(a.added||"")});
   else l.sort(function(a,b){return a._until-b._until});
   return l;
 }
+function whereOf(d){return (d.region=="全台"?"全台連鎖":d.region)+((d.districts||[]).length?" · "+d.districts.join("、"):"")}
 function render(){
-  var t=today(),total=state.deals.filter(function(d){return d._until&&d._until>=t}).length,vis=visible();
-  var scope=state.region=="全台"?"":(state.district=="全部"?state.region+" · ":state.region+" · "+state.district+" · ");
-  document.getElementById("info").textContent=(state.updated?state.updated+" 更新 · ":"")+(scope?scope+vis.length+" 筆":"共 "+total+" 筆");
+  var t=today(),total=live().length,vis=visible();
+  var parts=[];
+  if(state.region!="全台")parts.push(state.region);
+  if(state.region!="全台"&&state.district!="全部")parts.push(state.district);
+  if(state.category!=ALL)parts.push(state.category);
+  document.getElementById("info").textContent=(state.updated?state.updated+" 更新 · ":"")+(parts.length?parts.join(" · ")+" · "+vis.length+" 筆":"共 "+total+" 筆");
   var r=document.getElementById("regions");r.textContent="";
   ["全台","台北","新北"].forEach(function(n){var b=el("button",n==state.region?"on":"",n);b.onclick=function(){if(state.region!=n)state.district="全部";state.region=n;save();render()};r.appendChild(b)});
   var names=state.region=="台北"?TAIPEI:state.region=="新北"?NEWTP:[];
   document.getElementById("dlabel").style.display=names.length?"":"none";
   var dr=document.getElementById("districts");dr.style.display=names.length?"":"none";dr.textContent="";
   ["全部"].concat(names).forEach(function(n){var b=el("button","dchip"+(n==state.district?" on":""),n);b.onclick=function(){state.district=n;render()};dr.appendChild(b)});
+  var cb=document.getElementById("catbtn");cb.textContent="";cb.className="catbtn"+(state.catOpen?" open":"");
+  var lab=el("div");lab.appendChild(el("span",null,"類別　"));lab.appendChild(document.createTextNode(state.category));
+  cb.appendChild(lab);cb.appendChild(el("i",null,state.catOpen?"▴":"▾"));
+  cb.onclick=function(e){e.stopPropagation();state.catOpen=!state.catOpen;render()};
+  var cp=document.getElementById("catpanel");cp.textContent="";cp.style.display=state.catOpen?"block":"none";
+  if(state.catOpen)[ALL].concat(categories()).forEach(function(n){
+    var b=el("button",n==state.category?"on":"");b.appendChild(el("span",null,n));if(n==state.category)b.appendChild(el("span",null,"✓"));
+    b.onclick=function(e){e.stopPropagation();state.category=n;state.catOpen=false;render()};cp.appendChild(b);
+  });
   var tb=document.getElementById("tabs");tb.textContent="";
   ["即將到期","最新","吃到飽","壽星"].forEach(function(n){var b=el("button","tab"+(n==state.tab?" on":""),n);b.onclick=function(){state.tab=n;save();render()};tb.appendChild(b)});
   var box=document.getElementById("list");box.textContent="";
   if(!vis.length){box.appendChild(el("div","empty","目前沒有符合的優惠"));return}
   vis.forEach(function(d){
     var days=Math.round((d._until-t)/864e5);
-    var a=el("a","card");if(d.url){a.href=d.url;a.target="_blank";a.rel="noopener"}
+    var a=el("div","card");a.tabIndex=0;a.setAttribute("role","button");
+    a.onclick=function(){openDetail(d)};
+    a.onkeydown=function(e){if(e.key=="Enter"||e.key==" "){e.preventDefault();openDetail(d)}};
     var top=el("div","r1");top.appendChild(el("span","brand",d.brand));
-    top.appendChild(el("span","badge"+(days<=7?" hot":""),days==0?"今天到期":"剩 "+days+" 天"));
+    top.appendChild(el("span","badge"+(days<=7?" hot":""),days<=0?"今天到期":"剩 "+days+" 天"));
     a.appendChild(top);
     var of=el("div","offer");hl(of,d.offer||"");a.appendChild(of);
     var tg=el("div","tags");
-    tg.appendChild(el("span","tag",(d.region=="全台"?"全台連鎖":d.region)+((d.districts||[]).length?" · "+d.districts.join("、"):"")));
+    tg.appendChild(el("span","tag",whereOf(d)));
+    tg.appendChild(el("span","tag",d.category));
     (d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});
     tg.appendChild(el("span","until","到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()));
     a.appendChild(tg);
-    if(d.note)a.appendChild(el("div","note",d.note));
     box.appendChild(a);
   });
-  box.appendChild(el("div","hint","點一筆開啟原始頁面"));
+  box.appendChild(el("div","hint","點一筆看詳細資訊"));
 }
+function irow(label,value,tap,fn){
+  var r=el(tap?"button":"div","irow"+(tap?" tap":""));
+  r.appendChild(el("div","lb",label));r.appendChild(el("div","v",value));
+  if(tap)r.onclick=fn;return r;
+}
+function openSheet(d){
+  var q=d.address||d.brand,eq=encodeURIComponent(q);
+  var pn=document.getElementById("sheetpn");pn.textContent="";
+  pn.appendChild(el("div","t","用哪個地圖開啟？"));
+  [["Google 地圖","https://www.google.com/maps/search/?api=1&query="+eq],
+   ["Apple 地圖","https://maps.apple.com/?q="+eq],
+   ["Waze","https://waze.com/ul?q="+eq+"&navigate=yes"]].forEach(function(o){
+    var a=el("a",null,o[0]);a.href=o[1];a.target="_blank";a.rel="noopener";a.onclick=closeSheet;pn.appendChild(a);
+  });
+  if(d.address){var c=el("button",null,"複製地址");c.onclick=function(){copyText(d.address);closeSheet()};pn.appendChild(c)}
+  var x=el("button",null,"取消");x.style.color="var(--sb)";x.onclick=closeSheet;pn.appendChild(x);
+  document.getElementById("sheet").style.display="block";
+}
+function closeSheet(){document.getElementById("sheet").style.display="none"}
+function copyText(t){
+  function done(){toast("已複製地址")}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){fallback()})}else fallback();
+  function fallback(){var a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{document.execCommand("copy");done()}catch(e){toast("無法複製")}document.body.removeChild(a)}
+}
+function openDetail(d){
+  var t=today(),days=Math.round((d._until-t)/864e5);
+  var w=document.getElementById("dwrap");w.textContent="";
+  var bar=el("div","bar");var bk=el("button","back","←");bk.setAttribute("aria-label","返回");bk.onclick=function(){history.back()};
+  bar.appendChild(bk);bar.appendChild(el("div","credit","作者：ArchieKUO　"+VER));w.appendChild(bar);
+  var tt=el("div","dtitle");tt.appendChild(el("h2",null,d.brand));tt.appendChild(el("span","badge"+(days<=7?" hot":""),days<=0?"今天到期":"剩 "+days+" 天"));w.appendChild(tt);
+  var tg=el("div","dtags");tg.appendChild(el("span","tag",whereOf(d)));tg.appendChild(el("span","tag",d.category));(d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});w.appendChild(tg);
+  var ob=el("div","box");ob.appendChild(el("div","lb","優惠內容"));var big=el("div","big");hl(big,d.offer||"");ob.appendChild(big);w.appendChild(ob);
+  var info=el("div","box info");
+  info.appendChild(irow("優惠期間","即日起至 "+(d._until.getMonth()+1)+"/"+d._until.getDate()));
+  info.appendChild(irow("使用條件",d.note||"未註明"));
+  if(d.address)info.appendChild(irow("地址",d.address+"　›",true,function(){openSheet(d)}));
+  else info.appendChild(irow("地址",d.region=="全台"?"全台各分店，詳情請看原始頁面":"未提供"));
+  if(d.phone)info.appendChild(irow("電話",d.phone+"　›",true,function(){location.href="tel:"+d.phone.replace(/[^0-9+]/g,"")}));
+  else info.appendChild(irow("電話","未提供"));
+  info.appendChild(irow("營業時間",d.hours||"未提供"));
+  var rt=d.rating;
+  info.appendChild(irow("評價",rt&&rt.score>0&&rt.count>0?rt.score+" ★（"+rt.count+" 則）· 來源："+(rt.source||"")+(rt.date?"，"+rt.date+" 整理":""):"未提供"));
+  w.appendChild(info);
+  var bs=el("div","btns");
+  var nav=el("button","g","導航");nav.onclick=function(){openSheet(d)};bs.appendChild(nav);
+  var tel=el("button",null,"撥打");tel.onclick=function(){if(d.phone)location.href="tel:"+d.phone.replace(/[^0-9+]/g,"");else toast("這筆優惠沒有電話資料")};bs.appendChild(tel);
+  var src=el("button",null,"原始頁面");src.onclick=function(){if(d.url)window.open(d.url,"_blank","noopener");else toast("這筆優惠沒有原始頁面")};bs.appendChild(src);
+  w.appendChild(bs);
+  var dt=document.getElementById("detail");dt.style.display="block";dt.scrollTop=0;
+  document.getElementById("main").style.display="none";
+  history.pushState({detail:1},"");
+}
+function closeDetail(){document.getElementById("detail").style.display="none";document.getElementById("main").style.display="";closeSheet()}
+window.addEventListener("popstate",closeDetail);
+document.addEventListener("click",function(){if(state.catOpen){state.catOpen=false;render()}});
+document.getElementById("sheetbk").onclick=closeSheet;
 function load(manual){
   fetch("data.json?t="+Date.now()).then(function(r){return r.json()}).then(function(j){
-    state.updated=j.updated||"";state.deals=(j.deals||[]).map(function(d){d._until=parse(d.until);return d});render();
-  }).catch(function(){if(manual)alert("無法更新，請檢查網路")});
+    state.updated=j.updated||"";
+    state.deals=(j.deals||[]).map(function(d){d._until=parse(d.until);d.category=d.category||"其他";return d});
+    render();if(manual)toast("已更新");
+  }).catch(function(){if(manual)toast("無法更新，請檢查網路")});
 }
 document.getElementById("refresh").onclick=function(){load(true)};
 render();load(false);
+setTimeout(function(){var s=document.getElementById("splash");s.className="out";setTimeout(function(){s.style.display="none"},400)},800);
 </script>
 </body>
 </html>
