@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val DATA_URL = "https://raw.githubusercontent.com/nmymdf/restaurant-deals/main/data.json"
         const val GOLD = "#C9A227"
-        const val VERSION = "v0.2"
+        const val VERSION = "v0.3"
         val TAIPEI = listOf(
             "中正區", "大同區", "中山區", "松山區", "大安區", "萬華區",
             "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"
