@@ -3,64 +3,84 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>餐廳優惠日報</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' rx='24' fill='%231F1B16'/%3E%3Cpath d='M40 26L66 54M49 22L75 50' stroke='%23F1DD8A' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M26 54H82A28 28 0 0 1 26 54Z' fill='%23C9A227'/%3E%3Crect x='42' y='80' width='24' height='5' rx='2.5' fill='%23C9A227'/%3E%3Cpath d='M34 64H74' stroke='%231F1B16' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
-:root{--bg:#fff;--fg:#111;--sub:#666;--mute:#999;--line:#e6e6e6;--chip:#bbb;--red:#c62828;--gold:#C9A227}
-@media(prefers-color-scheme:dark){:root{--bg:#161616;--fg:#f2f2f2;--sub:#aaa;--mute:#888;--line:#333;--chip:#555;--red:#ef5350}}
+:root{--pg:#F7F4EC;--cd:#fff;--tx:#1F1B16;--sb:#6B6558;--ln:#E8E2D2;--ch:#EFE9D6;--rd:#B3261E;--rdbg:#FBE9E7;--hi:#A8860F;--gold:#C9A227;--ink:#1F1B16}
+@media(prefers-color-scheme:dark){:root{--pg:#14120F;--cd:#1F1B16;--tx:#F2EEE4;--sb:#A59E8C;--ln:#332E25;--ch:#2A2519;--rd:#FF8A80;--rdbg:#3A1F1C;--hi:#C9A227}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
-.wrap{max-width:560px;margin:0 auto}
-header{padding:14px 16px 8px}
-.top{display:flex;align-items:center;justify-content:space-between}
-h1{font-size:20px;margin:0;font-weight:700}
-button{font:inherit;color:inherit;background:none;cursor:pointer}
-.refresh{font-size:13px;color:var(--sub);border:1px solid var(--chip);border-radius:18px;padding:5px 12px}
-#info{font-size:12px;color:var(--sub);margin-top:2px}
+html{background:var(--pg)}
+body{margin:0;background:var(--pg);color:var(--tx);font:15px/1.5 -apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:14px 14px 28px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.head{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:10px;flex:none}
+.ttl{flex:1;min-width:0}
+h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .credit{font-size:12px;font-style:italic;color:var(--gold)}
-.row{display:flex;gap:8px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none}
-.row::-webkit-scrollbar{display:none}
-.chip{flex:none;font-size:13px;border:1px solid var(--chip);border-radius:18px;padding:5px 14px}
-.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.dchip{flex:none;font-size:12px;border:1px solid var(--chip);border-radius:14px;padding:4px 11px}
-.dchip.on{border:2px solid var(--fg);font-weight:700;padding:3px 10px}
-#dlabel{font-size:11px;color:var(--mute);padding:0 16px 4px}
-.tabs{display:flex;gap:18px;padding:0 16px 6px}
-.tab{font-size:13px;color:var(--sub);padding:6px 0}
-.tab.on{color:var(--fg);font-weight:700;border-bottom:2px solid var(--fg)}
-.deal{display:block;border-top:1px solid var(--line);padding:12px 16px;color:inherit;text-decoration:none}
-.deal:hover{background:rgba(127,127,127,.08)}
-.d1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.brand{font-weight:700}
-.left{font-size:12px;color:var(--sub);flex:none}
-.left.warn{color:var(--red)}
-.offer{font-size:13px;margin-top:3px}
-.meta{font-size:12px;color:var(--sub);margin-top:3px}
-.empty,.hint{text-align:center;color:var(--mute);font-size:13px;padding:36px 16px}
+.refresh{font-size:24px;color:var(--sb);padding:2px 6px;line-height:1}
+#info{font-size:12px;color:var(--sb);margin:8px 0 10px}
+.seg{display:flex;background:var(--ch);border-radius:12px;padding:3px}
+.seg button{flex:1;text-align:center;font-size:13px;padding:7px 0;border-radius:9px;color:var(--sb)}
+.seg button.on{background:var(--cd);color:var(--tx);font-weight:700;box-shadow:0 0 0 .5px var(--ln)}
+#dlabel{font-size:11px;color:var(--sb);margin:10px 2px 4px}
+.drow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.drow::-webkit-scrollbar{display:none}
+.dchip{flex:none;font-size:12px;padding:5px 12px;border-radius:15px;background:var(--ch);color:var(--sb)}
+.dchip.on{background:var(--gold);color:var(--ink);font-weight:700}
+.tabs{display:flex;gap:20px;margin:10px 4px 8px}
+.tab{font-size:13px;color:var(--sb);padding:4px 0 3px;border-bottom:2px solid transparent}
+.tab.on{color:var(--tx);font-weight:700;border-bottom-color:var(--gold)}
+.card{display:block;background:var(--cd);border:.5px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:10px;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--gold)}
+.r1{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.brand{font-size:15px;font-weight:700}
+.badge{font-size:11px;padding:2px 8px;border-radius:9px;background:var(--ch);color:var(--sb);flex:none}
+.badge.hot{background:var(--rdbg);color:var(--rd)}
+.offer{font-size:13px;line-height:1.55;margin:6px 0 8px}
+.offer b{color:var(--hi);font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:11px;padding:2px 8px;border-radius:9px;background:var(--ch);color:var(--sb)}
+.until{margin-left:auto;font-size:12px;color:var(--sb)}
+.note{font-size:12px;color:var(--sb);margin-top:6px}
+.empty{text-align:center;color:var(--sb);font-size:14px;padding:48px 16px}
+.hint{text-align:center;color:var(--sb);font-size:12px;padding:8px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header>
-<div class="top"><h1>餐廳優惠日報</h1><button class="refresh" id="refresh">重新整理</button></div>
+<div class="head">
+<svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.4</div></div>
+<button class="refresh" id="refresh" aria-label="重新整理">↻</button>
+</div>
 <div id="info"></div>
-<div class="credit">作者：ArchieKUO　v0.3</div>
-</header>
-<div class="row" id="regions"></div>
+<div class="seg" id="regions"></div>
 <div id="dlabel">區域（可左右滑動）</div>
-<div class="row" id="districts"></div>
+<div class="drow" id="districts"></div>
 <div class="tabs" id="tabs"></div>
 <div id="list"></div>
 </div>
 <script>
 var TAIPEI=["中正區","大同區","中山區","松山區","大安區","萬華區","信義區","士林區","北投區","內湖區","南港區","文山區"];
 var NEWTP=["板橋區","三重區","中和區","永和區","新莊區","新店區","土城區","蘆洲區","汐止區","樹林區","淡水區","鶯歌區","三峽區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區","瑞芳區"];
+var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var state={region:"全台",district:"全部",tab:"即將到期",deals:[],updated:""};
 try{var s=JSON.parse(localStorage.getItem("deals-ui")||"{}");if(s.region)state.region=s.region;if(s.tab)state.tab=s.tab}catch(e){}
 function save(){try{localStorage.setItem("deals-ui",JSON.stringify({region:state.region,tab:state.tab}))}catch(e){}}
 function today(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
 function parse(s){var p=(s||"").split("-");return p.length==3?new Date(+p[0],+p[1]-1,+p[2]):null}
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function hl(box,text){
+  var last=0,m;HI.lastIndex=0;
+  while((m=HI.exec(text))){
+    if(m.index>last)box.appendChild(document.createTextNode(text.slice(last,m.index)));
+    box.appendChild(el("b",null,m[0]));last=m.index+m[0].length;
+    if(m[0].length==0)HI.lastIndex++;
+  }
+  if(last<text.length)box.appendChild(document.createTextNode(text.slice(last)));
+}
 function visible(){
   var t=today();
   var l=state.deals.filter(function(d){return d._until&&d._until>=t});
@@ -77,7 +97,7 @@ function render(){
   var scope=state.region=="全台"?"":(state.district=="全部"?state.region+" · ":state.region+" · "+state.district+" · ");
   document.getElementById("info").textContent=(state.updated?state.updated+" 更新 · ":"")+(scope?scope+vis.length+" 筆":"共 "+total+" 筆");
   var r=document.getElementById("regions");r.textContent="";
-  ["全台","台北","新北"].forEach(function(n){var b=el("button","chip"+(n==state.region?" on":""),n);b.onclick=function(){if(state.region!=n)state.district="全部";state.region=n;save();render()};r.appendChild(b)});
+  ["全台","台北","新北"].forEach(function(n){var b=el("button",n==state.region?"on":"",n);b.onclick=function(){if(state.region!=n)state.district="全部";state.region=n;save();render()};r.appendChild(b)});
   var names=state.region=="台北"?TAIPEI:state.region=="新北"?NEWTP:[];
   document.getElementById("dlabel").style.display=names.length?"":"none";
   var dr=document.getElementById("districts");dr.style.display=names.length?"":"none";dr.textContent="";
@@ -88,12 +108,18 @@ function render(){
   if(!vis.length){box.appendChild(el("div","empty","目前沒有符合的優惠"));return}
   vis.forEach(function(d){
     var days=Math.round((d._until-t)/864e5);
-    var a=el("a","deal");if(d.url){a.href=d.url;a.target="_blank";a.rel="noopener"}
-    var top=el("div","d1");top.appendChild(el("span","brand",d.brand));
-    top.appendChild(el("span","left"+(days<=7?" warn":""),days==0?"今天到期":"剩 "+days+" 天"));
-    a.appendChild(top);a.appendChild(el("div","offer",d.offer));
-    var m=(d.region=="全台"?"全台連鎖":d.region)+((d.districts||[]).length?" · "+d.districts.join("、"):"")+" · 到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()+(d.note?" · "+d.note:"");
-    a.appendChild(el("div","meta",m));box.appendChild(a);
+    var a=el("a","card");if(d.url){a.href=d.url;a.target="_blank";a.rel="noopener"}
+    var top=el("div","r1");top.appendChild(el("span","brand",d.brand));
+    top.appendChild(el("span","badge"+(days<=7?" hot":""),days==0?"今天到期":"剩 "+days+" 天"));
+    a.appendChild(top);
+    var of=el("div","offer");hl(of,d.offer||"");a.appendChild(of);
+    var tg=el("div","tags");
+    tg.appendChild(el("span","tag",(d.region=="全台"?"全台連鎖":d.region)+((d.districts||[]).length?" · "+d.districts.join("、"):"")));
+    (d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});
+    tg.appendChild(el("span","until","到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()));
+    a.appendChild(tg);
+    if(d.note)a.appendChild(el("div","note",d.note));
+    box.appendChild(a);
   });
   box.appendChild(el("div","hint","點一筆開啟原始頁面"));
 }
