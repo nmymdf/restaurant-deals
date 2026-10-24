@@ -1,271 +1,385 @@
 {
-  "updated": "2026-10-24 07:53",
-  "deals": [
-    {
-      "id": "wp-steak-1031",
-      "brand": "王品牛排",
-      "offer": "內用 2 客套餐，送價值 689 元義式海鮮拼盤",
-      "region": "全台",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [],
-      "note": "",
-      "url": "https://www.storm.mg/lifestyle/11174210",
-      "districts": [],
-      "category": "牛排西餐"
-    },
-    {
-      "id": "umai-a5-1031",
-      "brand": "屋馬燒肉",
-      "offer": "日本 A5 肋眼牛排 1,010 元（原價 1,980 元）",
-      "region": "全台",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [],
-      "note": "",
-      "url": "https://www.storm.mg/lifestyle/11174210",
-      "districts": [],
-      "category": "燒肉"
-    },
-    {
-      "id": "tasty-bday-1031",
-      "brand": "西堤牛排",
-      "offer": "當月壽星領券，單客經典套餐 9 折",
-      "region": "全台",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "壽星"
-      ],
-      "note": "王品瘋美食 APP 領券",
-      "url": "https://happybirthday.com.tw/list/restaurant/taipei",
-      "districts": [],
-      "category": "牛排西餐"
-    },
-    {
-      "id": "chamonix-bday-1031",
-      "brand": "夏慕尼",
-      "offer": "當月壽星領券，單客套餐 88 折",
-      "region": "全台",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "壽星"
-      ],
-      "note": "王品瘋美食 APP 領券",
-      "url": "https://happybirthday.com.tw/list/restaurant/taichung",
-      "districts": [],
-      "category": "牛排西餐"
-    },
-    {
-      "id": "rooz-bday-1031",
-      "brand": "肉次方燒肉放題",
-      "offer": "當月壽星領券，指定套餐單客 9 折",
-      "region": "全台",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "壽星",
-        "吃到飽"
-      ],
-      "note": "王品瘋美食 APP 領券",
-      "url": "https://happybirthday.com.tw/list/restaurant/taichung",
-      "districts": [],
-      "category": "燒肉"
-    },
-    {
-      "id": "onepot-id-1031",
-      "brand": "這一小鍋",
-      "offer": "身分證有 1 或 0 送梅花豬肉；1 和 0 都有，主餐 8 折",
-      "region": "全台",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [],
-      "note": "",
-      "url": "https://pinje1225.pixnet.net/blog/posts/8230022556",
-      "districts": [],
-      "category": "火鍋"
-    },
-    {
-      "id": "coco-1031",
-      "brand": "CoCo 都可",
-      "offer": "茉莉綠茶 L 特價 29 元、粉角奶茶 L 特價 39 元",
-      "region": "全台",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [],
-      "note": "",
-      "url": "https://pinje1225.pixnet.net/blog/posts/8230022556",
-      "districts": [],
-      "category": "飲料甜點"
-    },
-    {
-      "id": "royal-lecafe-1231",
-      "brand": "台北老爺 Le Café",
-      "offer": "平日午餐兩人 2,280 元、平日晚餐兩人 2,380 元",
-      "region": "台北",
-      "until": "2026-12-31",
-      "added": "2026-10-23",
-      "tags": [
-        "吃到飽"
-      ],
-      "note": "午餐週一至五，晚餐週一至四",
-      "url": "https://travel.ettoday.net/article/3243640.htm",
-      "districts": [
-        "中山區"
-      ],
-      "category": "自助餐"
-    },
-    {
-      "id": "garden-buffet-1031",
-      "brand": "台北花園大酒店饗聚廚房",
-      "offer": "5 位成人同行，當筆現折 1,010 元",
-      "region": "台北",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "吃到飽"
-      ],
-      "note": "",
-      "url": "https://travel.ettoday.net/article/3243640.htm",
-      "districts": [],
-      "category": "自助餐"
-    },
-    {
-      "id": "sheraton-1031",
-      "brand": "喜來登十二廚",
-      "offer": "平日下午茶領券，四人同行一人免費",
-      "region": "台北",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "吃到飽"
-      ],
-      "note": "10 月限定",
-      "url": "https://tw.eztable.com/channel/3227",
-      "districts": [
-        "中正區"
-      ],
-      "category": "自助餐"
-    },
-    {
-      "id": "feg-cafe-bday-1031",
-      "brand": "遠東 Café",
-      "offer": "壽星生日當天同桌 8 折、生日當月同桌 85 折",
-      "region": "台北",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "壽星",
-        "吃到飽"
-      ],
-      "note": "需出示證件",
-      "url": "https://life.applealmond.com/posts/3308/",
-      "districts": [
-        "大安區"
-      ],
-      "category": "自助餐"
-    },
-    {
-      "id": "feasthall-banqiao-1231",
-      "brand": "饗食天堂板橋店",
-      "offer": "平日午餐 928 元、下午茶 758 元、晚餐 1,028 元",
-      "region": "新北",
-      "until": "2026-12-31",
-      "added": "2026-10-23",
-      "tags": [
-        "吃到飽"
-      ],
-      "note": "另收 10% 服務費；10/24–10/26 連假不適用",
-      "url": "https://tw.eztable.com/restaurant/15230",
-      "districts": [
-        "板橋區"
-      ],
-      "category": "自助餐"
-    },
-    {
-      "id": "lehamburger-bday-1031",
-      "brand": "樂漢堡（板橋、新莊店）",
-      "offer": "當月壽星幾歲送幾塊炸雞",
-      "region": "新北",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "壽星"
-      ],
-      "note": "4 人同行預約，每人低消 350 元",
-      "url": "https://info.talk.tw/2026birthday/",
-      "districts": [
-        "板橋區",
-        "新莊區"
-      ],
-      "category": "速食"
-    },
-    {
-      "id": "yamazaki-bday-1031",
-      "brand": "山崎咖啡所（板橋）",
-      "offer": "當月壽星用餐，送招牌手工司康 1 顆",
-      "region": "新北",
-      "until": "2026-10-31",
-      "added": "2026-10-23",
-      "tags": [
-        "壽星"
-      ],
-      "note": "",
-      "url": "https://info.talk.tw/2026birthday/",
-      "districts": [
-        "板橋區"
-      ],
-      "category": "早午餐咖啡"
-    },
-    {
-      "id": "jr-prelian-bday-1230",
-      "brand": "JR東日本大飯店台北 鉑麗安",
-      "offer": "當月壽星午餐或晚餐 4 人同行，壽星 1 人免費（平日 1,480 元、假日 1,680 元）",
-      "region": "台北",
-      "until": "2026-12-30",
-      "added": "2026-10-24",
-      "tags": [
-        "吃到飽",
-        "壽星"
-      ],
-      "note": "壽星仍需付 10% 服務費；限午餐、晚餐",
-      "url": "https://supertaste.tvbs.com.tw/pack/358807",
-      "districts": [
-        "中山區"
-      ],
-      "category": "自助餐"
-    },
-    {
-      "id": "sunny-buffet-bday-1231",
-      "brand": "茹曦酒店 Sunny Buffet",
-      "offer": "當月壽星平日午晚餐，2 位成人同行 1 人半價、4 人同行 1 人免費（平日 1,180 元）",
-      "region": "台北",
-      "until": "2026-12-31",
-      "added": "2026-10-24",
-      "tags": [
-        "吃到飽",
-        "壽星"
-      ],
-      "note": "限平日；折扣不含服務費",
-      "url": "https://supertaste.tvbs.com.tw/pack/358807",
-      "districts": [
-        "松山區"
-      ],
-      "category": "自助餐"
-    },
-    {
-      "id": "kfc-double11-1116",
-      "brand": "肯德基",
-      "offer": "雙11 299 元分享餐：咔啦脆雞 6 塊＋原味蛋撻 2 顆等",
-      "region": "全台",
-      "until": "2026-11-16",
-      "added": "2026-10-24",
-      "tags": [],
-      "note": "10/27 起；詳細品項依門市公告",
-      "url": "https://www.ctee.com.tw/news/20261022700737-431401",
-      "districts": [],
-      "category": "速食"
-    }
-  ]
+ "updated": "2026-10-25 07:55",
+ "deals": [
+  {
+   "id": "wp-steak-1031",
+   "brand": "王品牛排",
+   "offer": "內用 2 客套餐，送價值 689 元義式海鮮拼盤",
+   "region": "全台",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [],
+   "note": "",
+   "url": "https://www.storm.mg/lifestyle/11174210",
+   "districts": [],
+   "category": "牛排西餐"
+  },
+  {
+   "id": "umai-a5-1031",
+   "brand": "屋馬燒肉",
+   "offer": "日本 A5 肋眼牛排 1,010 元（原價 1,980 元）",
+   "region": "全台",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [],
+   "note": "",
+   "url": "https://www.storm.mg/lifestyle/11174210",
+   "districts": [],
+   "category": "燒肉"
+  },
+  {
+   "id": "tasty-bday-1031",
+   "brand": "西堤牛排",
+   "offer": "當月壽星領券，單客經典套餐 9 折",
+   "region": "全台",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "壽星"
+   ],
+   "note": "王品瘋美食 APP 領券",
+   "url": "https://happybirthday.com.tw/list/restaurant/taipei",
+   "districts": [],
+   "category": "牛排西餐"
+  },
+  {
+   "id": "chamonix-bday-1031",
+   "brand": "夏慕尼",
+   "offer": "當月壽星領券，單客套餐 88 折",
+   "region": "全台",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "壽星"
+   ],
+   "note": "王品瘋美食 APP 領券",
+   "url": "https://happybirthday.com.tw/list/restaurant/taichung",
+   "districts": [],
+   "category": "牛排西餐"
+  },
+  {
+   "id": "rooz-bday-1031",
+   "brand": "肉次方燒肉放題",
+   "offer": "當月壽星領券，指定套餐單客 9 折",
+   "region": "全台",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "壽星",
+    "吃到飽"
+   ],
+   "note": "王品瘋美食 APP 領券",
+   "url": "https://happybirthday.com.tw/list/restaurant/taichung",
+   "districts": [],
+   "category": "燒肉"
+  },
+  {
+   "id": "onepot-id-1031",
+   "brand": "這一小鍋",
+   "offer": "身分證有 1 或 0 送梅花豬肉；1 和 0 都有，主餐 8 折",
+   "region": "全台",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [],
+   "note": "",
+   "url": "https://pinje1225.pixnet.net/blog/posts/8230022556",
+   "districts": [],
+   "category": "火鍋"
+  },
+  {
+   "id": "coco-1031",
+   "brand": "CoCo 都可",
+   "offer": "茉莉綠茶 L 特價 29 元、粉角奶茶 L 特價 39 元",
+   "region": "全台",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [],
+   "note": "",
+   "url": "https://pinje1225.pixnet.net/blog/posts/8230022556",
+   "districts": [],
+   "category": "飲料甜點"
+  },
+  {
+   "id": "royal-lecafe-1231",
+   "brand": "台北老爺 Le Café",
+   "offer": "平日午餐兩人 2,280 元、平日晚餐兩人 2,380 元",
+   "region": "台北市",
+   "until": "2026-12-31",
+   "added": "2026-10-23",
+   "tags": [
+    "吃到飽"
+   ],
+   "note": "午餐週一至五，晚餐週一至四",
+   "url": "https://travel.ettoday.net/article/3243640.htm",
+   "districts": [
+    "中山區"
+   ],
+   "category": "自助餐"
+  },
+  {
+   "id": "garden-buffet-1031",
+   "brand": "台北花園大酒店饗聚廚房",
+   "offer": "5 位成人同行，當筆現折 1,010 元",
+   "region": "台北市",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "吃到飽"
+   ],
+   "note": "",
+   "url": "https://travel.ettoday.net/article/3243640.htm",
+   "districts": [],
+   "category": "自助餐"
+  },
+  {
+   "id": "sheraton-1031",
+   "brand": "喜來登十二廚",
+   "offer": "平日下午茶領券，四人同行一人免費",
+   "region": "台北市",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "吃到飽"
+   ],
+   "note": "10 月限定",
+   "url": "https://tw.eztable.com/channel/3227",
+   "districts": [
+    "中正區"
+   ],
+   "category": "自助餐"
+  },
+  {
+   "id": "feg-cafe-bday-1031",
+   "brand": "遠東 Café",
+   "offer": "壽星生日當天同桌 8 折、生日當月同桌 85 折",
+   "region": "台北市",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "壽星",
+    "吃到飽"
+   ],
+   "note": "需出示證件",
+   "url": "https://life.applealmond.com/posts/3308/",
+   "districts": [
+    "大安區"
+   ],
+   "category": "自助餐"
+  },
+  {
+   "id": "feasthall-banqiao-1231",
+   "brand": "饗食天堂板橋店",
+   "offer": "平日午餐 928 元、下午茶 758 元、晚餐 1,028 元",
+   "region": "新北市",
+   "until": "2026-12-31",
+   "added": "2026-10-23",
+   "tags": [
+    "吃到飽"
+   ],
+   "note": "另收 10% 服務費；10/24–10/26 連假不適用",
+   "url": "https://tw.eztable.com/restaurant/15230",
+   "districts": [
+    "板橋區"
+   ],
+   "category": "自助餐"
+  },
+  {
+   "id": "lehamburger-bday-1031",
+   "brand": "樂漢堡（板橋、新莊店）",
+   "offer": "當月壽星幾歲送幾塊炸雞",
+   "region": "新北市",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "壽星"
+   ],
+   "note": "4 人同行預約，每人低消 350 元",
+   "url": "https://info.talk.tw/2026birthday/",
+   "districts": [
+    "板橋區",
+    "新莊區"
+   ],
+   "category": "速食"
+  },
+  {
+   "id": "yamazaki-bday-1031",
+   "brand": "山崎咖啡所（板橋）",
+   "offer": "當月壽星用餐，送招牌手工司康 1 顆",
+   "region": "新北市",
+   "until": "2026-10-31",
+   "added": "2026-10-23",
+   "tags": [
+    "壽星"
+   ],
+   "note": "",
+   "url": "https://info.talk.tw/2026birthday/",
+   "districts": [
+    "板橋區"
+   ],
+   "category": "早午餐咖啡"
+  },
+  {
+   "id": "jr-prelian-bday-1230",
+   "brand": "JR東日本大飯店台北 鉑麗安",
+   "offer": "當月壽星午餐或晚餐 4 人同行，壽星 1 人免費（平日 1,480 元、假日 1,680 元）",
+   "region": "台北市",
+   "until": "2026-12-30",
+   "added": "2026-10-24",
+   "tags": [
+    "吃到飽",
+    "壽星"
+   ],
+   "note": "壽星仍需付 10% 服務費；限午餐、晚餐",
+   "url": "https://supertaste.tvbs.com.tw/pack/358807",
+   "districts": [
+    "中山區"
+   ],
+   "category": "自助餐"
+  },
+  {
+   "id": "sunny-buffet-bday-1231",
+   "brand": "茹曦酒店 Sunny Buffet",
+   "offer": "當月壽星平日午晚餐，2 位成人同行 1 人半價、4 人同行 1 人免費（平日 1,180 元）",
+   "region": "台北市",
+   "until": "2026-12-31",
+   "added": "2026-10-24",
+   "tags": [
+    "吃到飽",
+    "壽星"
+   ],
+   "note": "限平日；折扣不含服務費",
+   "url": "https://supertaste.tvbs.com.tw/pack/358807",
+   "districts": [
+    "松山區"
+   ],
+   "category": "自助餐"
+  },
+  {
+   "id": "kfc-double11-1116",
+   "brand": "肯德基",
+   "offer": "雙11 299 元分享餐：咔啦脆雞 6 塊＋原味蛋撻 2 顆等",
+   "region": "全台",
+   "until": "2026-11-16",
+   "added": "2026-10-24",
+   "tags": [],
+   "note": "10/27 起；詳細品項依門市公告",
+   "url": "https://www.ctee.com.tw/news/20261022700737-431401",
+   "districts": [],
+   "category": "速食"
+  },
+  {
+   "id": "sanshang-chicken-1104",
+   "brand": "三商炸雞",
+   "offer": "買 5 塊送 5 塊炸雞桶 325 元（原價 650 元）；6 塊青花椒炸雞 199 元（原價 420 元）",
+   "region": "全台",
+   "districts": [],
+   "category": "速食",
+   "until": "2026-11-04",
+   "added": "2026-10-25",
+   "tags": [],
+   "note": "實際以門市為準，部分門市可能不適用",
+   "url": "https://info.talk.tw/buy-one-get-one/"
+  },
+  {
+   "id": "kaneko-b1g1-1112",
+   "brand": "金子半之助",
+   "offer": "點任一主餐並升級套餐，贈買一送一優惠券",
+   "region": "全台",
+   "districts": [],
+   "category": "日式料理",
+   "until": "2026-11-12",
+   "added": "2026-10-25",
+   "tags": [],
+   "note": "優惠券限下次消費使用、限週一至週五，天婦羅大巨蛋門市不適用",
+   "url": "https://info.talk.tw/buy-one-get-one/"
+  },
+  {
+   "id": "bondolci-hawaii-1103",
+   "brand": "薄多義",
+   "offer": "外帶限定夏威夷披薩，買一份送相同品項一份",
+   "region": "全台",
+   "districts": [],
+   "category": "速食",
+   "until": "2026-11-03",
+   "added": "2026-10-25",
+   "tags": [],
+   "note": "限外帶，實際以門市為準",
+   "url": "https://info.talk.tw/buy-one-get-one/"
+  },
+  {
+   "id": "ieat-bday-1130",
+   "brand": "饗賓餐旅集團（饗食天堂、果然匯、朵頤牛排、貓將壽司等）",
+   "offer": "生日當月整筆原價內用 96 折",
+   "region": "全台",
+   "districts": [],
+   "category": "自助餐",
+   "until": "2026-11-30",
+   "added": "2026-10-25",
+   "tags": [
+    "壽星",
+    "吃到飽"
+   ],
+   "note": "需下載 iEAT APP 領券、事先訂位、限內用，另加 10% 服務費，96 折人數上限 8 人，不與其他優惠併用",
+   "url": "https://madestudio.com.tw/zh/food/birthday-deals/"
+  },
+  {
+   "id": "tc-lifang-bf-1231",
+   "brand": "台中李方艾美酒店 新食譜全日餐廳",
+   "offer": "台中人早餐買一送一（早餐每位 700 元＋10%，平均每人約 420 元）",
+   "region": "台中市",
+   "districts": [
+    "中區"
+   ],
+   "category": "自助餐",
+   "until": "2026-12-31",
+   "added": "2026-10-25",
+   "tags": [
+    "吃到飽"
+   ],
+   "note": "需設籍台中市並出示身分證明；需提前 3 天訂位、每日限量；每證限 4 人、每組最多 2 證；免費者仍收 10% 服務費",
+   "url": "https://supertaste.tvbs.com.tw/food/359917",
+   "address": "台中市中區建國路111號（台中李方艾美酒店2樓）",
+   "phone": "04-22240888",
+   "hours": "早餐 06:30–10:00"
+  },
+  {
+   "id": "khh-marriott-bday-1230",
+   "brand": "高雄萬豪酒店 豪享自助餐廳／京享蔬食百匯",
+   "offer": "當月壽星本人午、晚餐自助餐 8 折",
+   "region": "高雄市",
+   "districts": [
+    "鼓山區"
+   ],
+   "category": "自助餐",
+   "until": "2026-12-30",
+   "added": "2026-10-25",
+   "tags": [
+    "壽星",
+    "吃到飽"
+   ],
+   "note": "12 歲以上壽星本人、需出示證件，另加一成服務費；除夕至初四、連假及國定假日不適用",
+   "url": "https://www.khhmarriott.com/News/Content/8304bc25-01d3-4f43-9f33-948656820dce",
+   "address": "高雄市鼓山區龍德新路222號",
+   "phone": "(07)559-6909"
+  },
+  {
+   "id": "tn-crowne-bday-1231",
+   "brand": "台南大員皇冠假日酒店（彩豐樓、元素、煉‧瓦）",
+   "offer": "當月壽星餐飲 9 折",
+   "region": "台南市",
+   "districts": [
+    "安平區"
+   ],
+   "category": "自助餐",
+   "until": "2026-12-31",
+   "added": "2026-10-25",
+   "tags": [
+    "壽星"
+   ],
+   "note": "同桌 8 人同享，另加 10% 服務費；不含早餐、桌菜、包廂、酒類、外帶；節慶日不適用；不可併用其他優惠",
+   "url": "https://www.cptainan.com/news-detail/birthday/",
+   "address": "台南市安平區州平路289號",
+   "phone": "+886-6-512-1807"
+  }
+ ]
 }
