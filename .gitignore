@@ -4,3 +4,4 @@ local.properties
 .idea/
 *.iml
 app/src/main/assets/data.json
+app/src/main/assets/regions.json

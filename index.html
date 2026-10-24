@@ -24,21 +24,42 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .credit{font-size:12px;font-style:italic;color:var(--gold)}
 .refresh{font-size:24px;color:var(--sb);padding:2px 6px;line-height:1}
 #info{font-size:12px;color:var(--sb);margin:8px 0 10px}
-.seg{display:flex;background:var(--ch);border-radius:12px;padding:3px}
-.seg button{flex:1;text-align:center;font-size:13px;padding:7px 0;border-radius:9px;color:var(--sb)}
-.seg button.on{background:var(--cd);color:var(--tx);font-weight:700;box-shadow:0 0 0 .5px var(--ln)}
-#dlabel{font-size:11px;color:var(--sb);margin:10px 2px 4px}
-.drow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.drow::-webkit-scrollbar{display:none}
-.dchip{flex:none;font-size:12px;padding:5px 12px;border-radius:15px;background:var(--ch);color:var(--sb)}
-.dchip.on{background:var(--gold);color:var(--ink);font-weight:700}
-.catbtn{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:10px;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:10px 12px 10px 14px;font-size:13px;text-align:left}
-.catbtn.open{border:1px solid var(--gold)}
-.catbtn span{color:var(--sb)}
-.catbtn i{font-style:normal;color:var(--sb)}
-#catpanel{display:none;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;margin-top:4px;padding:4px 0}
+.nb{display:flex;align-items:center;width:100%;text-align:left;background:var(--cd);border:1px solid var(--gold);border-radius:14px;padding:11px 14px;margin-bottom:10px}
+.nb .t{font-size:15px;font-weight:700}
+.nb .s{font-size:12px;color:var(--sb)}
+.nb i{font-style:normal;font-size:22px;color:var(--hi);margin-left:auto}
+.frow{display:flex;gap:8px}
+.fbtn{display:flex;align-items:center;justify-content:space-between;min-width:0;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:10px 12px 10px 14px;font-size:13px;text-align:left}
+.fbtn.reg{flex:1.25}.fbtn.cat{flex:1}
+.fbtn.open{border:1px solid var(--gold)}
+.fbtn .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fbtn span.k{color:var(--sb)}
+.fbtn i{font-style:normal;color:var(--sb);margin-left:6px}
+#regpanel,#catpanel{display:none;background:var(--cd);border:.5px solid var(--ln);border-radius:14px;margin-top:4px}
+#catpanel{padding:4px 0;border-radius:12px}
 #catpanel button{display:flex;justify-content:space-between;width:100%;text-align:left;padding:10px 14px;font-size:13px}
 #catpanel button.on{background:var(--ch);font-weight:700;color:var(--hi)}
+.rbody{display:flex;height:300px}
+.rl{flex:.85;overflow-y:auto;background:var(--pg);border-radius:14px 0 0 0}
+.rr{flex:1.15;overflow-y:auto}
+.glab{font-size:11px;color:var(--sb);padding:10px 14px 4px}
+.crow{display:flex;align-items:center;width:100%;text-align:left;font-size:14px;color:var(--sb);padding:0}
+.crow b{width:3px;height:24px;background:transparent;flex:none}
+.crow span{padding:11px 8px 11px 11px}
+.crow.on{background:var(--cd);color:var(--tx);font-weight:700}
+.crow.on b{background:var(--gold)}
+.orow{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;font-size:14px;padding:11px 14px;border-top:.5px solid var(--ln)}
+.orow:first-child{border-top:0}
+.orow.on{color:var(--hi);font-weight:700}
+.rhint{color:var(--sb);font-size:13px;line-height:1.6;padding:16px}
+.rfoot{display:flex;gap:8px;padding:10px 12px;border-top:.5px solid var(--ln)}
+.rfoot button{border-radius:12px;padding:11px 0;font-size:14px;border:.5px solid var(--ln);background:var(--cd)}
+.rfoot .c{flex:1}
+.rfoot .a{flex:2;background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
+.note{font-size:12px;color:var(--sb);background:var(--ch);border-radius:10px;padding:8px 12px;margin-bottom:10px}
+.pk .why{font-size:12.5px;margin-top:4px}
+.dist{font-size:12px;font-weight:700;color:var(--hi);flex:none}
+.more{display:block;width:100%;margin-top:6px;background:var(--gold);color:var(--ink);font-weight:700;border-radius:12px;padding:11px 0;font-size:14px}
 .tabs{display:flex;gap:20px;margin:10px 4px 8px}
 .tab{font-size:13px;color:var(--sb);padding:4px 0 3px;border-bottom:2px solid transparent}
 .tab.on{color:var(--tx);font-weight:700;border-bottom-color:var(--gold)}
@@ -55,8 +76,9 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .until{margin-left:auto;font-size:12px;color:var(--sb)}
 .empty{text-align:center;color:var(--sb);font-size:14px;padding:48px 16px}
 .hint{text-align:center;color:var(--sb);font-size:12px;padding:8px}
-#detail{position:fixed;inset:0;z-index:40;background:var(--pg);overflow-y:auto;display:none}
-#detail .wrap{padding-bottom:40px}
+#detail,#nearby{position:fixed;inset:0;z-index:40;background:var(--pg);overflow-y:auto;display:none}
+#detail{z-index:45}
+#detail .wrap,#nearby .wrap{padding-bottom:40px}
 .bar{display:flex;align-items:center;justify-content:space-between}
 .back{font-size:26px;line-height:1;padding:2px 14px 2px 0}
 .dtitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 8px}
@@ -84,34 +106,39 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v0.5</div></div>
+<div id="splash"><div class="ver">v0.6</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.5</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.6</div></div>
 <button class="refresh" id="refresh" aria-label="重新整理">↻</button>
 </div>
 <div id="info"></div>
-<div class="seg" id="regions"></div>
-<div id="dlabel">區域（可左右滑動）</div>
-<div class="drow" id="districts"></div>
-<button class="catbtn" id="catbtn"></button>
+<button class="nb" id="nbbtn"><div><div class="t">附近好餐廳</div><div class="s">你所在位置 2 公里內，評價高或人氣旺的店</div></div><i>›</i></button>
+<div class="frow"><button class="fbtn reg" id="regbtn"></button><button class="fbtn cat" id="catbtn"></button></div>
+<div id="regpanel"><div class="rbody"><div class="rl" id="rl"></div><div class="rr" id="rr"></div></div><div class="rfoot"><button class="c" id="rclear">清除</button><button class="a" id="rapply"></button></div></div>
 <div id="catpanel"></div>
 <div class="tabs" id="tabs"></div>
 <div id="list"></div>
 </div>
+<div id="nearby"><div class="wrap" id="nwrap"></div></div>
 <div id="detail"><div class="wrap" id="dwrap"></div></div>
 <div id="sheet"><div class="bk" id="sheetbk"></div><div class="pn" id="sheetpn"></div></div>
 <div id="toast"></div>
 <script>
-var VER="v0.5";
-var TAIPEI=["中正區","大同區","中山區","松山區","大安區","萬華區","信義區","士林區","北投區","內湖區","南港區","文山區"];
-var NEWTP=["板橋區","三重區","中和區","永和區","新莊區","新店區","土城區","蘆洲區","汐止區","樹林區","淡水區","鶯歌區","三峽區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區","瑞芳區"];
+var VER="v0.6";
+var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
-var state={region:"全台",district:"全部",category:ALL,catOpen:false,tab:"即將到期",deals:[],updated:""};
-try{var s=JSON.parse(localStorage.getItem("deals-ui")||"{}");if(s.region)state.region=s.region;if(s.tab)state.tab=s.tab}catch(e){}
-function save(){try{localStorage.setItem("deals-ui",JSON.stringify({region:state.region,tab:state.tab}))}catch(e){}}
+var state={region:"全台",districts:[],pendCity:"全台",pendDs:[],category:ALL,panel:0,tab:"即將到期",deals:[],updated:""};
+try{var s0=JSON.parse(localStorage.getItem("deals-ui")||"{}");if(s0.tab)state.tab=s0.tab}catch(e){}
+function save(){try{localStorage.setItem("deals-ui",JSON.stringify({tab:state.tab}))}catch(e){}}
+function normCity(r){
+  r=(r||"").trim().replace(/臺/g,"台");if(!r||r=="全台")return "全台";
+  for(var i=0;i<GROUPS.length;i++)for(var j=0;j<GROUPS[i].cities.length;j++){var c=GROUPS[i].cities[j];if(c.name==r||c.key==r)return c.name}
+  return r;
+}
+function districtsOf(city){for(var i=0;i<GROUPS.length;i++)for(var j=0;j<GROUPS[i].cities.length;j++)if(GROUPS[i].cities[j].name==city)return GROUPS[i].cities[j].districts;return []}
 function today(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
 function parse(s){var p=(s||"").split("-");return p.length==3?new Date(+p[0],+p[1]-1,+p[2]):null}
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
@@ -133,10 +160,13 @@ function categories(){
   l.sort(function(a,b){if((a=="其他")!=(b=="其他"))return a=="其他"?1:-1;return (c[b]||0)-(c[a]||0)||(a<b?-1:1)});
   return l;
 }
-function visible(){
+function filtered(city,ds){
   var l=live();
-  if(state.region!="全台")l=l.filter(function(d){return d.region==state.region||d.region=="全台"});
-  if(state.region!="全台"&&state.district!="全部")l=l.filter(function(d){var ds=d.districts||[];return d.region=="全台"||!ds.length||ds.indexOf(state.district)>=0});
+  if(city!="全台")l=l.filter(function(d){
+    var dc=normCity(d.region);if(dc=="全台")return true;if(dc!=city)return false;
+    var x=d.districts||[];if(!ds.length||!x.length)return true;
+    return x.some(function(n){return ds.indexOf(n)>=0});
+  });
   if(state.category!=ALL)l=l.filter(function(d){return d.category==state.category});
   if(state.tab=="吃到飽")l=l.filter(function(d){return (d.tags||[]).indexOf("吃到飽")>=0});
   if(state.tab=="壽星")l=l.filter(function(d){return (d.tags||[]).indexOf("壽星")>=0});
@@ -144,32 +174,67 @@ function visible(){
   else l.sort(function(a,b){return a._until-b._until});
   return l;
 }
-function whereOf(d){return (d.region=="全台"?"全台連鎖":d.region)+((d.districts||[]).length?" · "+d.districts.join("、"):"")}
+function visible(){return filtered(state.region,state.districts)}
+function regSummary(){
+  if(state.region=="全台")return "全台";
+  var n=state.districts.length;if(!n)return state.region;
+  return state.region+" · "+(n<=2?state.districts.join("、"):n+" 區");
+}
+function togglePanel(w){
+  if(state.panel==w)state.panel=0;
+  else{state.panel=w;if(w==1){state.pendCity=state.region;state.pendDs=state.districts.slice()}}
+  render();
+}
+function renderRegion(){
+  var rl=document.getElementById("rl"),rr=document.getElementById("rr");
+  var ls=rl.scrollTop,rs=rr.scrollTop;
+  rl.textContent="";rr.textContent="";
+  function crow(n){
+    var b=el("button","crow"+(n==state.pendCity?" on":""));b.appendChild(el("b"));b.appendChild(el("span",null,n));
+    b.onclick=function(e){e.stopPropagation();if(state.pendCity!=n){state.pendCity=n;state.pendDs=[];renderRegion();rr.scrollTop=0}};
+    return b;
+  }
+  rl.appendChild(crow("全台"));
+  GROUPS.forEach(function(g){
+    rl.appendChild(el("div","glab",g.name=="六都"?"六都":"其他縣市 · "+g.name));
+    g.cities.forEach(function(c){rl.appendChild(crow(c.name))});
+  });
+  function orow(t,on,fn){var b=el("button","orow"+(on?" on":""));b.appendChild(el("span",null,t));if(on)b.appendChild(el("span",null,"✓"));b.onclick=function(e){e.stopPropagation();fn()};return b}
+  if(state.pendCity=="全台")rr.appendChild(el("div","rhint","顯示全台的優惠。想看特定地區，請從左邊選縣市。"));
+  else{
+    rr.appendChild(orow("不限",!state.pendDs.length,function(){state.pendDs=[];renderRegion()}));
+    districtsOf(state.pendCity).forEach(function(d){
+      rr.appendChild(orow(d,state.pendDs.indexOf(d)>=0,function(){var i=state.pendDs.indexOf(d);if(i>=0)state.pendDs.splice(i,1);else state.pendDs.push(d);renderRegion()}));
+    });
+  }
+  rl.scrollTop=ls;rr.scrollTop=rs;
+  document.getElementById("rapply").textContent="套用，看 "+filtered(state.pendCity,state.pendDs).length+" 筆";
+}
+function whereOf(d){var c=normCity(d.region);return (c=="全台"?"全台連鎖":c)+((d.districts||[]).length?" · "+d.districts.join("、"):"")}
 function render(){
   var t=today(),total=live().length,vis=visible();
   var parts=[];
-  if(state.region!="全台")parts.push(state.region);
-  if(state.region!="全台"&&state.district!="全部")parts.push(state.district);
+  if(state.region!="全台")parts.push(regSummary());
   if(state.category!=ALL)parts.push(state.category);
   document.getElementById("info").textContent=(state.updated?state.updated+" 更新 · ":"")+(parts.length?parts.join(" · ")+" · "+vis.length+" 筆":"共 "+total+" 筆");
-  var r=document.getElementById("regions");r.textContent="";
-  ["全台","台北","新北"].forEach(function(n){var b=el("button",n==state.region?"on":"",n);b.onclick=function(){if(state.region!=n)state.district="全部";state.region=n;save();render()};r.appendChild(b)});
-  var names=state.region=="台北"?TAIPEI:state.region=="新北"?NEWTP:[];
-  document.getElementById("dlabel").style.display=names.length?"":"none";
-  var dr=document.getElementById("districts");dr.style.display=names.length?"":"none";dr.textContent="";
-  ["全部"].concat(names).forEach(function(n){var b=el("button","dchip"+(n==state.district?" on":""),n);b.onclick=function(){state.district=n;render()};dr.appendChild(b)});
-  var cb=document.getElementById("catbtn");cb.textContent="";cb.className="catbtn"+(state.catOpen?" open":"");
-  var lab=el("div");lab.appendChild(el("span",null,"類別　"));lab.appendChild(document.createTextNode(state.category));
-  cb.appendChild(lab);cb.appendChild(el("i",null,state.catOpen?"▴":"▾"));
-  cb.onclick=function(e){e.stopPropagation();state.catOpen=!state.catOpen;render()};
-  var cp=document.getElementById("catpanel");cp.textContent="";cp.style.display=state.catOpen?"block":"none";
-  if(state.catOpen)[ALL].concat(categories()).forEach(function(n){
+  var rb=document.getElementById("regbtn");rb.textContent="";rb.className="fbtn reg"+(state.panel==1?" open":"");
+  var rv=el("div","v");rv.appendChild(el("span","k","地區　"));rv.appendChild(document.createTextNode(regSummary()));rb.appendChild(rv);rb.appendChild(el("i",null,state.panel==1?"▴":"▾"));
+  rb.onclick=function(e){e.stopPropagation();togglePanel(1)};
+  var rp=document.getElementById("regpanel");rp.style.display=state.panel==1?"block":"none";
+  if(state.panel==1)renderRegion();
+  var cb=document.getElementById("catbtn");cb.textContent="";cb.className="fbtn cat"+(state.panel==2?" open":"");
+  var lab=el("div","v");lab.appendChild(el("span","k","類別　"));lab.appendChild(document.createTextNode(state.category));
+  cb.appendChild(lab);cb.appendChild(el("i",null,state.panel==2?"▴":"▾"));
+  cb.onclick=function(e){e.stopPropagation();togglePanel(2)};
+  var cp=document.getElementById("catpanel");cp.textContent="";cp.style.display=state.panel==2?"block":"none";
+  if(state.panel==2)[ALL].concat(categories()).forEach(function(n){
     var b=el("button",n==state.category?"on":"");b.appendChild(el("span",null,n));if(n==state.category)b.appendChild(el("span",null,"✓"));
-    b.onclick=function(e){e.stopPropagation();state.category=n;state.catOpen=false;render()};cp.appendChild(b);
+    b.onclick=function(e){e.stopPropagation();state.category=n;state.panel=0;render()};cp.appendChild(b);
   });
   var tb=document.getElementById("tabs");tb.textContent="";
   ["即將到期","最新","吃到飽","壽星"].forEach(function(n){var b=el("button","tab"+(n==state.tab?" on":""),n);b.onclick=function(){state.tab=n;save();render()};tb.appendChild(b)});
   var box=document.getElementById("list");box.textContent="";
+  if(state.region!="全台"&&!vis.some(function(d){return normCity(d.region)==state.region}))box.appendChild(el("div","note",state.region+"目前沒有在地優惠"+(vis.length?"，以下是全台連鎖優惠":"")));
   if(!vis.length){box.appendChild(el("div","empty","目前沒有符合的優惠"));return}
   vis.forEach(function(d){
     var days=Math.round((d._until-t)/864e5);
@@ -242,10 +307,126 @@ function openDetail(d){
   document.getElementById("main").style.display="none";
   history.pushState({detail:1},"");
 }
-function closeDetail(){document.getElementById("detail").style.display="none";document.getElementById("main").style.display="";closeSheet()}
-window.addEventListener("popstate",closeDetail);
-document.addEventListener("click",function(){if(state.catOpen){state.catOpen=false;render()}});
+function vis(id){return document.getElementById(id).style.display=="block"}
+function onPop(){
+  closeSheet();
+  if(vis("detail")){document.getElementById("detail").style.display="none";if(!vis("nearby"))document.getElementById("main").style.display="";return}
+  if(vis("nearby")){document.getElementById("nearby").style.display="none";document.getElementById("main").style.display="";nbStop=true}
+}
+window.addEventListener("popstate",onPop);
+document.addEventListener("click",function(e){if(state.panel==2||(state.panel==1&&!document.getElementById("regpanel").contains(e.target))){state.panel=0;render()}});
+document.getElementById("rclear").onclick=function(e){e.stopPropagation();state.pendCity="全台";state.pendDs=[];renderRegion()};
+document.getElementById("rapply").onclick=function(e){e.stopPropagation();state.region=state.pendCity;state.districts=state.pendDs.slice();state.panel=0;render()};
+document.getElementById("regpanel").onclick=function(e){e.stopPropagation()};
 document.getElementById("sheetbk").onclick=closeSheet;
+var picks=[],picksUpdated="",userLoc=null,nbRadius=0,nbStop=false,nbCoords={},nbBusy=false,nbChecked=0,userCity="";
+var RADII=[2000,5000,10000];
+try{nbCoords=JSON.parse(localStorage.getItem("deals-geo")||"{}")}catch(e){}
+function saveGeo(){try{localStorage.setItem("deals-geo",JSON.stringify(nbCoords))}catch(e){}}
+function fmtN(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
+function fmtDist(m){return m<1000?(Math.round(m/10)*10)+" 公尺":(m/1000).toFixed(1)+" 公里"}
+function haversine(a,b,c,d){var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r;var h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(h))}
+function reasons(k){
+  var o=[],r=k.rating;
+  if(r&&r.score>0&&r.count>0)o.push("評價 "+r.score+" ★（"+fmtN(r.count)+" 則）· "+(r.source||"")+(r.date?" "+r.date:""));
+  var v=k.views;if(v&&v.count>0)o.push("點閱約 "+fmtN(v.count)+(v.source?" · "+v.source:"")+(v.date?" "+v.date:""));
+  if(k.award)o.push(k.award);
+  return o;
+}
+function coordOf(k){
+  if(typeof k.lat=="number"&&typeof k.lng=="number")return [k.lat,k.lng];
+  var c=nbCoords[k.address];return (c&&c.length==2)?c:null;
+}
+function openNearby(){
+  var n=document.getElementById("nearby"),w=document.getElementById("nwrap");w.textContent="";
+  var bar=el("div","bar");var bk=el("button","back","←");bk.setAttribute("aria-label","返回");bk.onclick=function(){history.back()};
+  bar.appendChild(bk);bar.appendChild(el("div","credit","作者：ArchieKUO　"+VER));w.appendChild(bar);
+  w.appendChild(el("h2",null,"附近好餐廳")).style.cssText="font-size:22px;margin:12px 0 4px";
+  var st=el("div");st.id="nbstatus";st.style.cssText="font-size:12px;color:var(--sb);margin-bottom:10px";w.appendChild(st);
+  var lb=el("div");lb.id="nblist";w.appendChild(lb);
+  n.style.display="block";n.scrollTop=0;document.getElementById("main").style.display="none";
+  history.pushState({nearby:1},"");nbStop=false;
+  st.textContent="正在取得你的位置…";
+  if(!navigator.geolocation){nbMsg("這個瀏覽器不支援定位。");return}
+  navigator.geolocation.getCurrentPosition(function(p){
+    userLoc=[p.coords.latitude,p.coords.longitude];nbRadius=0;
+    fetch("picks.json?t="+Date.now()).then(function(r){return r.json()}).then(function(j){
+      picks=j.picks||[];picksUpdated=j.updated||"";
+      reverseCity(function(){nbRefresh();nbGeocode()});
+    }).catch(function(){nbMsg("無法載入精選名單，請稍後再試。")});
+  },function(){nbMsg("取不到你的位置。請在瀏覽器允許「位置」，並開啟手機的定位服務。")},{enableHighAccuracy:false,timeout:15000,maximumAge:300000});
+}
+function nbMsg(t){
+  var st=document.getElementById("nbstatus"),lb=document.getElementById("nblist");if(!st)return;
+  st.textContent="";lb.textContent="";var d=el("div","empty",t);d.style.whiteSpace="pre-line";lb.appendChild(d);
+}
+function reverseCity(done){
+  fetch("https://nominatim.openstreetmap.org/reverse?format=json&accept-language=zh-TW&zoom=5&lat="+userLoc[0]+"&lon="+userLoc[1])
+   .then(function(r){return r.json()}).then(function(j){var a=j.address||{};userCity=normCity(a.city||a.state||a.county||"");done()}).catch(function(){done()});
+}
+function nbGeocode(){
+  if(nbBusy)return;
+  var todo=picks.filter(function(k){return !coordOf(k)&&k.address&&nbCoords[k.address]!==0});
+  if(!todo.length)return;
+  todo.sort(function(a,b){return (normCity(a.city)==userCity?0:1)-(normCity(b.city)==userCity?0:1)});
+  nbBusy=true;var i=0;
+  (function step(){
+    if(nbStop||i>=todo.length){nbBusy=false;nbRefresh();return}
+    var k=todo[i++];nbChecked=i;
+    fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=tw&q="+encodeURIComponent(k.address))
+     .then(function(r){return r.json()}).then(function(j){
+       if(j&&j.length)nbCoords[k.address]=[parseFloat(j[0].lat),parseFloat(j[0].lon)];else nbCoords[k.address]=0;
+       saveGeo();if(i%5==0)nbRefresh();setTimeout(step,1100);
+     }).catch(function(){setTimeout(step,1100)});
+  })();
+}
+function nbRefresh(){
+  var st=document.getElementById("nbstatus"),lb=document.getElementById("nblist");
+  if(!st||!userLoc||!vis("nearby"))return;
+  if(!picks.length){nbMsg("精選名單還在整理中，每天早上會自動更新。\n過一陣子再來看看。");return}
+  var R=RADII[nbRadius],out=[];
+  picks.forEach(function(k){var c=coordOf(k);if(!c)return;var d=haversine(userLoc[0],userLoc[1],c[0],c[1]);if(d<=R)out.push([k,d])});
+  out.sort(function(a,b){return a[1]-b[1]});
+  st.textContent=(R/1000)+" 公里內 "+out.length+" 家"+(picksUpdated?"　· 名單 "+picksUpdated+" 更新":"")+(nbBusy?"　· 正在比對地址（第一次較久）":"");
+  lb.textContent="";
+  if(!out.length){var e=el("div","empty",nbBusy?"已檢查 "+nbChecked+" 家，請稍候…":(R/1000)+" 公里內目前沒有精選的店。\n偏遠地區的資料較少，名單會持續擴充。");e.style.whiteSpace="pre-line";lb.appendChild(e)}
+  out.forEach(function(o){
+    var k=o[0],a=el("div","card pk");a.tabIndex=0;a.setAttribute("role","button");
+    a.onclick=function(){openPick(k,o[1])};
+    var top=el("div","r1");top.appendChild(el("span","brand",k.name));top.appendChild(el("span","dist",fmtDist(o[1])));a.appendChild(top);
+    reasons(k).forEach(function(t){a.appendChild(el("div","why",t))});
+    var tg=el("div","tags");tg.style.marginTop="8px";tg.appendChild(el("span","tag",k.category||"其他"));
+    if(k.district)tg.appendChild(el("span","tag",normCity(k.city)+" "+k.district));a.appendChild(tg);lb.appendChild(a);
+  });
+  if(nbRadius<RADII.length-1&&!nbBusy){var m=el("button","more","範圍擴大到 "+(RADII[nbRadius+1]/1000)+" 公里");m.onclick=function(){nbRadius++;nbRefresh()};lb.appendChild(m)}
+}
+function openPick(k,dist){
+  var w=document.getElementById("dwrap");w.textContent="";
+  var bar=el("div","bar");var bk=el("button","back","←");bk.setAttribute("aria-label","返回");bk.onclick=function(){history.back()};
+  bar.appendChild(bk);bar.appendChild(el("div","credit","作者：ArchieKUO　"+VER));w.appendChild(bar);
+  var tt=el("div","dtitle");tt.appendChild(el("h2",null,k.name));if(dist>=0)tt.appendChild(el("span","dist",fmtDist(dist)));w.appendChild(tt);
+  var tg=el("div","dtags");tg.appendChild(el("span","tag",k.category||"其他"));if(k.district)tg.appendChild(el("span","tag",normCity(k.city)+" "+k.district));w.appendChild(tg);
+  var ob=el("div","box");ob.appendChild(el("div","lb","為什麼推薦"));
+  var rs=reasons(k);if(!rs.length)rs=["入選精選名單"];
+  rs.forEach(function(t){var b=el("div","big",t);b.style.fontSize="14.5px";ob.appendChild(b)});w.appendChild(ob);
+  var d={address:k.address,brand:k.name};
+  var info=el("div","box info");
+  if(k.address)info.appendChild(irow("地址",k.address+"　›",true,function(){openSheet(d)}));else info.appendChild(irow("地址","未提供"));
+  if(k.phone)info.appendChild(irow("電話",k.phone+"　›",true,function(){location.href="tel:"+k.phone.replace(/[^0-9+]/g,"")}));else info.appendChild(irow("電話","未提供"));
+  info.appendChild(irow("營業時間",k.hours||"未提供"));w.appendChild(info);
+  var bs=el("div","btns");
+  var nav=el("button","g","導航");nav.onclick=function(){openSheet(d)};bs.appendChild(nav);
+  var tel=el("button",null,"撥打");tel.onclick=function(){if(k.phone)location.href="tel:"+k.phone.replace(/[^0-9+]/g,"");else toast("沒有電話資料")};bs.appendChild(tel);
+  var src=el("button",null,"資料來源");src.onclick=function(){if(k.url)window.open(k.url,"_blank","noopener");else toast("沒有來源網址")};bs.appendChild(src);
+  w.appendChild(bs);
+  var n=el("div","hint","評價與點閱數為整理當日的公開資料，可能與現況略有差異。");n.style.textAlign="left";n.style.marginTop="10px";w.appendChild(n);
+  var dt=document.getElementById("detail");dt.style.display="block";dt.scrollTop=0;
+  history.pushState({pick:1},"");
+}
+document.getElementById("nbbtn").onclick=openNearby;
+function loadRegions(){
+  fetch("regions.json").then(function(r){return r.json()}).then(function(j){GROUPS=j.groups||[];render()}).catch(function(){});
+}
 function load(manual){
   fetch("data.json?t="+Date.now()).then(function(r){return r.json()}).then(function(j){
     state.updated=j.updated||"";
@@ -254,7 +435,7 @@ function load(manual){
   }).catch(function(){if(manual)toast("無法更新，請檢查網路")});
 }
 document.getElementById("refresh").onclick=function(){load(true)};
-render();load(false);
+render();loadRegions();load(false);
 setTimeout(function(){var s=document.getElementById("splash");s.className="out";setTimeout(function(){s.style.display="none"},400)},800);
 </script>
 </body>

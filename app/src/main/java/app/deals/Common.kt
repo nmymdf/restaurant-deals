@@ -32,13 +32,33 @@ data class Deal(
     val raw: String
 )
 
+class Pick(
+    val id: String,
+    val name: String,
+    val city: String,
+    val district: String,
+    val category: String,
+    val address: String,
+    val phone: String,
+    val hours: String,
+    val rating: Rating?,
+    val views: Long,
+    val viewsSource: String,
+    val viewsDate: String,
+    val award: String,
+    val url: String,
+    val lat: Double?,
+    val lng: Double?,
+    val raw: String
+)
+
 class Pal(
     val pg: Int, val cd: Int, val tx: Int, val sb: Int, val ln: Int,
     val ch: Int, val rd: Int, val rdbg: Int, val hi: Int
 )
 
 object Theme {
-    const val VERSION = "v0.5"
+    const val VERSION = "v0.6"
     val GOLD = Color.parseColor("#C9A227")
     val INK = Color.parseColor("#1F1B16")
 
@@ -109,5 +129,56 @@ object Theme {
             rating = rating,
             raw = d.toString()
         )
+    }
+
+    fun num(n: Long): String = String.format(java.util.Locale.US, "%,d", n)
+
+    fun dist(m: Double): String =
+        if (m < 1000) "${(Math.round(m / 10.0) * 10).toInt()} 公尺" else String.format(java.util.Locale.US, "%.1f 公里", m / 1000.0)
+
+    fun parsePick(d: JSONObject): Pick? {
+        fun str(key: String): String = if (d.isNull(key)) "" else d.optString(key, "")
+        val name = str("name")
+        if (name.isEmpty()) return null
+        val r = d.optJSONObject("rating")
+        val rating = if (r != null && r.optDouble("score", 0.0) > 0.0 && r.optInt("count", 0) > 0) {
+            Rating(r.optDouble("score", 0.0), r.optInt("count", 0), r.optString("source", ""), r.optString("date", ""))
+        } else null
+        val v = d.optJSONObject("views")
+        val lat = d.optDouble("lat", Double.NaN)
+        val lng = d.optDouble("lng", Double.NaN)
+        return Pick(
+            id = str("id").ifEmpty { name },
+            name = name,
+            city = Regions.normalize(str("city")),
+            district = str("district"),
+            category = str("category").ifEmpty { "其他" },
+            address = str("address"),
+            phone = str("phone"),
+            hours = str("hours"),
+            rating = rating,
+            views = v?.optLong("count", 0L) ?: 0L,
+            viewsSource = v?.optString("source", "") ?: "",
+            viewsDate = v?.optString("date", "") ?: "",
+            award = str("award"),
+            url = str("url"),
+            lat = if (lat.isNaN()) null else lat,
+            lng = if (lng.isNaN()) null else lng,
+            raw = d.toString()
+        )
+    }
+
+    /** 這家店入選的理由（依資料欄位產生，每項都附來源與日期） */
+    fun reasons(p: Pick): List<String> {
+        val out = ArrayList<String>()
+        p.rating?.let {
+            out.add("評價 ${it.score} ★（${num(it.count.toLong())} 則）· ${it.source}" + if (it.date.isNotEmpty()) " ${it.date}" else "")
+        }
+        if (p.views > 0) {
+            out.add("點閱約 ${num(p.views)}" + (if (p.viewsSource.isNotEmpty()) " · ${p.viewsSource}" else "") +
+                if (p.viewsDate.isNotEmpty()) " ${p.viewsDate}" else "")
+        }
+        if (p.award.isNotEmpty()) out.add(p.award)
+        return out
     }
 }

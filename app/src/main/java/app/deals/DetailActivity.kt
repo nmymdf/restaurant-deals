@@ -28,6 +28,7 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         p = Theme.palette(this)
+        Regions.load(this)
         val raw = intent.getStringExtra("deal")
         val deal = if (raw == null) null else runCatching { Theme.parseDeal(JSONObject(raw)) }.getOrNull()
         if (deal == null) {
@@ -93,8 +94,9 @@ class DetailActivity : AppCompatActivity() {
         content.addView(titleRow)
 
         val tagRow = LinearLayout(this)
-        val where = if (d.region == "全台") "全台連鎖" else
-            d.region + (if (d.districts.isNotEmpty()) " · " + d.districts.joinToString("、") else "")
+        val city = Regions.normalize(d.region)
+        val where = if (city == "全台") "全台連鎖" else
+            city + (if (d.districts.isNotEmpty()) " · " + d.districts.joinToString("、") else "")
         tagRow.addView(chip(where), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         tagRow.addView(chip(d.category), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         for (t in d.tags) tagRow.addView(chip(t), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
@@ -128,7 +130,7 @@ class DetailActivity : AppCompatActivity() {
         info.addView(row("使用條件", d.note.ifEmpty { "未註明" }))
         val addrText = when {
             d.address.isNotEmpty() -> d.address + "　›"
-            d.region == "全台" -> "全台各分店，詳情請看原始頁面"
+            city == "全台" -> "全台各分店，詳情請看原始頁面"
             else -> "未提供"
         }
         info.addView(row("地址", addrText, d.address.isNotEmpty()) { openMap(d) })

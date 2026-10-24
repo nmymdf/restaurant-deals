@@ -26,6 +26,7 @@ jobs:
         run: |
           mkdir -p app/src/main/assets
           cp data.json app/src/main/assets/data.json
+          cp regions.json app/src/main/assets/regions.json
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon
       - name: Publish APK to the apk branch
