@@ -1,4 +1,455 @@
 {
-  "updated": "",
-  "picks": []
+ "updated": "2026-10-25 08:25",
+ "picks": [
+  {
+   "id": "tpe-maoyuan",
+   "name": "茂園",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "中式港式",
+   "address": "台北市中山區長安東路二段185號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-jijiazhuang",
+   "name": "雞家莊 (長春路)",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "中式港式",
+   "address": "台北市中山區長春路55號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-yinshijia",
+   "name": "隱食家",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "其他",
+   "address": "台北市中山區雙城街28巷8號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-renheyuan",
+   "name": "人和園",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "中式港式",
+   "address": "台北市中山區中山北路二段112號2樓",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-xiaozhuo",
+   "name": "小酌之家",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "中式港式",
+   "address": "台北市中山區吉林路420號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-ruanshili",
+   "name": "軟食力",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "其他",
+   "address": "台北市中山區民權東路二段135巷30弄21號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-xiaopin",
+   "name": "小品雅廚",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "中式港式",
+   "address": "台北市中山區中原街130號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-huangji",
+   "name": "黃記魯肉飯",
+   "city": "台北市",
+   "district": "中山區",
+   "category": "其他",
+   "address": "台北市中山區中山北路二段183巷28號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-tianxia3",
+   "name": "天下三絕",
+   "city": "台北市",
+   "district": "大安區",
+   "category": "中式港式",
+   "address": "台北市大安區仁愛路四段27巷3號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-dintaifung",
+   "name": "鼎泰豐 (信義路)",
+   "city": "台北市",
+   "district": "大安區",
+   "category": "中式港式",
+   "address": "台北市大安區信義路二段277號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-xiangzilong",
+   "name": "巷子龍家常菜",
+   "city": "台北市",
+   "district": "大安區",
+   "category": "中式港式",
+   "address": "台北市大安區四維路25號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-hangzhou",
+   "name": "杭州小籠湯包 (大安)",
+   "city": "台北市",
+   "district": "大安區",
+   "category": "中式港式",
+   "address": "台北市大安區杭州南路二段19號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-jinshangxuan",
+   "name": "金賞軒",
+   "city": "台北市",
+   "district": "松山區",
+   "category": "中式港式",
+   "address": "台北市松山區敦化北路155巷111號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-zuifengyuan",
+   "name": "醉楓園小館",
+   "city": "台北市",
+   "district": "松山區",
+   "category": "中式港式",
+   "address": "台北市松山區八德路三段8巷5號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tpe-qiaotou",
+   "name": "大橋頭老牌筒仔米糕",
+   "city": "台北市",
+   "district": "大同區",
+   "category": "其他",
+   "address": "台北市大同區延平北路三段41號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-ayuyuan",
+   "name": "阿爸の芋圓",
+   "city": "新北市",
+   "district": "永和區",
+   "category": "飲料甜點",
+   "address": "新北市永和區保平路18巷1號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-hakka",
+   "name": "客家小館",
+   "city": "新北市",
+   "district": "永和區",
+   "category": "中式港式",
+   "address": "新北市永和區智光街22號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-songchao",
+   "name": "宋朝",
+   "city": "新北市",
+   "district": "永和區",
+   "category": "中式港式",
+   "address": "新北市永和區復興街72號1樓",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-jiaxiang",
+   "name": "永和佳香豆漿",
+   "city": "新北市",
+   "district": "永和區",
+   "category": "其他",
+   "address": "新北市永和區民治街57號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-shanghao",
+   "name": "上好雞肉",
+   "city": "新北市",
+   "district": "中和區",
+   "category": "其他",
+   "address": "新北市中和區民治街8巷1號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-caijia",
+   "name": "蔡家牛肉麵",
+   "city": "新北市",
+   "district": "中和區",
+   "category": "其他",
+   "address": "新北市中和區秀朗路三段153巷16弄12號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-dawangong",
+   "name": "大碗公當歸羊肉",
+   "city": "新北市",
+   "district": "板橋區",
+   "category": "其他",
+   "address": "新北市板橋區四維路112巷2號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-yejia",
+   "name": "葉家藥燉排骨",
+   "city": "新北市",
+   "district": "板橋區",
+   "category": "其他",
+   "address": "新北市板橋區中山路二段441號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-dianxiaoer",
+   "name": "店小二 (大同北路)",
+   "city": "新北市",
+   "district": "三重區",
+   "category": "中式港式",
+   "address": "新北市三重區大同北路27號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-guangxing",
+   "name": "光興腿庫",
+   "city": "新北市",
+   "district": "三重區",
+   "category": "其他",
+   "address": "新北市三重區光興街223號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-zhenpin",
+   "name": "珍品餐飲坊",
+   "city": "新北市",
+   "district": "新莊區",
+   "category": "中式港式",
+   "address": "新北市新莊區復興路一段97號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-laigangshan",
+   "name": "賴岡山羊肉",
+   "city": "新北市",
+   "district": "新店區",
+   "category": "其他",
+   "address": "新北市新店區中正路244-4號1樓",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-shandong",
+   "name": "山東小館",
+   "city": "新北市",
+   "district": "新店區",
+   "category": "中式港式",
+   "address": "新北市新店區中央路133巷19號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-chaoren",
+   "name": "超人鱸魚",
+   "city": "新北市",
+   "district": "新店區",
+   "category": "其他",
+   "address": "新北市新店區北新路一段349號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "ntp-sanjiemei",
+   "name": "三姐妹農家樂",
+   "city": "新北市",
+   "district": "萬里區",
+   "category": "中式港式",
+   "address": "新北市萬里區大坪23號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  }
+ ]
 }
