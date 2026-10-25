@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-25 07:55",
+ "updated": "2026-10-26 08:05",
  "deals": [
   {
    "id": "wp-steak-1031",
@@ -380,6 +380,19 @@
    "url": "https://www.cptainan.com/news-detail/birthday/",
    "address": "台南市安平區州平路289號",
    "phone": "+886-6-512-1807"
+  },
+  {
+   "id": "burgerking-bogo-1115",
+   "brand": "漢堡王",
+   "offer": "「購堡嘉年華」優惠券：雞塊、薯條、玉米濃湯等 12 項商品買一送一；兩顆漢堡 99 元、4 件套餐 109 元起",
+   "region": "全台",
+   "districts": [],
+   "category": "速食",
+   "until": "2026-11-15",
+   "added": "2026-10-26",
+   "tags": [],
+   "note": "需使用優惠券；實際適用品項與門市以官方公告為準",
+   "url": "https://www.nownews.com/news/6880947"
   }
  ]
 }
