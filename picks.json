@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-25 08:25",
+ "updated": "2026-10-26 08:30",
  "picks": [
   {
    "id": "tpe-maoyuan",
@@ -450,6 +450,201 @@
    ],
    "award": "必比登 2025",
    "url": "https://supertaste.tvbs.com.tw/travel/355946"
+  },
+  {
+   "id": "tc-kungfu",
+   "name": "功夫上海手工魚丸",
+   "city": "台中市",
+   "district": "西區",
+   "category": "中式港式",
+   "address": "台中市西區中美街380號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-zuiyuelou",
+   "name": "醉月樓",
+   "city": "台中市",
+   "district": "中區",
+   "category": "中式港式",
+   "address": "台中市中區中山路20號2樓",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-laoshiguan",
+   "name": "老士官擀麵",
+   "city": "台中市",
+   "district": "清水區",
+   "category": "中式港式",
+   "address": "台中市清水區鎮南街81之12號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-yejianbu",
+   "name": "夜間部爌肉飯",
+   "city": "台中市",
+   "district": "西區",
+   "category": "中式港式",
+   "address": "台中市西區精誠路109號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-fudingwang",
+   "name": "富鼎旺豬腳",
+   "city": "台中市",
+   "district": "中區",
+   "category": "中式港式",
+   "address": "台中市中區台灣大道一段560號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-weiming",
+   "name": "上海未名麵點",
+   "city": "台中市",
+   "district": "中區",
+   "category": "中式港式",
+   "address": "台中市中區市府路69號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-fuzhuangyuan",
+   "name": "富狀元豬腳",
+   "city": "台中市",
+   "district": "西區",
+   "category": "中式港式",
+   "address": "台中市西區美村路一段203號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-fengji",
+   "name": "鳳記鵝肉老店",
+   "city": "台中市",
+   "district": "沙鹿區",
+   "category": "中式港式",
+   "address": "台中市沙鹿區屏西路170號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-akun",
+   "name": "阿坤麵",
+   "city": "台中市",
+   "district": "中區",
+   "category": "中式港式",
+   "address": "台中市中區平等街142號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-rouyuan",
+   "name": "台中肉員",
+   "city": "台中市",
+   "district": "南區",
+   "category": "中式港式",
+   "address": "台中市南區復興路三段529號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-kekou",
+   "name": "可口牛肉麵",
+   "city": "台中市",
+   "district": "西屯區",
+   "category": "中式港式",
+   "address": "台中市西屯區大墩路911號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-fanji",
+   "name": "范記金之園",
+   "city": "台中市",
+   "district": "中區",
+   "category": "中式港式",
+   "address": "台中市中區成功路170號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tc-xinyuan",
+   "name": "馨苑小料理",
+   "city": "台中市",
+   "district": "西區",
+   "category": "中式港式",
+   "address": "台中市西區民生北路106號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://safood.tw/taichung-bib-gourmand3"
   }
  ]
 }
