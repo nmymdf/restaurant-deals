@@ -293,14 +293,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun categories(): List<String> {
+    private fun categoryCounts(): Map<String, Int> {
         val today = LocalDate.now()
-        val counts = deals.filter { !it.until.isBefore(today) }.groupingBy { it.category }.eachCount()
-        val keep = counts.filter { it.value >= 2 }.keys.toMutableList()
-        if (category != ALL_CAT && category !in keep) keep.add(category)
-        return keep.sortedWith(
-            compareBy<String> { it == "其他" }.thenByDescending { counts[it] ?: 0 }.thenBy { it }
-        )
+        return deals.filter { !it.until.isBefore(today) }.groupingBy { it.category }.eachCount()
+    }
+
+    /** 固定項目全部顯示（沒有優惠的顯示 0），資料裡新出現的類別接在後面，「其他」最後。 */
+    private fun categories(): List<String> {
+        val counts = categoryCounts()
+        val extra = counts.keys.filter { it !in Theme.PRESET_CATS && it != "其他" }.sortedByDescending { counts[it] ?: 0 }
+        val list = ArrayList<String>(Theme.PRESET_CATS)
+        list.addAll(extra)
+        if (category != ALL_CAT && category !in list && category != "其他") list.add(category)
+        list.add("其他")
+        return list
     }
 
     private fun cityOf(d: Deal) = Regions.normalize(d.region)
@@ -318,6 +324,7 @@ class MainActivity : AppCompatActivity() {
         list = when (tab) {
             "吃到飽" -> list.filter { "吃到飽" in it.tags }
             "壽星" -> list.filter { "壽星" in it.tags }
+            "素食" -> list.filter { d -> d.tags.any { it in Theme.VEG } }
             else -> list
         }
         return when (tab) {
@@ -460,13 +467,16 @@ class MainActivity : AppCompatActivity() {
         catPanel.visibility = if (openPanel == 2) View.VISIBLE else View.GONE
         catPanel.removeAllViews()
         if (openPanel == 2) {
+            val counts = categoryCounts()
             for (n in listOf(ALL_CAT) + categories()) {
                 val sel = n == category
+                val c = counts[n] ?: 0
+                val empty = n != ALL_CAT && c == 0
                 catPanel.addView(TextView(this).apply {
-                    text = if (sel) "$n　✓" else n
+                    text = (if (sel) "$n　✓" else n) + if (n != ALL_CAT) "　（$c）" else ""
                     textSize = 13f
                     setPadding(dp(14), dp(10), dp(14), dp(10))
-                    setTextColor(if (sel) p.hi else p.tx)
+                    setTextColor(if (sel) p.hi else if (empty) p.sb else p.tx)
                     if (sel) {
                         setTypeface(null, Typeface.BOLD)
                         setBackgroundColor(p.ch)
@@ -477,7 +487,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         tabRow.removeAllViews()
-        for (t in listOf("即將到期", "最新", "吃到飽", "壽星")) {
+        for (t in listOf("即將到期", "最新", "吃到飽", "壽星", "素食")) {
             val sel = t == tab
             val col = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
@@ -493,7 +503,7 @@ class MainActivity : AppCompatActivity() {
             col.addView(View(this).apply {
                 setBackgroundColor(if (sel) Theme.GOLD else Color.TRANSPARENT)
             }, LinearLayout.LayoutParams(-1, dp(2)))
-            tabRow.addView(col, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(20) })
+            tabRow.addView(col, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(16) })
         }
 
         listBox.removeAllViews()
@@ -508,7 +518,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (items.isEmpty()) {
             listBox.addView(TextView(this).apply {
-                text = "目前沒有符合的優惠"
+                text = if (category != ALL_CAT && deals.none { it.category == category }) "目前沒有「$category」的優惠" else "目前沒有符合的優惠"
                 textSize = 14f
                 setTextColor(p.sb)
                 gravity = Gravity.CENTER
@@ -561,7 +571,8 @@ class MainActivity : AppCompatActivity() {
         tagRow.addView(small(where, p.ch, p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         tagRow.addView(small(d.category, p.ch, p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         for (t in d.tags) {
-            tagRow.addView(small(t, p.ch, p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
+            val v = t in Theme.VEG
+            tagRow.addView(small(t, if (v) p.vgbg else p.ch, if (v) p.vg else p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         }
         tagRow.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         tagRow.addView(TextView(this).apply {

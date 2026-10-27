@@ -49,18 +49,30 @@ class Pick(
     val url: String,
     val lat: Double?,
     val lng: Double?,
+    val veg: String,
+    val recommend: String,
     val raw: String
 )
 
 class Pal(
     val pg: Int, val cd: Int, val tx: Int, val sb: Int, val ln: Int,
-    val ch: Int, val rd: Int, val rdbg: Int, val hi: Int
+    val ch: Int, val rd: Int, val rdbg: Int, val hi: Int,
+    val vg: Int, val vgbg: Int
 )
 
 object Theme {
-    const val VERSION = "v0.6"
+    const val VERSION = "v0.8"
     val GOLD = Color.parseColor("#C9A227")
     val INK = Color.parseColor("#1F1B16")
+
+    val VEG = setOf("素食", "全素", "蛋奶素")
+
+    /** 類別選單固定顯示的項目（吃什麼）。素食不是類別，是標籤。 */
+    val PRESET_CATS = listOf(
+        "自助餐", "牛排西餐", "燒肉", "火鍋", "日式料理", "中式港式", "台菜", "小吃麵食",
+        "韓式料理", "泰式東南亞", "義式法式", "居酒屋燒烤", "海鮮", "速食", "早午餐咖啡",
+        "飲料甜點", "麵包烘焙", "飯店餐廳"
+    )
 
     private val HIGHLIGHT = Regex(
         "[0-9,]+\\s*元|[0-9.]+\\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價"
@@ -73,13 +85,15 @@ object Theme {
             Pal(
                 Color.parseColor("#14120F"), Color.parseColor("#1F1B16"), Color.parseColor("#F2EEE4"),
                 Color.parseColor("#A59E8C"), Color.parseColor("#332E25"), Color.parseColor("#2A2519"),
-                Color.parseColor("#FF8A80"), Color.parseColor("#3A1F1C"), Color.parseColor("#C9A227")
+                Color.parseColor("#FF8A80"), Color.parseColor("#3A1F1C"), Color.parseColor("#C9A227"),
+                Color.parseColor("#8FD19A"), Color.parseColor("#1E2E20")
             )
         } else {
             Pal(
                 Color.parseColor("#F7F4EC"), Color.parseColor("#FFFFFF"), Color.parseColor("#1F1B16"),
                 Color.parseColor("#6B6558"), Color.parseColor("#E8E2D2"), Color.parseColor("#EFE9D6"),
-                Color.parseColor("#B3261E"), Color.parseColor("#FBE9E7"), Color.parseColor("#A8860F")
+                Color.parseColor("#B3261E"), Color.parseColor("#FBE9E7"), Color.parseColor("#A8860F"),
+                Color.parseColor("#2F6B33"), Color.parseColor("#E3F0E2")
             )
         }
     }
@@ -164,9 +178,23 @@ object Theme {
             url = str("url"),
             lat = if (lat.isNaN()) null else lat,
             lng = if (lng.isNaN()) null else lng,
+            veg = str("veg"),
+            recommend = d.optJSONObject("recommend")?.optString("source", "") ?: str("recommend"),
             raw = d.toString()
         )
     }
+
+    /** 1 精選、2 口碑不錯、3 附近餐廳（尚無足夠評價資料） */
+    fun tier(p: Pick): Int {
+        val r = p.rating
+        if (p.award.isNotEmpty() || p.views >= 10000) return 1
+        if (r != null && ((r.score >= 4.0 && r.count >= 300) || (r.score >= 3.8 && r.count >= 3000))) return 1
+        if (r != null && r.score >= 3.8 && r.count >= 100) return 2
+        if (p.recommend.isNotEmpty()) return 2
+        return 3
+    }
+
+    fun tierName(t: Int) = when (t) { 1 -> "精選"; 2 -> "口碑不錯"; else -> "附近餐廳" }
 
     /** 這家店入選的理由（依資料欄位產生，每項都附來源與日期） */
     fun reasons(p: Pick): List<String> {
@@ -179,6 +207,8 @@ object Theme {
                 if (p.viewsDate.isNotEmpty()) " ${p.viewsDate}" else "")
         }
         if (p.award.isNotEmpty()) out.add(p.award)
+        if (p.recommend.isNotEmpty()) out.add("媒體推薦 · ${p.recommend}")
+        if (out.isEmpty()) out.add("尚無評價資料")
         return out
     }
 }

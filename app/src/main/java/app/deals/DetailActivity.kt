@@ -41,8 +41,9 @@ class DetailActivity : AppCompatActivity() {
     private fun chip(text: String): TextView = TextView(this).apply {
         this.text = text
         textSize = 11f
-        setTextColor(p.sb)
-        background = rect(p.ch, dp(9))
+        val v = text in Theme.VEG
+        setTextColor(if (v) p.vg else p.sb)
+        background = rect(if (v) p.vgbg else p.ch, dp(9))
         setPadding(dp(8), dp(2), dp(8), dp(2))
     }
 

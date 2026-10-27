@@ -14,8 +14,8 @@
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' rx='24' fill='%231F1B16'/%3E%3Cpath d='M40 26L66 54M49 22L75 50' stroke='%23F1DD8A' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M26 54H82A28 28 0 0 1 26 54Z' fill='%23C9A227'/%3E%3Crect x='42' y='80' width='24' height='5' rx='2.5' fill='%23C9A227'/%3E%3Cpath d='M34 64H74' stroke='%231F1B16' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
-:root{--pg:#F7F4EC;--cd:#fff;--tx:#1F1B16;--sb:#6B6558;--ln:#E8E2D2;--ch:#EFE9D6;--rd:#B3261E;--rdbg:#FBE9E7;--hi:#A8860F;--gold:#C9A227;--ink:#1F1B16}
-@media(prefers-color-scheme:dark){:root{--pg:#14120F;--cd:#1F1B16;--tx:#F2EEE4;--sb:#A59E8C;--ln:#332E25;--ch:#2A2519;--rd:#FF8A80;--rdbg:#3A1F1C;--hi:#C9A227}}
+:root{--pg:#F7F4EC;--cd:#fff;--tx:#1F1B16;--sb:#6B6558;--ln:#E8E2D2;--ch:#EFE9D6;--rd:#B3261E;--rdbg:#FBE9E7;--hi:#A8860F;--gold:#C9A227;--ink:#1F1B16;--vg:#2F6B33;--vgbg:#E3F0E2}
+@media(prefers-color-scheme:dark){:root{--pg:#14120F;--cd:#1F1B16;--tx:#F2EEE4;--sb:#A59E8C;--ln:#332E25;--ch:#2A2519;--rd:#FF8A80;--rdbg:#3A1F1C;--hi:#C9A227;--vg:#8FD19A;--vgbg:#1E2E20}}
 *{box-sizing:border-box}
 html{background:var(--pg)}
 body{margin:0;background:var(--pg);color:var(--tx);font:15px/1.5 -apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
@@ -79,6 +79,11 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .offer{font-size:13px;line-height:1.55;margin:6px 0 8px}
 .offer b{color:var(--hi);font-weight:700}
 .tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag.veg{background:var(--vgbg);color:var(--vg)}
+.tier{font-size:12px;font-weight:700;color:var(--sb);margin:6px 2px}
+.tier.t1{color:var(--hi)}
+.vegbtn{font-size:13px;padding:7px 14px;border-radius:16px;background:var(--ch);color:var(--sb);margin-bottom:12px}
+.vegbtn.on{background:var(--vgbg);color:var(--vg);box-shadow:inset 0 0 0 1px var(--vg)}
 .tag{font-size:11px;padding:2px 8px;border-radius:9px;background:var(--ch);color:var(--sb)}
 .until{margin-left:auto;font-size:12px;color:var(--sb)}
 .empty{text-align:center;color:var(--sb);font-size:14px;padding:48px 16px}
@@ -122,11 +127,11 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v0.7</div></div>
+<div id="splash"><div class="ver">v0.8</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.7</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.8</div></div>
 <button class="refresh" id="refresh" aria-label="重新整理">↻</button>
 </div>
 <div id="info"></div>
@@ -143,7 +148,7 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 <div id="a2hs"><div class="bk" id="a2bk"></div><div class="pn" id="a2pn"></div></div>
 <div id="toast"></div>
 <script>
-var VER="v0.7";
+var VER="v0.8";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -170,12 +175,16 @@ function hl(box,text){
 }
 function toast(t){var e=document.getElementById("toast");e.textContent=t;e.style.display="block";clearTimeout(toast._t);toast._t=setTimeout(function(){e.style.display="none"},1800)}
 function live(){var t=today();return state.deals.filter(function(d){return d._until&&d._until>=t})}
+var PRESET=["自助餐","牛排西餐","燒肉","火鍋","日式料理","中式港式","台菜","小吃麵食","韓式料理","泰式東南亞","義式法式","居酒屋燒烤","海鮮","速食","早午餐咖啡","飲料甜點","麵包烘焙","飯店餐廳"];
+var VEG=["素食","全素","蛋奶素"];
+function isVeg(tags){return (tags||[]).some(function(x){return VEG.indexOf(x)>=0})}
+function catCounts(){var c={};live().forEach(function(d){c[d.category]=(c[d.category]||0)+1});return c}
 function categories(){
-  var c={};live().forEach(function(d){c[d.category]=(c[d.category]||0)+1});
-  var l=Object.keys(c).filter(function(k){return c[k]>=2});
-  if(state.category!=ALL&&l.indexOf(state.category)<0)l.push(state.category);
-  l.sort(function(a,b){if((a=="其他")!=(b=="其他"))return a=="其他"?1:-1;return (c[b]||0)-(c[a]||0)||(a<b?-1:1)});
-  return l;
+  var c=catCounts();
+  var extra=Object.keys(c).filter(function(k){return PRESET.indexOf(k)<0&&k!="其他"}).sort(function(a,b){return (c[b]||0)-(c[a]||0)});
+  var l=PRESET.concat(extra);
+  if(state.category!=ALL&&l.indexOf(state.category)<0&&state.category!="其他")l.push(state.category);
+  l.push("其他");return l;
 }
 function filtered(city,ds){
   var l=live();
@@ -187,6 +196,7 @@ function filtered(city,ds){
   if(state.category!=ALL)l=l.filter(function(d){return d.category==state.category});
   if(state.tab=="吃到飽")l=l.filter(function(d){return (d.tags||[]).indexOf("吃到飽")>=0});
   if(state.tab=="壽星")l=l.filter(function(d){return (d.tags||[]).indexOf("壽星")>=0});
+  if(state.tab=="素食")l=l.filter(function(d){return isVeg(d.tags)});
   if(state.tab=="最新")l.sort(function(a,b){return (b.added||"").localeCompare(a.added||"")});
   else l.sort(function(a,b){return a._until-b._until});
   return l;
@@ -244,15 +254,16 @@ function render(){
   cb.appendChild(lab);cb.appendChild(el("i",null,state.panel==2?"▴":"▾"));
   cb.onclick=function(e){e.stopPropagation();togglePanel(2)};
   var cp=document.getElementById("catpanel");cp.textContent="";cp.style.display=state.panel==2?"block":"none";
-  if(state.panel==2)[ALL].concat(categories()).forEach(function(n){
-    var b=el("button",n==state.category?"on":"");b.appendChild(el("span",null,n));if(n==state.category)b.appendChild(el("span",null,"✓"));
+  if(state.panel==2){var cc=catCounts();[ALL].concat(categories()).forEach(function(n){
+    var k=cc[n]||0;
+    var b=el("button",n==state.category?"on":"");b.appendChild(el("span",null,n+(n==ALL?"":"　（"+k+"）")));if(n!=ALL&&!k&&n!=state.category)b.style.color="var(--sb)";if(n==state.category)b.appendChild(el("span",null,"✓"));
     b.onclick=function(e){e.stopPropagation();state.category=n;state.panel=0;render()};cp.appendChild(b);
-  });
+  })}
   var tb=document.getElementById("tabs");tb.textContent="";
-  ["即將到期","最新","吃到飽","壽星"].forEach(function(n){var b=el("button","tab"+(n==state.tab?" on":""),n);b.onclick=function(){state.tab=n;save();render()};tb.appendChild(b)});
+  ["即將到期","最新","吃到飽","壽星","素食"].forEach(function(n){var b=el("button","tab"+(n==state.tab?" on":""),n);b.onclick=function(){state.tab=n;save();render()};tb.appendChild(b)});
   var box=document.getElementById("list");box.textContent="";
   if(state.region!="全台"&&!vis.some(function(d){return normCity(d.region)==state.region}))box.appendChild(el("div","note",state.region+"目前沒有在地優惠"+(vis.length?"，以下是全台連鎖優惠":"")));
-  if(!vis.length){box.appendChild(el("div","empty","目前沒有符合的優惠"));return}
+  if(!vis.length){box.appendChild(el("div","empty",state.category!=ALL&&!state.deals.some(function(d){return d.category==state.category})?"目前沒有「"+state.category+"」的優惠":"目前沒有符合的優惠"));return}
   vis.forEach(function(d){
     var days=Math.round((d._until-t)/864e5);
     var a=el("div","card");a.tabIndex=0;a.setAttribute("role","button");
@@ -265,7 +276,7 @@ function render(){
     var tg=el("div","tags");
     tg.appendChild(el("span","tag",whereOf(d)));
     tg.appendChild(el("span","tag",d.category));
-    (d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});
+    (d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag"+(VEG.indexOf(x)>=0?" veg":""),x))});
     tg.appendChild(el("span","until","到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()));
     a.appendChild(tg);
     box.appendChild(a);
@@ -302,7 +313,7 @@ function openDetail(d){
   var bar=el("div","bar");var bk=el("button","back","←");bk.setAttribute("aria-label","返回");bk.onclick=function(){history.back()};
   bar.appendChild(bk);bar.appendChild(el("div","credit","作者：ArchieKUO　"+VER));w.appendChild(bar);
   var tt=el("div","dtitle");tt.appendChild(el("h2",null,d.brand));tt.appendChild(el("span","badge"+(days<=7?" hot":""),days<=0?"今天到期":"剩 "+days+" 天"));w.appendChild(tt);
-  var tg=el("div","dtags");tg.appendChild(el("span","tag",whereOf(d)));tg.appendChild(el("span","tag",d.category));(d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});w.appendChild(tg);
+  var tg=el("div","dtags");tg.appendChild(el("span","tag",whereOf(d)));tg.appendChild(el("span","tag",d.category));(d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag"+(VEG.indexOf(x)>=0?" veg":""),x))});w.appendChild(tg);
   var ob=el("div","box");ob.appendChild(el("div","lb","優惠內容"));var big=el("div","big");hl(big,d.offer||"");ob.appendChild(big);w.appendChild(ob);
   var info=el("div","box info");
   info.appendChild(irow("優惠期間","即日起至 "+(d._until.getMonth()+1)+"/"+d._until.getDate()));
@@ -343,11 +354,24 @@ function saveGeo(){try{localStorage.setItem("deals-geo",JSON.stringify(nbCoords)
 function fmtN(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
 function fmtDist(m){return m<1000?(Math.round(m/10)*10)+" 公尺":(m/1000).toFixed(1)+" 公里"}
 function haversine(a,b,c,d){var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r;var h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(h))}
+var vegOnly=false;
+function tierOf(k){
+  var r=k.rating,v=k.views;
+  if(k.award||(v&&v.count>=10000))return 1;
+  if(r&&((r.score>=4&&r.count>=300)||(r.score>=3.8&&r.count>=3000)))return 1;
+  if(r&&r.score>=3.8&&r.count>=100)return 2;
+  if(recSrc(k))return 2;
+  return 3;
+}
+function recSrc(k){var r=k.recommend;return !r?"":(typeof r=="string"?r:(r.source||""))}
+var TIERN={1:"精選",2:"口碑不錯",3:"附近餐廳"};
 function reasons(k){
   var o=[],r=k.rating;
   if(r&&r.score>0&&r.count>0)o.push("評價 "+r.score+" ★（"+fmtN(r.count)+" 則）· "+(r.source||"")+(r.date?" "+r.date:""));
   var v=k.views;if(v&&v.count>0)o.push("點閱約 "+fmtN(v.count)+(v.source?" · "+v.source:"")+(v.date?" "+v.date:""));
   if(k.award)o.push(k.award);
+  if(recSrc(k))o.push("媒體推薦 · "+recSrc(k));
+  if(!o.length)o.push("尚無評價資料");
   return o;
 }
 function coordOf(k){
@@ -360,6 +384,8 @@ function openNearby(){
   bar.appendChild(bk);bar.appendChild(el("div","credit","作者：ArchieKUO　"+VER));w.appendChild(bar);
   w.appendChild(el("h2",null,"附近好餐廳")).style.cssText="font-size:22px;margin:12px 0 4px";
   var st=el("div");st.id="nbstatus";st.style.cssText="font-size:12px;color:var(--sb);margin-bottom:10px";w.appendChild(st);
+  var vb=el("button","vegbtn"+(vegOnly?" on":""),vegOnly?"只看素食　✓":"只看素食");vb.id="vegbtn";
+  vb.onclick=function(){vegOnly=!vegOnly;vb.className="vegbtn"+(vegOnly?" on":"");vb.textContent=vegOnly?"只看素食　✓":"只看素食";nbRefresh()};w.appendChild(vb);
   var lb=el("div");lb.id="nblist";w.appendChild(lb);
   n.style.display="block";n.scrollTop=0;document.getElementById("main").style.display="none";
   history.pushState({nearby:1},"");nbStop=false;
@@ -397,32 +423,50 @@ function nbGeocode(){
      }).catch(function(){setTimeout(step,1100)});
   })();
 }
+function nbNote(t){var n=el("div","note",t);return n}
 function nbRefresh(){
   var st=document.getElementById("nbstatus"),lb=document.getElementById("nblist");
   if(!st||!userLoc||!vis("nearby"))return;
-  if(!picks.length){nbMsg("精選名單還在整理中，每天早上會自動更新。\n過一陣子再來看看。");return}
-  var R=RADII[nbRadius],out=[];
-  picks.forEach(function(k){var c=coordOf(k);if(!c)return;var d=haversine(userLoc[0],userLoc[1],c[0],c[1]);if(d<=R)out.push([k,d])});
-  out.sort(function(a,b){return a[1]-b[1]});
-  st.textContent=(R/1000)+" 公里內 "+out.length+" 家"+(picksUpdated?"　· 名單 "+picksUpdated+" 更新":"")+(nbBusy?"　· 正在比對地址（第一次較久）":"");
+  if(!picks.length){nbMsg("名單還在整理中，每天早上會自動更新。\n過一陣子再來看看。");return}
+  var all=[];
+  picks.forEach(function(k){if(vegOnly&&!k.veg)return;var c=coordOf(k);if(!c)return;all.push([k,haversine(userLoc[0],userLoc[1],c[0],c[1])])});
+  all.sort(function(a,b){return a[1]-b[1]});
+  var idx=nbRadius,inR=all.filter(function(o){return o[1]<=RADII[idx]});
+  while(!inR.length&&!nbBusy&&idx<RADII.length-1){idx++;inR=all.filter(function(o){return o[1]<=RADII[idx]})}
+  var nearest=false;
+  if(!inR.length&&!nbBusy&&all.length){inR=all.slice(0,5);nearest=true}
+  var km=RADII[idx]/1000;
+  st.textContent=(nearest?"離你最近的 "+inR.length+" 家":km+" 公里內 "+inR.length+" 家")+(picksUpdated?"　· 名單 "+picksUpdated+" 更新":"")+(nbBusy?"　· 正在比對地址（第一次較久）":"");
   lb.textContent="";
-  if(!out.length){var e=el("div","empty",nbBusy?"已檢查 "+nbChecked+" 家，請稍候…":(R/1000)+" 公里內目前沒有精選的店。\n偏遠地區的資料較少，名單會持續擴充。");e.style.whiteSpace="pre-line";lb.appendChild(e)}
-  out.forEach(function(o){
-    var k=o[0],a=el("div","card pk");a.tabIndex=0;a.setAttribute("role","button");
-    a.onclick=function(){openPick(k,o[1])};
-    var top=el("div","r1");top.appendChild(el("span","brand",k.name));top.appendChild(el("span","dist",fmtDist(o[1])));a.appendChild(top);
-    reasons(k).forEach(function(t){a.appendChild(el("div","why",t))});
-    var tg=el("div","tags");tg.style.marginTop="8px";tg.appendChild(el("span","tag",k.category||"其他"));
-    if(k.district)tg.appendChild(el("span","tag",normCity(k.city)+" "+k.district));a.appendChild(tg);lb.appendChild(a);
+  if(nearest)lb.appendChild(nbNote(RADII[RADII.length-1]/1000+" 公里內沒有符合的店，先列出離你最近的幾家，距離都標在旁邊。"));
+  else if(idx>nbRadius)lb.appendChild(nbNote(RADII[nbRadius]/1000+" 公里內沒有店，已自動擴大到 "+km+" 公里。"));
+  if(!inR.length){
+    var m=nbBusy?"已檢查 "+nbChecked+" 家，請稍候…":vegOnly?"目前名單裡還沒有素食店。\n關掉「只看素食」可以看全部。":!picks.some(function(k){return coordOf(k)})?"暫時無法把地址轉成位置，無法計算距離。\n你仍可在首頁的地區選單找優惠。":"這個地區的資料還在整理中。\n名單每天會自動擴充。";
+    var e=el("div","empty",m);e.style.whiteSpace="pre-line";lb.appendChild(e);return;
+  }
+  var g={1:[],2:[],3:[]};inR.forEach(function(o){g[tierOf(o[0])].push(o)});
+  if(!g[1].length&&!nbBusy)lb.appendChild(nbNote("這個範圍內沒有精選，先看口碑不錯和附近的店。"));
+  [1,2,3].forEach(function(t){
+    if(!g[t].length)return;
+    lb.appendChild(el("div","tier t"+t,TIERN[t]+"　"+g[t].length));
+    g[t].forEach(function(o){
+      var k=o[0],a=el("div","card pk");a.tabIndex=0;a.setAttribute("role","button");
+      a.onclick=function(){openPick(k,o[1])};
+      var top=el("div","r1");top.appendChild(el("span","brand",k.name));top.appendChild(el("span","dist",fmtDist(o[1])));a.appendChild(top);
+      reasons(k).forEach(function(x){a.appendChild(el("div","why",x))});
+      var tg=el("div","tags");tg.style.marginTop="8px";tg.appendChild(el("span","tag",k.category||"其他"));
+      if(k.veg)tg.appendChild(el("span","tag veg",k.veg));
+      if(k.district)tg.appendChild(el("span","tag",normCity(k.city)+" "+k.district));a.appendChild(tg);lb.appendChild(a);
+    });
   });
-  if(nbRadius<RADII.length-1&&!nbBusy){var m=el("button","more","範圍擴大到 "+(RADII[nbRadius+1]/1000)+" 公里");m.onclick=function(){nbRadius++;nbRefresh()};lb.appendChild(m)}
+  if(idx<RADII.length-1&&!nbBusy&&!nearest){var mb=el("button","more","範圍擴大到 "+(RADII[idx+1]/1000)+" 公里");mb.onclick=function(){nbRadius=idx+1;nbRefresh()};lb.appendChild(mb)}
 }
 function openPick(k,dist){
   var w=document.getElementById("dwrap");w.textContent="";
   var bar=el("div","bar");var bk=el("button","back","←");bk.setAttribute("aria-label","返回");bk.onclick=function(){history.back()};
   bar.appendChild(bk);bar.appendChild(el("div","credit","作者：ArchieKUO　"+VER));w.appendChild(bar);
   var tt=el("div","dtitle");tt.appendChild(el("h2",null,k.name));if(dist>=0)tt.appendChild(el("span","dist",fmtDist(dist)));w.appendChild(tt);
-  var tg=el("div","dtags");tg.appendChild(el("span","tag",k.category||"其他"));if(k.district)tg.appendChild(el("span","tag",normCity(k.city)+" "+k.district));w.appendChild(tg);
+  var tg=el("div","dtags");tg.appendChild(el("span","tag",TIERN[tierOf(k)]));tg.appendChild(el("span","tag",k.category||"其他"));if(k.veg)tg.appendChild(el("span","tag veg",k.veg));if(k.district)tg.appendChild(el("span","tag",normCity(k.city)+" "+k.district));w.appendChild(tg);
   var ob=el("div","box");ob.appendChild(el("div","lb","為什麼推薦"));
   var rs=reasons(k);if(!rs.length)rs=["入選精選名單"];
   rs.forEach(function(t){var b=el("div","big",t);b.style.fontSize="14.5px";ob.appendChild(b)});w.appendChild(ob);
