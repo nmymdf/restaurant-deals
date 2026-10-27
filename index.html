@@ -43,9 +43,19 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .fbtn span.k{color:var(--sb)}
 .fbtn i{font-style:normal;color:var(--sb);margin-left:6px}
 #regpanel,#catpanel{display:none;background:var(--cd);border:.5px solid var(--ln);border-radius:14px;margin-top:4px}
-#catpanel{padding:4px 0;border-radius:12px}
-#catpanel button{display:flex;justify-content:space-between;width:100%;text-align:left;padding:10px 14px;font-size:13px}
-#catpanel button.on{background:var(--ch);font-weight:700;color:var(--hi)}
+#catpanel{padding:8px;max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.cc{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--ln);background:var(--pg);border-radius:10px;padding:13px 12px;font-size:15px;text-align:left;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.cc b{font-weight:400;font-size:13px;color:var(--sb)}
+.cc.on{background:var(--ch);border-color:var(--gold);color:var(--hi);font-weight:700}
+.cc.veg{background:var(--vgbg);border-color:var(--vg);color:var(--vg);font-weight:700}.cc.veg b{color:var(--vg)}
+.cc.zero{background:transparent;border-style:dashed;color:var(--sb)}
+.cc.drag{opacity:.35}
+.cc.over{outline:2px solid var(--gold)}
+.cgall{display:block;width:100%;text-align:center;padding:12px;border-radius:10px;background:var(--ch);color:var(--hi);font-weight:700;font-size:15px;margin-bottom:6px;border:1px solid transparent}
+.cgall.on{border-color:var(--gold)}
+.cghint{display:block;width:100%;text-align:center;font-size:12px;color:var(--hi);padding:10px 0 4px}
+#ghost{position:fixed;z-index:200;pointer-events:none;opacity:.9;box-shadow:0 6px 18px #0006;display:none}
 .rbody{display:flex;height:300px}
 .rl{flex:.85;overflow-y:auto;background:var(--pg);border-radius:14px 0 0 0}
 .rr{flex:1.15;overflow-y:auto}
@@ -127,11 +137,11 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v0.8</div></div>
+<div id="splash"><div class="ver">v0.9</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.8</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.9</div></div>
 <button class="refresh" id="refresh" aria-label="重新整理">↻</button>
 </div>
 <div id="info"></div>
@@ -146,9 +156,10 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 <div id="detail"><div class="wrap" id="dwrap"></div></div>
 <div id="sheet"><div class="bk" id="sheetbk"></div><div class="pn" id="sheetpn"></div></div>
 <div id="a2hs"><div class="bk" id="a2bk"></div><div class="pn" id="a2pn"></div></div>
+<div id="ghost" class="cc"></div>
 <div id="toast"></div>
 <script>
-var VER="v0.8";
+var VER="v0.9";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -175,16 +186,78 @@ function hl(box,text){
 }
 function toast(t){var e=document.getElementById("toast");e.textContent=t;e.style.display="block";clearTimeout(toast._t);toast._t=setTimeout(function(){e.style.display="none"},1800)}
 function live(){var t=today();return state.deals.filter(function(d){return d._until&&d._until>=t})}
-var PRESET=["自助餐","牛排西餐","燒肉","火鍋","日式料理","中式港式","台菜","小吃麵食","韓式料理","泰式東南亞","義式法式","居酒屋燒烤","海鮮","速食","早午餐咖啡","飲料甜點","麵包烘焙","飯店餐廳"];
+var PRESET=["自助餐","牛排西餐","燒肉","火鍋","日式料理","中式港式","台菜","小吃麵食","韓式料理","泰式東南亞","義式法式","居酒屋燒烤","海鮮","速食","早午餐咖啡","飲料甜點","麵包烘焙","飯店餐廳","鐵板燒","便當","親子餐廳","餐酒館"];
 var VEG=["素食","全素","蛋奶素"];
 function isVeg(tags){return (tags||[]).some(function(x){return VEG.indexOf(x)>=0})}
-function catCounts(){var c={};live().forEach(function(d){c[d.category]=(c[d.category]||0)+1});return c}
+function catCounts(){var c={};live().forEach(function(d){c[d.category]=(c[d.category]||0)+1});c["素食"]=live().filter(function(d){return isVeg(d.tags)}).length;return c}
 function categories(){
   var c=catCounts();
-  var extra=Object.keys(c).filter(function(k){return PRESET.indexOf(k)<0&&k!="其他"}).sort(function(a,b){return (c[b]||0)-(c[a]||0)});
-  var l=PRESET.concat(extra);
-  if(state.category!=ALL&&l.indexOf(state.category)<0&&state.category!="其他")l.push(state.category);
-  l.push("其他");return l;
+  var extra=Object.keys(c).filter(function(k){return k!="素食"&&PRESET.indexOf(k)<0&&k!="其他"}).sort(function(a,b){return (c[b]||0)-(c[a]||0)});
+  var base=["素食"].concat(PRESET,extra);
+  if(state.category!=ALL&&base.indexOf(state.category)<0&&state.category!="其他")base.push(state.category);
+  base.push("其他");
+  var saved=[];try{saved=JSON.parse(localStorage.getItem("deals-catorder")||"[]")}catch(e){}
+  saved=saved.filter(function(n,i){return base.indexOf(n)>=0&&saved.indexOf(n)==i});
+  return saved.concat(base.filter(function(n){return saved.indexOf(n)<0}));
+}
+function saveOrder(l){try{if(l)localStorage.setItem("deals-catorder",JSON.stringify(l));else localStorage.removeItem("deals-catorder")}catch(e){}}
+function moveCat(from,to){
+  if(from==to)return;var l=categories();l.splice(l.indexOf(from),1);var i=l.indexOf(to);l.splice(i<0?l.length:i,0,from);saveOrder(l);render();
+}
+function buildCats(cp){
+  var cc=catCounts();
+  var al=el("button","cgall"+(state.category==ALL?" on":""),state.category==ALL?ALL+" ✓":ALL);
+  al.onclick=function(e){e.stopPropagation();state.category=ALL;state.panel=0;render()};cp.appendChild(al);
+  var g=el("div","cg");cp.appendChild(g);
+  categories().forEach(function(n){
+    var k=cc[n]||0;
+    var b=el("div","cc"+(n=="素食"?" veg":"")+(n==state.category?" on":"")+(!k&&n!="素食"?" zero":""));
+    b.dataset.n=n;b.appendChild(el("span",null,n==state.category?n+" ✓":n));b.appendChild(el("b",null,String(k)));
+    attachDrag(b,n);g.appendChild(b);
+  });
+  var h=el("button","cghint","長按卡片可以拖動排序　·　恢復預設順序");
+  h.onclick=function(e){e.stopPropagation();saveOrder(null);render()};cp.appendChild(h);
+}
+function attachDrag(b,n){
+  var timer=null,dragging=false,sx=0,sy=0,over=null,moved=false;
+  var ghost=document.getElementById("ghost");
+  function stopTimer(){clearTimeout(timer);timer=null}
+  function overEl(x,y){var e=document.elementFromPoint(x,y);return e&&e.closest?e.closest(".cc"):null}
+  b.addEventListener("pointerdown",function(e){
+    sx=e.clientX;sy=e.clientY;moved=false;
+    timer=setTimeout(function(){
+      dragging=true;b.classList.add("drag");
+      ghost.textContent=n;ghost.style.width=b.offsetWidth+"px";ghost.style.display="flex";
+      ghost.style.left=(sx-b.offsetWidth/2)+"px";ghost.style.top=(sy-24)+"px";
+      try{b.setPointerCapture(e.pointerId)}catch(x){}
+      if(navigator.vibrate)try{navigator.vibrate(15)}catch(x){}
+    },450);
+  });
+  b.addEventListener("pointermove",function(e){
+    if(!dragging){if(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8){moved=true;stopTimer()}return}
+    ghost.style.left=(e.clientX-b.offsetWidth/2)+"px";ghost.style.top=(e.clientY-24)+"px";
+    var t=overEl(e.clientX,e.clientY);
+    if(over&&over!==t)over.classList.remove("over");
+    over=(t&&t!==b)?t:null;if(over)over.classList.add("over");
+  });
+  function end(e,cancel){
+    stopTimer();
+    if(!dragging)return;
+    dragging=false;ghost.style.display="none";b.classList.remove("drag");
+    var t=over;over=null;
+    document.querySelectorAll(".cc.over").forEach(function(x){x.classList.remove("over")});
+    b.dataset.skip="1";setTimeout(function(){delete b.dataset.skip},50);
+    if(!cancel&&t&&t.dataset.n)moveCat(n,t.dataset.n);
+  }
+  b.addEventListener("pointerup",function(e){end(e,false)});
+  b.addEventListener("pointercancel",function(e){end(e,true)});
+  b.addEventListener("touchmove",function(e){if(dragging)e.preventDefault()},{passive:false});
+  b.addEventListener("contextmenu",function(e){e.preventDefault()});
+  b.addEventListener("click",function(e){
+    e.stopPropagation();
+    if(b.dataset.skip||moved)return;
+    state.category=n;state.panel=0;render();
+  });
 }
 function filtered(city,ds){
   var l=live();
@@ -193,7 +266,8 @@ function filtered(city,ds){
     var x=d.districts||[];if(!ds.length||!x.length)return true;
     return x.some(function(n){return ds.indexOf(n)>=0});
   });
-  if(state.category!=ALL)l=l.filter(function(d){return d.category==state.category});
+  if(state.category=="素食")l=l.filter(function(d){return isVeg(d.tags)});
+  else if(state.category!=ALL)l=l.filter(function(d){return d.category==state.category});
   if(state.tab=="吃到飽")l=l.filter(function(d){return (d.tags||[]).indexOf("吃到飽")>=0});
   if(state.tab=="壽星")l=l.filter(function(d){return (d.tags||[]).indexOf("壽星")>=0});
   if(state.tab=="素食")l=l.filter(function(d){return isVeg(d.tags)});
@@ -254,11 +328,7 @@ function render(){
   cb.appendChild(lab);cb.appendChild(el("i",null,state.panel==2?"▴":"▾"));
   cb.onclick=function(e){e.stopPropagation();togglePanel(2)};
   var cp=document.getElementById("catpanel");cp.textContent="";cp.style.display=state.panel==2?"block":"none";
-  if(state.panel==2){var cc=catCounts();[ALL].concat(categories()).forEach(function(n){
-    var k=cc[n]||0;
-    var b=el("button",n==state.category?"on":"");b.appendChild(el("span",null,n+(n==ALL?"":"　（"+k+"）")));if(n!=ALL&&!k&&n!=state.category)b.style.color="var(--sb)";if(n==state.category)b.appendChild(el("span",null,"✓"));
-    b.onclick=function(e){e.stopPropagation();state.category=n;state.panel=0;render()};cp.appendChild(b);
-  })}
+  if(state.panel==2)buildCats(cp);
   var tb=document.getElementById("tabs");tb.textContent="";
   ["即將到期","最新","吃到飽","壽星","素食"].forEach(function(n){var b=el("button","tab"+(n==state.tab?" on":""),n);b.onclick=function(){state.tab=n;save();render()};tb.appendChild(b)});
   var box=document.getElementById("list");box.textContent="";

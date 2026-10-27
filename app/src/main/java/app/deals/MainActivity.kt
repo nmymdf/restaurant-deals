@@ -1,6 +1,9 @@
 package app.deals
 
+import android.content.ClipData
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
+import android.view.DragEvent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -53,6 +56,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var catLabel: TextView
     private lateinit var catArrow: TextView
     private lateinit var catPanel: LinearLayout
+    private lateinit var catScroll: ScrollView
     private lateinit var tabRow: LinearLayout
     private lateinit var listBox: LinearLayout
 
@@ -236,10 +240,13 @@ class MainActivity : AppCompatActivity() {
 
         catPanel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = rect(p.cd, dp(12), p.ln)
-            setPadding(0, dp(4), 0, dp(4))
+            setPadding(dp(8), dp(8), dp(8), dp(8))
         }
-        root.addView(catPanel, LinearLayout.LayoutParams(-1, -2).apply {
+        catScroll = ScrollView(this).apply {
+            background = rect(p.cd, dp(12), p.ln)
+            addView(catPanel)
+        }
+        root.addView(catScroll, LinearLayout.LayoutParams(-1, dp(380)).apply {
             leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(4)
         })
 
@@ -295,21 +302,88 @@ class MainActivity : AppCompatActivity() {
 
     private fun categoryCounts(): Map<String, Int> {
         val today = LocalDate.now()
-        return deals.filter { !it.until.isBefore(today) }.groupingBy { it.category }.eachCount()
+        val live = deals.filter { !it.until.isBefore(today) }
+        val m = HashMap<String, Int>(live.groupingBy { it.category }.eachCount())
+        m["素食"] = live.count { d -> d.tags.any { it in Theme.VEG } }
+        return m
     }
 
-    /** 固定項目全部顯示（沒有優惠的顯示 0），資料裡新出現的類別接在後面，「其他」最後。 */
+    /** 預設：素食最前面、固定類別、新出現的類別、其他最後；再套用使用者拖動後記住的順序。 */
     private fun categories(): List<String> {
         val counts = categoryCounts()
-        val extra = counts.keys.filter { it !in Theme.PRESET_CATS && it != "其他" }.sortedByDescending { counts[it] ?: 0 }
-        val list = ArrayList<String>(Theme.PRESET_CATS)
-        list.addAll(extra)
-        if (category != ALL_CAT && category !in list && category != "其他") list.add(category)
-        list.add("其他")
-        return list
+        val extra = counts.keys.filter { it != "素食" && it !in Theme.PRESET_CATS && it != "其他" }
+            .sortedByDescending { counts[it] ?: 0 }
+        val base = ArrayList<String>()
+        base.add("素食")
+        base.addAll(Theme.PRESET_CATS)
+        base.addAll(extra)
+        if (category != ALL_CAT && category !in base && category != "其他") base.add(category)
+        base.add("其他")
+        val saved = (getSharedPreferences("deals", MODE_PRIVATE).getString("catorder", "") ?: "")
+            .split("\n").filter { it in base }.distinct()
+        return saved + base.filter { it !in saved }
     }
 
-    private fun cityOf(d: Deal) = Regions.normalize(d.region)
+    private fun saveOrder(list: List<String>) {
+        getSharedPreferences("deals", MODE_PRIVATE).edit().putString("catorder", list.joinToString("\n")).apply()
+    }
+
+    private fun moveCat(from: String, to: String) {
+        if (from == to) return
+        val l = ArrayList(categories())
+        l.remove(from)
+        val i = l.indexOf(to)
+        l.add(if (i < 0) l.size else i, from)
+        saveOrder(l)
+        catPanel.post { render() }
+    }
+
+    private fun catCell(n: String, count: Int): View {
+        val sel = n == category
+        val veg = n == "素食"
+        val empty = count == 0
+        val bg = GradientDrawable().apply {
+            cornerRadius = dp(10).toFloat()
+            if (veg) { setColor(p.vgbg); setStroke(dp(1), p.vg) }
+            else if (sel) { setColor(p.ch); setStroke(dp(1), Theme.GOLD) }
+            else if (empty) { setColor(0); setStroke(dp(1), p.ln, dp(4).toFloat(), dp(3).toFloat()) }
+            else { setColor(p.pg); setStroke(dp(1), p.ln) }
+        }
+        return LinearLayout(this).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            background = bg
+            setPadding(dp(12), dp(13), dp(12), dp(13))
+            addView(TextView(this@MainActivity).apply {
+                text = if (sel) "$n ✓" else n
+                textSize = 15f
+                setTypeface(null, if (sel || veg) Typeface.BOLD else Typeface.NORMAL)
+                setTextColor(if (veg) p.vg else if (sel) p.hi else if (empty) p.sb else p.tx)
+                maxLines = 1
+            }, LinearLayout.LayoutParams(0, -2, 1f))
+            addView(TextView(this@MainActivity).apply {
+                text = count.toString()
+                textSize = 13f
+                setTextColor(if (veg) p.vg else p.sb)
+            })
+            setOnClickListener { category = n; openPanel = 0; render() }
+            setOnLongClickListener { v ->
+                v.startDragAndDrop(ClipData.newPlainText("cat", n), View.DragShadowBuilder(v), null, 0)
+                true
+            }
+            setOnDragListener { v, e ->
+                when (e.action) {
+                    DragEvent.ACTION_DRAG_ENTERED -> { v.alpha = 0.45f; true }
+                    DragEvent.ACTION_DRAG_EXITED, DragEvent.ACTION_DRAG_ENDED -> { v.alpha = 1f; true }
+                    DragEvent.ACTION_DROP -> {
+                        v.alpha = 1f
+                        moveCat(e.clipData.getItemAt(0).text.toString(), n)
+                        true
+                    }
+                    else -> true
+                }
+            }
+        }
+    }
 
     private fun filtered(city: String, ds: Set<String>): List<Deal> {
         val today = LocalDate.now()
@@ -320,7 +394,8 @@ class MainActivity : AppCompatActivity() {
                 dc == "全台" || (dc == city && (ds.isEmpty() || d.districts.isEmpty() || d.districts.any { it in ds }))
             }
         }
-        if (category != ALL_CAT) list = list.filter { it.category == category }
+        if (category == "素食") list = list.filter { d -> d.tags.any { it in Theme.VEG } }
+        else if (category != ALL_CAT) list = list.filter { it.category == category }
         list = when (tab) {
             "吃到飽" -> list.filter { "吃到飽" in it.tags }
             "壽星" -> list.filter { "壽星" in it.tags }
@@ -464,26 +539,44 @@ class MainActivity : AppCompatActivity() {
         catLabel.text = label
         catArrow.text = if (openPanel == 2) "▴" else "▾"
         catBtn.background = rect(p.cd, dp(12), if (openPanel == 2) Theme.GOLD else p.ln)
-        catPanel.visibility = if (openPanel == 2) View.VISIBLE else View.GONE
+        catScroll.visibility = if (openPanel == 2) View.VISIBLE else View.GONE
         catPanel.removeAllViews()
         if (openPanel == 2) {
             val counts = categoryCounts()
-            for (n in listOf(ALL_CAT) + categories()) {
-                val sel = n == category
-                val c = counts[n] ?: 0
-                val empty = n != ALL_CAT && c == 0
-                catPanel.addView(TextView(this).apply {
-                    text = (if (sel) "$n　✓" else n) + if (n != ALL_CAT) "　（$c）" else ""
-                    textSize = 13f
-                    setPadding(dp(14), dp(10), dp(14), dp(10))
-                    setTextColor(if (sel) p.hi else if (empty) p.sb else p.tx)
-                    if (sel) {
-                        setTypeface(null, Typeface.BOLD)
-                        setBackgroundColor(p.ch)
-                    }
-                    setOnClickListener { category = n; openPanel = 0; render() }
-                })
+            val all = ALL_CAT == category
+            catPanel.addView(TextView(this).apply {
+                text = if (all) "$ALL_CAT ✓" else ALL_CAT
+                textSize = 15f
+                gravity = Gravity.CENTER
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(p.hi)
+                background = rect(p.ch, dp(10), if (all) Theme.GOLD else 0)
+                setPadding(0, dp(12), 0, dp(12))
+                setOnClickListener { category = ALL_CAT; openPanel = 0; render() }
+            }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(6) })
+            val names = categories()
+            var i = 0
+            while (i < names.size) {
+                val row = LinearLayout(this)
+                for (j in 0..1) {
+                    val lp = LinearLayout.LayoutParams(0, -2, 1f).apply { if (j == 0) rightMargin = dp(6) }
+                    if (i + j < names.size) row.addView(catCell(names[i + j], counts[names[i + j]] ?: 0), lp)
+                    else row.addView(View(this), lp)
+                }
+                catPanel.addView(row, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(6) })
+                i += 2
             }
+            catPanel.addView(TextView(this).apply {
+                text = "長按卡片可以拖動排序　·　恢復預設順序"
+                textSize = 12f
+                gravity = Gravity.CENTER
+                setTextColor(p.hi)
+                setPadding(0, dp(10), 0, dp(6))
+                setOnClickListener {
+                    getSharedPreferences("deals", MODE_PRIVATE).edit().remove("catorder").apply()
+                    render()
+                }
+            })
         }
 
         tabRow.removeAllViews()

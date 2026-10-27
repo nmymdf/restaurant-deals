@@ -61,7 +61,7 @@ class Pal(
 )
 
 object Theme {
-    const val VERSION = "v0.8"
+    const val VERSION = "v0.9"
     val GOLD = Color.parseColor("#C9A227")
     val INK = Color.parseColor("#1F1B16")
 
@@ -71,7 +71,7 @@ object Theme {
     val PRESET_CATS = listOf(
         "自助餐", "牛排西餐", "燒肉", "火鍋", "日式料理", "中式港式", "台菜", "小吃麵食",
         "韓式料理", "泰式東南亞", "義式法式", "居酒屋燒烤", "海鮮", "速食", "早午餐咖啡",
-        "飲料甜點", "麵包烘焙", "飯店餐廳"
+        "飲料甜點", "麵包烘焙", "飯店餐廳", "鐵板燒", "便當", "親子餐廳", "餐酒館"
     )
 
     private val HIGHLIGHT = Regex(
