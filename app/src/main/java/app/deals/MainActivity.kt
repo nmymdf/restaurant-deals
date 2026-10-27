@@ -385,6 +385,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun cityOf(d: Deal) = Regions.normalize(d.region)
+
     private fun filtered(city: String, ds: Set<String>): List<Deal> {
         val today = LocalDate.now()
         var list = deals.filter { !it.until.isBefore(today) }
