@@ -32,10 +32,17 @@ class NearbyActivity : AppCompatActivity() {
     }
 
     private lateinit var p: Pal
-    private lateinit var status: TextView
+    private lateinit var ui: Ui
+    private lateinit var header: Header
+    private lateinit var filterBar: LinearLayout
+    private lateinit var panelHolder: LinearLayout
+    private lateinit var condHolder: LinearLayout
     private lateinit var listBox: LinearLayout
+    private var openPanel = 0 // 0 收合、1 範圍、2 類別
+    private var category = Cats.ALL
+    private var lastCounts: Map<String, Int> = emptyMap()
     private val io = Executors.newSingleThreadExecutor()
-    private val ui = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
 
     private var picks: List<Pick> = emptyList()
     private var picksReady = false
@@ -46,8 +53,6 @@ class NearbyActivity : AppCompatActivity() {
     private var updated = ""
     private val coords = HashMap<String, DoubleArray>()
     private var userCity = ""
-    private var vegOnly = false
-    private lateinit var vegBtn: TextView
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     private fun rect(fill: Int, r: Int, stroke: Int = 0) = Theme.roundRect(fill, r, stroke, 1)
@@ -55,6 +60,7 @@ class NearbyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         p = Theme.palette(this)
+        ui = Ui(this, p)
         Regions.load(this)
         buildUi()
         loadPicks()
@@ -78,58 +84,72 @@ class NearbyActivity : AppCompatActivity() {
     }
 
     private fun buildUi() {
-        val content = LinearLayout(this).apply {
+        val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(12), dp(16), dp(28))
-        }
-        val bar = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        bar.addView(TextView(this).apply {
-            text = "←"
-            textSize = 26f
-            setTextColor(p.tx)
-            contentDescription = "返回"
-            setPadding(0, dp(2), dp(14), dp(2))
-            setOnClickListener { finish() }
-        })
-        bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        bar.addView(TextView(this).apply {
-            text = "作者：ArchieKUO　${Theme.VERSION}"
-            textSize = 12f
-            setTypeface(null, Typeface.ITALIC)
-            setTextColor(Theme.GOLD)
-        })
-        content.addView(bar)
-        content.addView(TextView(this).apply {
-            text = "附近好餐廳"
-            textSize = 22f
-            setTypeface(null, Typeface.BOLD)
-            setTextColor(p.tx)
-            setPadding(0, dp(12), 0, dp(4))
-        })
-        status = TextView(this).apply {
-            textSize = 12f
-            setTextColor(p.sb)
-            setPadding(0, 0, 0, dp(10))
-        }
-        content.addView(status)
-        vegBtn = TextView(this).apply {
-            textSize = 13f
-            setPadding(dp(14), dp(7), dp(14), dp(7))
-            setOnClickListener { vegOnly = !vegOnly; styleVeg(); refresh() }
-        }
-        styleVeg()
-        content.addView(vegBtn, LinearLayout.LayoutParams(-2, -2).apply { bottomMargin = dp(12) })
-        listBox = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        content.addView(listBox)
-        setContentView(ScrollView(this).apply {
             setBackgroundColor(p.pg)
-            addView(content)
+        }
+        header = ui.header(1, "名單更新") { loadPicks(true) }
+        root.addView(header.view)
+        filterBar = LinearLayout(this).apply { setPadding(dp(16), 0, dp(16), 0) }
+        root.addView(filterBar)
+        panelHolder = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        root.addView(panelHolder, LinearLayout.LayoutParams(-1, -2).apply {
+            leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(4)
         })
-        status.text = "正在取得你的位置…"
+        condHolder = LinearLayout(this)
+        root.addView(condHolder, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
+        listBox = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(14), dp(4), dp(14), dp(28))
+        }
+        root.addView(ScrollView(this).apply { addView(listBox) }, LinearLayout.LayoutParams(-1, 0, 1f))
+        setContentView(root)
+        drawFilters()
+        showMessage("正在取得你的位置…")
+    }
+
+    private fun togglePanel(which: Int) {
+        openPanel = if (openPanel == which) 0 else which
+        drawFilters()
+    }
+
+    private fun drawFilters() {
+        filterBar.removeAllViews()
+        filterBar.addView(ui.filterButton("範圍", "${(RADII[radiusIdx] / 1000).toInt()} 公里", openPanel == 1) { togglePanel(1) },
+            LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
+        filterBar.addView(ui.filterButton("類別", category, openPanel == 2) { togglePanel(2) },
+            LinearLayout.LayoutParams(0, -2, 1f))
+        panelHolder.removeAllViews()
+        if (openPanel == 1) {
+            val box = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                background = rect(p.cd, dp(12), p.ln)
+            }
+            for (i in RADII.indices) {
+                val sel = i == radiusIdx
+                box.addView(TextView(this).apply {
+                    text = "${(RADII[i] / 1000).toInt()} 公里內" + if (sel) "  ✓" else ""
+                    textSize = 14f
+                    setTextColor(if (sel) p.hi else p.tx)
+                    if (sel) setTypeface(null, Typeface.BOLD)
+                    setPadding(dp(16), dp(12), dp(16), dp(12))
+                    setOnClickListener { radiusIdx = i; openPanel = 0; drawFilters(); refresh() }
+                })
+            }
+            panelHolder.addView(box)
+        } else if (openPanel == 2) {
+            val known = picks.map { it.category }.distinct()
+            panelHolder.addView(
+                ui.categoryPanel(lastCounts, known, category,
+                    onPick = { category = it; openPanel = 0; drawFilters(); refresh() },
+                    onReorder = { drawFilters() }),
+                LinearLayout.LayoutParams(-1, dp(380))
+            )
+        }
     }
 
     private fun showMessage(msg: String, btn: String? = null, onClick: (() -> Unit)? = null) {
-        status.text = ""
+        condHolder.removeAllViews()
         listBox.removeAllViews()
         listBox.addView(TextView(this).apply {
             text = msg
@@ -154,7 +174,7 @@ class NearbyActivity : AppCompatActivity() {
     }
 
     // ---- 精選名單 ----
-    private fun loadPicks() {
+    private fun loadPicks(manual: Boolean = false) {
         val prefs = getSharedPreferences("deals", MODE_PRIVATE)
         io.execute {
             val remote = runCatching {
@@ -166,6 +186,7 @@ class NearbyActivity : AppCompatActivity() {
                 text
             }.getOrNull()
             if (remote != null) prefs.edit().putString("picks", remote).apply()
+            if (remote != null) ui.markFetched("fetched_picks")
             val text = remote ?: prefs.getString("picks", null)
             val parsed = ArrayList<Pick>()
             var upd = ""
@@ -175,10 +196,12 @@ class NearbyActivity : AppCompatActivity() {
                 val arr = obj.getJSONArray("picks")
                 for (i in 0 until arr.length()) Theme.parsePick(arr.getJSONObject(i))?.let { parsed.add(it) }
             }
-            ui.post {
+            handler.post {
                 picks = parsed
                 updated = upd
                 picksReady = true
+                header.caption.text = "名單更新　" + ui.fetchedText("fetched_picks")
+                if (manual) android.widget.Toast.makeText(this, if (remote != null) "已更新" else "無法更新，先顯示上次的名單", android.widget.Toast.LENGTH_SHORT).show()
                 refresh()
             }
         }
@@ -186,7 +209,7 @@ class NearbyActivity : AppCompatActivity() {
 
     // ---- 定位 ----
     private fun locate() {
-        status.text = "正在取得你的位置…"
+        showMessage("正在取得你的位置…")
         val lm = getSystemService(LOCATION_SERVICE) as LocationManager
         var best: Location? = null
         for (prov in listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER)) {
@@ -226,7 +249,7 @@ class NearbyActivity : AppCompatActivity() {
             if (ok) listeners.add(ls)
         }
         if (listeners.isEmpty()) { deliver(null); return }
-        ui.postDelayed({ deliver(null) }, 15000)
+        handler.postDelayed({ deliver(null) }, 15000)
     }
 
     private fun gotLocation(l: Location) {
@@ -238,7 +261,7 @@ class NearbyActivity : AppCompatActivity() {
                 val a: List<Address>? = Geocoder(this, Locale.TAIWAN).getFromLocation(l.latitude, l.longitude, 1)
                 Regions.normalize(a?.firstOrNull()?.adminArea ?: "")
             }.getOrDefault("")
-            ui.post { userCity = city; refresh() }
+            handler.post { userCity = city; refresh() }
         }
         refresh()
     }
@@ -283,20 +306,14 @@ class NearbyActivity : AppCompatActivity() {
                 n++
                 val a = arr
                 val cur = n
-                ui.post {
+                handler.post {
                     if (a != null) coords[k.id] = a
                     checked = cur
                     if (cur % 5 == 0 || cur == order.size) refresh()
                 }
             }
-            ui.post { geocoding = false; refresh() }
+            handler.post { geocoding = false; refresh() }
         }
-    }
-
-    private fun styleVeg() {
-        vegBtn.text = if (vegOnly) "只看素食　✓" else "只看素食"
-        vegBtn.setTextColor(if (vegOnly) p.vg else p.sb)
-        vegBtn.background = rect(if (vegOnly) p.vgbg else p.ch, dp(16), if (vegOnly) p.vg else 0)
     }
 
     private fun note(t: String) = TextView(this).apply {
@@ -310,7 +327,7 @@ class NearbyActivity : AppCompatActivity() {
     // ---- 顯示 ----
     private fun refresh() {
         val l = loc ?: return
-        if (!picksReady) { status.text = "正在載入精選名單…"; return }
+        if (!picksReady) { showMessage("正在載入名單…"); return }
         if (picks.isEmpty()) {
             showMessage("名單還在整理中，每天早上會自動更新。\n過一陣子再來看看。")
             return
@@ -318,70 +335,71 @@ class NearbyActivity : AppCompatActivity() {
         startGeocoding()
         val all = ArrayList<Pair<Pick, Double>>()
         for (k in picks) {
-            if (vegOnly && k.veg.isEmpty()) continue
             val c = coordOf(k) ?: continue
             val r = FloatArray(1)
             Location.distanceBetween(l.latitude, l.longitude, c[0], c[1], r)
             all.add(k to r[0].toDouble())
         }
         all.sortBy { it.second }
+        val withCat = if (category == Cats.ALL) all else all.filter { it.first.category == category }
 
         // 範圍內沒有店就自動往外找，最後保底顯示最近的 5 家
         var idx = radiusIdx
-        var inR = all.filter { it.second <= RADII[idx] }
+        var inR = withCat.filter { it.second <= RADII[idx] }
         while (inR.isEmpty() && !geocoding && idx < RADII.size - 1) {
             idx++
-            inR = all.filter { it.second <= RADII[idx] }
+            inR = withCat.filter { it.second <= RADII[idx] }
         }
         var nearestMode = false
-        if (inR.isEmpty() && !geocoding && all.isNotEmpty()) {
-            inR = all.take(5)
+        if (inR.isEmpty() && !geocoding && withCat.isNotEmpty()) {
+            inR = withCat.take(5)
             nearestMode = true
         }
         val km = (RADII[idx] / 1000).toInt()
+        lastCounts = (if (nearestMode) withCat.take(5) else all.filter { it.second <= RADII[idx] })
+            .groupingBy { it.first.category }.eachCount()
+
+        val groups = inR.groupBy { Theme.tier(it.first) }
+        val conds = ArrayList<Pair<String, () -> Unit>>()
+        if (radiusIdx > 0) conds.add("$km 公里" to { radiusIdx = 0; drawFilters(); refresh() })
+        if (category != Cats.ALL) conds.add(category to { category = Cats.ALL; drawFilters(); refresh() })
+        val parts = (1..3).filter { !groups[it].isNullOrEmpty() }
+            .joinToString("、") { "${Theme.tierName(it)} ${groups[it]!!.size}" }
         val progress = if (geocoding) "　· 正在比對地址（第一次較久）" else ""
-        status.text = (if (nearestMode) "離你最近的 ${inR.size} 家" else "$km 公里內 ${inR.size} 家") +
-            (if (updated.isNotEmpty()) "　· 名單 $updated 更新" else "") + progress
+        val countLine = (if (nearestMode) "離你最近的 ${inR.size} 家" else "符合 ${inR.size} 家") +
+            (if (inR.isNotEmpty()) "（$parts）" else "") + progress
+        condHolder.removeAllViews()
+        condHolder.addView(ui.conditions(conds, countLine), LinearLayout.LayoutParams(-1, -2))
 
         listBox.removeAllViews()
         val sp = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) }
         if (nearestMode) listBox.addView(note("${(RADII[RADII.size - 1] / 1000).toInt()} 公里內沒有符合的店，先列出離你最近的幾家，距離都標在旁邊。"), sp)
         else if (idx > radiusIdx) listBox.addView(note("${(RADII[radiusIdx] / 1000).toInt()} 公里內沒有店，已自動擴大到 $km 公里。"), sp)
         if (inR.isEmpty()) {
-            val msg = when {
-                geocoding -> "已檢查 $checked 家，請稍候…"
-                vegOnly -> "目前名單裡還沒有素食店。\n關掉「只看素食」可以看全部。"
-                picks.none { coordOf(it) != null } -> "這台手機無法把地址轉成位置，暫時無法計算距離。\n你仍可在首頁的地區選單找優惠。"
-                else -> "這個地區的資料還在整理中。\n名單每天會自動擴充。"
+            val where = "${(RADII[radiusIdx] / 1000).toInt()} 公里內"
+            when {
+                geocoding -> listBox.addView(ui.emptyState("已檢查 $checked 家，請稍候…", null, null))
+                category != Cats.ALL && all.isNotEmpty() ->
+                    listBox.addView(ui.emptyState("附近目前沒有「$category」的店", "移除$category，看全部 ${all.size} 家") {
+                        category = Cats.ALL; drawFilters(); refresh()
+                    })
+                picks.none { coordOf(it) != null } ->
+                    listBox.addView(ui.emptyState("這台手機無法把地址轉成位置，暫時無法計算距離。\n你仍可在「優惠」分頁用地區選單找優惠。", null, null))
+                else -> listBox.addView(ui.emptyState("$where 的資料還在整理中。\n名單每天會自動擴充。", null, null))
             }
-            listBox.addView(TextView(this).apply {
-                this.text = msg
-                textSize = 14f
-                setTextColor(p.sb)
-                setLineSpacing(0f, 1.25f)
-                gravity = Gravity.CENTER
-                setPadding(dp(16), dp(36), dp(16), dp(16))
-            })
             return
         }
-        val groups = inR.groupBy { Theme.tier(it.first) }
         if (groups[1].isNullOrEmpty() && !geocoding) {
-            listBox.addView(note("這個範圍內沒有精選，先看口碑不錯和附近的店。"), sp)
+            listBox.addView(note("這個範圍內沒有「好餐廳」，先看口碑不錯和附近的店。"), sp)
         }
         for (t in 1..3) {
             val g = groups[t] ?: continue
-            listBox.addView(TextView(this).apply {
-                text = "${Theme.tierName(t)}　${g.size}"
-                textSize = 12f
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(if (t == 1) p.hi else p.sb)
-                setPadding(dp(2), dp(6), 0, dp(6))
-            })
+            listBox.addView(ui.sectionTitle(Theme.tierName(t), g.size))
             for ((k, d) in g) listBox.addView(card(k, d))
         }
         if (idx < RADII.size - 1 && !geocoding && !nearestMode) {
             val next = (RADII[idx + 1] / 1000).toInt()
-            listBox.addView(button("範圍擴大到 $next 公里") { radiusIdx = idx + 1; refresh() },
+            listBox.addView(button("範圍擴大到 $next 公里") { radiusIdx = idx + 1; drawFilters(); refresh() },
                 LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
         }
     }
@@ -428,13 +446,6 @@ class NearbyActivity : AppCompatActivity() {
         }
         val tags = LinearLayout(this)
         tags.addView(chip(k.category), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
-        if (k.veg.isNotEmpty()) tags.addView(TextView(this).apply {
-            text = k.veg
-            textSize = 11f
-            setTextColor(p.vg)
-            background = rect(p.vgbg, dp(9))
-            setPadding(dp(8), dp(2), dp(8), dp(2))
-        }, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         if (k.district.isNotEmpty()) tags.addView(chip(k.city + " " + k.district))
         box.addView(tags, LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(8) })
         val wrap = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }

@@ -85,13 +85,6 @@ class PickActivity : AppCompatActivity() {
         val tags = LinearLayout(this)
         tags.addView(chip(Theme.tierName(Theme.tier(k))), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         tags.addView(chip(k.category), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
-        if (k.veg.isNotEmpty()) tags.addView(TextView(this).apply {
-            text = k.veg
-            textSize = 11f
-            setTextColor(p.vg)
-            background = rect(p.vgbg, dp(9))
-            setPadding(dp(8), dp(2), dp(8), dp(2))
-        }, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         if (k.district.isNotEmpty()) tags.addView(chip(k.city + " " + k.district))
         content.addView(tags)
 
@@ -102,7 +95,7 @@ class PickActivity : AppCompatActivity() {
         }
         why.addView(TextView(this).apply { text = "為什麼推薦"; textSize = 11f; setTextColor(p.sb) })
         val rs = Theme.reasons(k)
-        for (r in if (rs.isEmpty()) listOf("入選精選名單") else rs) {
+        for (r in if (rs.isEmpty()) listOf("尚無評價資料") else rs) {
             why.addView(TextView(this).apply {
                 text = r
                 textSize = 14.5f

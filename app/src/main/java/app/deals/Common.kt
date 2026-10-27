@@ -61,17 +61,15 @@ class Pal(
 )
 
 object Theme {
-    const val VERSION = "v0.9"
+    const val VERSION = "v1.0"
     val GOLD = Color.parseColor("#C9A227")
     val INK = Color.parseColor("#1F1B16")
 
-    val VEG = setOf("素食", "全素", "蛋奶素")
-
-    /** 類別選單固定顯示的項目（吃什麼）。素食不是類別，是標籤。 */
+    /** 類別選單固定顯示的項目（吃什麼）。素食和其他類別一樣。 */
     val PRESET_CATS = listOf(
         "自助餐", "牛排西餐", "燒肉", "火鍋", "日式料理", "中式港式", "台菜", "小吃麵食",
         "韓式料理", "泰式東南亞", "義式法式", "居酒屋燒烤", "海鮮", "速食", "早午餐咖啡",
-        "飲料甜點", "麵包烘焙", "飯店餐廳", "鐵板燒", "便當", "親子餐廳", "餐酒館"
+        "飲料甜點", "麵包烘焙", "飯店餐廳", "鐵板燒", "便當", "親子餐廳", "餐酒館", "素食"
     )
 
     private val HIGHLIGHT = Regex(
@@ -184,7 +182,7 @@ object Theme {
         )
     }
 
-    /** 1 精選、2 口碑不錯、3 附近餐廳（尚無足夠評價資料） */
+    /** 1 好餐廳、2 口碑不錯、3 附近餐廳（尚無足夠評價資料） */
     fun tier(p: Pick): Int {
         val r = p.rating
         if (p.award.isNotEmpty() || p.views >= 10000) return 1
@@ -194,7 +192,7 @@ object Theme {
         return 3
     }
 
-    fun tierName(t: Int) = when (t) { 1 -> "精選"; 2 -> "口碑不錯"; else -> "附近餐廳" }
+    fun tierName(t: Int) = when (t) { 1 -> "好餐廳"; 2 -> "口碑不錯"; else -> "附近餐廳" }
 
     /** 這家店入選的理由（依資料欄位產生，每項都附來源與日期） */
     fun reasons(p: Pick): List<String> {

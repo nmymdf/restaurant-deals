@@ -1,18 +1,11 @@
 package app.deals
 
-import android.content.ClipData
 import android.content.Intent
-import android.graphics.drawable.GradientDrawable
-import android.view.DragEvent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -29,35 +22,27 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val DATA_URL = "https://raw.githubusercontent.com/nmymdf/restaurant-deals/main/data.json"
-        const val ALL_CAT = "全部類別"
     }
 
     private lateinit var p: Pal
+    private lateinit var ui: Ui
+    private lateinit var header: Header
     private var region = "全台"
     private var districts: Set<String> = emptySet()
     private var pendCity = "全台"
     private val pendDistricts = LinkedHashSet<String>()
-    private var category = ALL_CAT
+    private var category = Cats.ALL
     private var openPanel = 0 // 0 收合、1 地區、2 類別
-    private var tab = "即將到期"
     private var deals: List<Deal> = emptyList()
-    private var updated = ""
 
-    private lateinit var infoText: TextView
-    private lateinit var regBtn: LinearLayout
-    private lateinit var regLabel: TextView
-    private lateinit var regArrow: TextView
+    private lateinit var filterBar: LinearLayout
     private lateinit var regPanel: LinearLayout
     private lateinit var leftCol: LinearLayout
     private lateinit var rightCol: LinearLayout
     private lateinit var rightScroll: ScrollView
     private lateinit var applyBtn: TextView
-    private lateinit var catBtn: LinearLayout
-    private lateinit var catLabel: TextView
-    private lateinit var catArrow: TextView
-    private lateinit var catPanel: LinearLayout
-    private lateinit var catScroll: ScrollView
-    private lateinit var tabRow: LinearLayout
+    private lateinit var catHolder: LinearLayout
+    private lateinit var condHolder: LinearLayout
     private lateinit var listBox: LinearLayout
 
     private val io = Executors.newSingleThreadExecutor()
@@ -69,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         p = Theme.palette(this)
+        ui = Ui(this, p)
         Regions.load(this)
         buildUi()
         val cached = getSharedPreferences("deals", MODE_PRIVATE).getString("json", null)
@@ -85,110 +71,11 @@ class MainActivity : AppCompatActivity() {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(p.pg)
         }
+        header = ui.header(0, "資料更新") { fetchRemote(true) }
+        root.addView(header.view)
 
-        val head = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(14), dp(16), dp(4))
-        }
-        val titleRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        val logo = ImageView(this).apply {
-            setImageResource(R.drawable.ic_launcher_fg)
-            background = rect(Theme.INK, dp(10))
-            clipToOutline = true
-        }
-        titleRow.addView(logo, LinearLayout.LayoutParams(dp(38), dp(38)).apply { rightMargin = dp(10) })
-        val titleBox = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        titleBox.addView(TextView(this).apply {
-            text = "餐廳優惠日報"
-            textSize = 19f
-            setTypeface(null, Typeface.BOLD)
-            setTextColor(p.tx)
-        })
-        titleBox.addView(TextView(this).apply {
-            text = "作者：ArchieKUO　${Theme.VERSION}"
-            textSize = 12f
-            setTypeface(null, Typeface.ITALIC)
-            setTextColor(Theme.GOLD)
-        })
-        titleRow.addView(titleBox, LinearLayout.LayoutParams(0, -2, 1f))
-        titleRow.addView(TextView(this).apply {
-            text = "↻"
-            textSize = 24f
-            setTextColor(p.sb)
-            gravity = Gravity.CENTER
-            contentDescription = "重新整理"
-            setPadding(dp(10), dp(4), dp(4), dp(4))
-            setOnClickListener { fetchRemote(true) }
-        })
-        head.addView(titleRow)
-        infoText = TextView(this).apply {
-            textSize = 12f
-            setTextColor(p.sb)
-            setPadding(0, dp(8), 0, dp(10))
-        }
-        head.addView(infoText)
-        root.addView(head)
-
-        val nearby = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            background = rect(p.cd, dp(14), Theme.GOLD)
-            setPadding(dp(14), dp(11), dp(14), dp(11))
-            setOnClickListener { startActivity(Intent(this@MainActivity, NearbyActivity::class.java)) }
-        }
-        val nbText = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        nbText.addView(TextView(this).apply {
-            text = "附近好餐廳"
-            textSize = 15f
-            setTypeface(null, Typeface.BOLD)
-            setTextColor(p.tx)
-        })
-        nbText.addView(TextView(this).apply {
-            text = "你所在位置 2 公里內，評價高或人氣旺的店"
-            textSize = 12f
-            setTextColor(p.sb)
-        })
-        nearby.addView(nbText, LinearLayout.LayoutParams(0, -2, 1f))
-        nearby.addView(TextView(this).apply {
-            text = "›"
-            textSize = 22f
-            setTextColor(p.hi)
-        })
-        root.addView(nearby, LinearLayout.LayoutParams(-1, -2).apply {
-            leftMargin = dp(16); rightMargin = dp(16); bottomMargin = dp(10)
-        })
-
-        val bar = LinearLayout(this).apply { setPadding(dp(16), 0, dp(16), 0) }
-        regLabel = TextView(this).apply {
-            textSize = 13f
-            setTextColor(p.tx)
-            maxLines = 1
-            ellipsize = android.text.TextUtils.TruncateAt.END
-        }
-        regArrow = TextView(this).apply { textSize = 13f; setTextColor(p.sb) }
-        regBtn = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14), dp(10), dp(12), dp(10))
-            setOnClickListener { togglePanel(1) }
-        }
-        regBtn.addView(regLabel, LinearLayout.LayoutParams(0, -2, 1f))
-        regBtn.addView(regArrow)
-        bar.addView(regBtn, LinearLayout.LayoutParams(0, -2, 1.25f).apply { rightMargin = dp(8) })
-        catLabel = TextView(this).apply {
-            textSize = 13f
-            setTextColor(p.tx)
-            maxLines = 1
-            ellipsize = android.text.TextUtils.TruncateAt.END
-        }
-        catArrow = TextView(this).apply { textSize = 13f; setTextColor(p.sb) }
-        catBtn = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14), dp(10), dp(12), dp(10))
-            setOnClickListener { togglePanel(2) }
-        }
-        catBtn.addView(catLabel, LinearLayout.LayoutParams(0, -2, 1f))
-        catBtn.addView(catArrow)
-        bar.addView(catBtn, LinearLayout.LayoutParams(0, -2, 1f))
-        root.addView(bar)
+        filterBar = LinearLayout(this).apply { setPadding(dp(16), 0, dp(16), 0) }
+        root.addView(filterBar)
 
         regPanel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -238,20 +125,13 @@ class MainActivity : AppCompatActivity() {
             leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(4)
         })
 
-        catPanel = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(8), dp(8), dp(8))
-        }
-        catScroll = ScrollView(this).apply {
-            background = rect(p.cd, dp(12), p.ln)
-            addView(catPanel)
-        }
-        root.addView(catScroll, LinearLayout.LayoutParams(-1, dp(380)).apply {
+        catHolder = LinearLayout(this)
+        root.addView(catHolder, LinearLayout.LayoutParams(-1, -2).apply {
             leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(4)
         })
 
-        tabRow = LinearLayout(this).apply { setPadding(dp(18), dp(8), dp(16), dp(6)) }
-        root.addView(tabRow)
+        condHolder = LinearLayout(this)
+        root.addView(condHolder, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
 
         val scroll = ScrollView(this)
         listBox = LinearLayout(this).apply {
@@ -266,7 +146,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyJson(text: String) {
         val obj = JSONObject(text)
-        updated = obj.optString("updated")
         val arr = obj.getJSONArray("deals")
         val out = ArrayList<Deal>()
         for (i in 0 until arr.length()) {
@@ -290,6 +169,7 @@ class MainActivity : AppCompatActivity() {
                 val text = result.getOrNull()
                 if (text != null) {
                     getSharedPreferences("deals", MODE_PRIVATE).edit().putString("json", text).apply()
+                    ui.markFetched("fetched_deals")
                     runCatching { applyJson(text) }
                     render()
                     if (manual) Toast.makeText(this, "已更新", Toast.LENGTH_SHORT).show()
@@ -300,117 +180,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun categoryCounts(): Map<String, Int> {
+    private fun liveDeals(): List<Deal> {
         val today = LocalDate.now()
-        val live = deals.filter { !it.until.isBefore(today) }
-        val m = HashMap<String, Int>(live.groupingBy { it.category }.eachCount())
-        m["素食"] = live.count { d -> d.tags.any { it in Theme.VEG } }
-        return m
-    }
-
-    /** 預設：素食最前面、固定類別、新出現的類別、其他最後；再套用使用者拖動後記住的順序。 */
-    private fun categories(): List<String> {
-        val counts = categoryCounts()
-        val extra = counts.keys.filter { it != "素食" && it !in Theme.PRESET_CATS && it != "其他" }
-            .sortedByDescending { counts[it] ?: 0 }
-        val base = ArrayList<String>()
-        base.add("素食")
-        base.addAll(Theme.PRESET_CATS)
-        base.addAll(extra)
-        if (category != ALL_CAT && category !in base && category != "其他") base.add(category)
-        base.add("其他")
-        val saved = (getSharedPreferences("deals", MODE_PRIVATE).getString("catorder", "") ?: "")
-            .split("\n").filter { it in base }.distinct()
-        return saved + base.filter { it !in saved }
-    }
-
-    private fun saveOrder(list: List<String>) {
-        getSharedPreferences("deals", MODE_PRIVATE).edit().putString("catorder", list.joinToString("\n")).apply()
-    }
-
-    private fun moveCat(from: String, to: String) {
-        if (from == to) return
-        val l = ArrayList(categories())
-        l.remove(from)
-        val i = l.indexOf(to)
-        l.add(if (i < 0) l.size else i, from)
-        saveOrder(l)
-        catPanel.post { render() }
-    }
-
-    private fun catCell(n: String, count: Int): View {
-        val sel = n == category
-        val veg = n == "素食"
-        val empty = count == 0
-        val bg = GradientDrawable().apply {
-            cornerRadius = dp(10).toFloat()
-            if (veg) { setColor(p.vgbg); setStroke(dp(1), p.vg) }
-            else if (sel) { setColor(p.ch); setStroke(dp(1), Theme.GOLD) }
-            else if (empty) { setColor(0); setStroke(dp(1), p.ln, dp(4).toFloat(), dp(3).toFloat()) }
-            else { setColor(p.pg); setStroke(dp(1), p.ln) }
-        }
-        return LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            background = bg
-            setPadding(dp(12), dp(13), dp(12), dp(13))
-            addView(TextView(this@MainActivity).apply {
-                text = if (sel) "$n ✓" else n
-                textSize = 15f
-                setTypeface(null, if (sel || veg) Typeface.BOLD else Typeface.NORMAL)
-                setTextColor(if (veg) p.vg else if (sel) p.hi else if (empty) p.sb else p.tx)
-                maxLines = 1
-            }, LinearLayout.LayoutParams(0, -2, 1f))
-            addView(TextView(this@MainActivity).apply {
-                text = count.toString()
-                textSize = 13f
-                setTextColor(if (veg) p.vg else p.sb)
-            })
-            setOnClickListener { category = n; openPanel = 0; render() }
-            setOnLongClickListener { v ->
-                v.startDragAndDrop(ClipData.newPlainText("cat", n), View.DragShadowBuilder(v), null, 0)
-                true
-            }
-            setOnDragListener { v, e ->
-                when (e.action) {
-                    DragEvent.ACTION_DRAG_ENTERED -> { v.alpha = 0.45f; true }
-                    DragEvent.ACTION_DRAG_EXITED, DragEvent.ACTION_DRAG_ENDED -> { v.alpha = 1f; true }
-                    DragEvent.ACTION_DROP -> {
-                        v.alpha = 1f
-                        moveCat(e.clipData.getItemAt(0).text.toString(), n)
-                        true
-                    }
-                    else -> true
-                }
-            }
-        }
+        return deals.filter { !it.until.isBefore(today) }
     }
 
     private fun cityOf(d: Deal) = Regions.normalize(d.region)
 
-    private fun filtered(city: String, ds: Set<String>): List<Deal> {
-        val today = LocalDate.now()
-        var list = deals.filter { !it.until.isBefore(today) }
+    private fun filtered(city: String, ds: Set<String>, cat: String): List<Deal> {
+        var list = liveDeals()
         if (city != "全台") {
             list = list.filter { d ->
                 val dc = cityOf(d)
                 dc == "全台" || (dc == city && (ds.isEmpty() || d.districts.isEmpty() || d.districts.any { it in ds }))
             }
         }
-        if (category == "素食") list = list.filter { d -> d.tags.any { it in Theme.VEG } }
-        else if (category != ALL_CAT) list = list.filter { it.category == category }
-        list = when (tab) {
-            "吃到飽" -> list.filter { "吃到飽" in it.tags }
-            "壽星" -> list.filter { "壽星" in it.tags }
-            "素食" -> list.filter { d -> d.tags.any { it in Theme.VEG } }
-            else -> list
-        }
-        return when (tab) {
-            "最新" -> list.sortedByDescending { it.added }
-            else -> list.sortedBy { it.until }
-        }
+        if (cat != Cats.ALL) list = list.filter { it.category == cat }
+        return list.sortedBy { it.until }
     }
 
-    private fun visibleDeals(): List<Deal> = filtered(region, districts)
+    /** 每個類別在目前地區下有幾筆（不受已選類別影響） */
+    private fun categoryCounts(): Map<String, Int> =
+        filtered(region, districts, Cats.ALL).groupingBy { it.category }.eachCount()
 
     private fun togglePanel(which: Int) {
         if (openPanel == which) {
@@ -506,7 +297,7 @@ class MainActivity : AppCompatActivity() {
                 })
             }
         }
-        applyBtn.text = "套用，看 ${filtered(pendCity, pendDistricts).size} 筆"
+        applyBtn.text = "套用，看 ${filtered(pendCity, pendDistricts, category).size} 筆"
     }
 
     private fun small(textValue: String, bg: Int, fg: Int): TextView = TextView(this).apply {
@@ -519,109 +310,75 @@ class MainActivity : AppCompatActivity() {
 
     private fun render() {
         val today = LocalDate.now()
-        val total = deals.count { !it.until.isBefore(today) }
-        val items = visibleDeals()
+        val items = filtered(region, districts, category)
+        val local = items.filter { cityOf(it) != "全台" }
+        val chain = items.filter { cityOf(it) == "全台" }
 
-        val parts = ArrayList<String>()
-        if (region != "全台") parts.add(regionSummary())
-        if (category != ALL_CAT) parts.add(category)
-        val scope = if (parts.isEmpty()) "共 $total 筆" else parts.joinToString(" · ") + " · ${items.size} 筆"
-        infoText.text = (if (updated.isNotEmpty()) "$updated 更新 · " else "") + scope
+        header.caption.text = "資料更新　" + ui.fetchedText("fetched_deals")
 
-        val regSpan = SpannableString("地區　${regionSummary()}")
-        regSpan.setSpan(ForegroundColorSpan(p.sb), 0, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        regLabel.text = regSpan
-        regArrow.text = if (openPanel == 1) "▴" else "▾"
-        regBtn.background = rect(p.cd, dp(12), if (openPanel == 1) Theme.GOLD else p.ln)
+        filterBar.removeAllViews()
+        filterBar.addView(ui.filterButton("地區", regionSummary(), openPanel == 1) { togglePanel(1) },
+            LinearLayout.LayoutParams(0, -2, 1.25f).apply { rightMargin = dp(8) })
+        filterBar.addView(ui.filterButton("類別", category, openPanel == 2) { togglePanel(2) },
+            LinearLayout.LayoutParams(0, -2, 1f))
+
         regPanel.visibility = if (openPanel == 1) View.VISIBLE else View.GONE
         if (openPanel == 1) renderRegionPanel()
 
-        val label = SpannableString("類別　$category")
-        label.setSpan(ForegroundColorSpan(p.sb), 0, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        catLabel.text = label
-        catArrow.text = if (openPanel == 2) "▴" else "▾"
-        catBtn.background = rect(p.cd, dp(12), if (openPanel == 2) Theme.GOLD else p.ln)
-        catScroll.visibility = if (openPanel == 2) View.VISIBLE else View.GONE
-        catPanel.removeAllViews()
+        catHolder.removeAllViews()
         if (openPanel == 2) {
-            val counts = categoryCounts()
-            val all = ALL_CAT == category
-            catPanel.addView(TextView(this).apply {
-                text = if (all) "$ALL_CAT ✓" else ALL_CAT
-                textSize = 15f
-                gravity = Gravity.CENTER
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(p.hi)
-                background = rect(p.ch, dp(10), if (all) Theme.GOLD else 0)
-                setPadding(0, dp(12), 0, dp(12))
-                setOnClickListener { category = ALL_CAT; openPanel = 0; render() }
-            }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(6) })
-            val names = categories()
-            var i = 0
-            while (i < names.size) {
-                val row = LinearLayout(this)
-                for (j in 0..1) {
-                    val lp = LinearLayout.LayoutParams(0, -2, 1f).apply { if (j == 0) rightMargin = dp(6) }
-                    if (i + j < names.size) row.addView(catCell(names[i + j], counts[names[i + j]] ?: 0), lp)
-                    else row.addView(View(this), lp)
-                }
-                catPanel.addView(row, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(6) })
-                i += 2
-            }
-            catPanel.addView(TextView(this).apply {
-                text = "長按卡片可以拖動排序　·　恢復預設順序"
-                textSize = 12f
-                gravity = Gravity.CENTER
-                setTextColor(p.hi)
-                setPadding(0, dp(10), 0, dp(6))
-                setOnClickListener {
-                    getSharedPreferences("deals", MODE_PRIVATE).edit().remove("catorder").apply()
-                    render()
-                }
-            })
+            val known = deals.map { it.category }.distinct()
+            catHolder.addView(
+                ui.categoryPanel(categoryCounts(), known, category,
+                    onPick = { category = it; openPanel = 0; render() },
+                    onReorder = { render() }),
+                LinearLayout.LayoutParams(-1, dp(380))
+            )
         }
 
-        tabRow.removeAllViews()
-        for (t in listOf("即將到期", "最新", "吃到飽", "壽星", "素食")) {
-            val sel = t == tab
-            val col = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setOnClickListener { tab = t; render() }
-            }
-            col.addView(TextView(this).apply {
-                text = t
-                textSize = 13f
-                setPadding(0, dp(4), 0, dp(4))
-                setTextColor(if (sel) p.tx else p.sb)
-                if (sel) setTypeface(null, Typeface.BOLD)
-            })
-            col.addView(View(this).apply {
-                setBackgroundColor(if (sel) Theme.GOLD else Color.TRANSPARENT)
-            }, LinearLayout.LayoutParams(-1, dp(2)))
-            tabRow.addView(col, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(16) })
-        }
+        val conds = ArrayList<Pair<String, () -> Unit>>()
+        if (region != "全台") conds.add(regionSummary() to { region = "全台"; districts = emptySet(); render() })
+        if (category != Cats.ALL) conds.add(category to { category = Cats.ALL; render() })
+        val countLine = if (items.isEmpty()) "符合 0 筆"
+            else "符合 ${items.size} 筆（在地 ${local.size}、全台連鎖 ${chain.size}）"
+        condHolder.removeAllViews()
+        condHolder.addView(ui.conditions(conds, countLine), LinearLayout.LayoutParams(-1, -2))
 
         listBox.removeAllViews()
-        if (region != "全台" && items.none { cityOf(it) == region }) {
+        if (items.isEmpty()) {
+            val noCat = if (category != Cats.ALL) filtered(region, districts, Cats.ALL) else emptyList()
+            val where = if (region == "全台") "全台" else regionSummary()
+            if (category != Cats.ALL && noCat.isNotEmpty()) {
+                listBox.addView(ui.emptyState("$where 目前沒有「$category」的優惠", "移除$category，看 ${noCat.size} 筆") {
+                    category = Cats.ALL; render()
+                })
+            } else if (region != "全台") {
+                val all = filtered("全台", emptySet(), category)
+                listBox.addView(ui.emptyState("$where 目前沒有符合的優惠",
+                    if (all.isNotEmpty()) "移除地區，看全台 ${all.size} 筆" else null) {
+                    region = "全台"; districts = emptySet(); render()
+                })
+            } else {
+                listBox.addView(ui.emptyState("目前沒有優惠", null, null))
+            }
+            return
+        }
+        if (local.isNotEmpty()) {
+            listBox.addView(ui.sectionTitle("在地優惠", local.size))
+            for (d in local) listBox.addView(card(d, today))
+        } else if (region != "全台") {
             listBox.addView(TextView(this).apply {
-                text = "${region}目前沒有在地優惠" + if (items.isNotEmpty()) "，以下是全台連鎖優惠" else ""
+                text = "${regionSummary()}目前沒有在地優惠，以下是全台連鎖"
                 textSize = 12f
                 setTextColor(p.sb)
                 background = rect(p.ch, dp(10))
                 setPadding(dp(12), dp(8), dp(12), dp(8))
             }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
         }
-        if (items.isEmpty()) {
-            listBox.addView(TextView(this).apply {
-                text = if (category != ALL_CAT && deals.none { it.category == category }) "目前沒有「$category」的優惠" else "目前沒有符合的優惠"
-                textSize = 14f
-                setTextColor(p.sb)
-                gravity = Gravity.CENTER
-                setPadding(dp(16), dp(48), dp(16), dp(48))
-            })
-            return
+        if (chain.isNotEmpty()) {
+            listBox.addView(ui.sectionTitle("全台連鎖", chain.size))
+            for (d in chain) listBox.addView(card(d, today))
         }
-        for (d in items) listBox.addView(card(d, today))
         listBox.addView(TextView(this).apply {
             text = "點一筆看詳細資訊"
             textSize = 12f
@@ -666,8 +423,7 @@ class MainActivity : AppCompatActivity() {
         tagRow.addView(small(where, p.ch, p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         tagRow.addView(small(d.category, p.ch, p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         for (t in d.tags) {
-            val v = t in Theme.VEG
-            tagRow.addView(small(t, if (v) p.vgbg else p.ch, if (v) p.vg else p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
+            tagRow.addView(small(t, p.ch, p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         }
         tagRow.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         tagRow.addView(TextView(this).apply {
