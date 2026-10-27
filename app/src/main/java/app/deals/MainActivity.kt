@@ -318,8 +318,8 @@ class MainActivity : AppCompatActivity() {
 
         filterBar.removeAllViews()
         filterBar.addView(ui.filterButton("地區", regionSummary(), openPanel == 1) { togglePanel(1) },
-            LinearLayout.LayoutParams(0, -2, 1.25f).apply { rightMargin = dp(8) })
-        filterBar.addView(ui.filterButton("類別", category, openPanel == 2) { togglePanel(2) },
+            LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
+        filterBar.addView(ui.filterButton("類別", if (category == Cats.ALL) "全部" else category, openPanel == 2) { togglePanel(2) },
             LinearLayout.LayoutParams(0, -2, 1f))
 
         regPanel.visibility = if (openPanel == 1) View.VISIBLE else View.GONE
@@ -407,7 +407,7 @@ class MainActivity : AppCompatActivity() {
         }, LinearLayout.LayoutParams(0, -2, 1f))
         val hot = days <= 7
         top.addView(
-            small(if (days <= 0) "今天到期" else "剩 $days 天", if (hot) p.rdbg else p.ch, if (hot) p.rd else p.sb)
+            small("到 ${d.until.monthValue}/${d.until.dayOfMonth} · " + (if (days <= 0) "今天到期" else "剩 $days 天"), if (hot) p.rdbg else p.ch, if (hot) p.rd else p.sb)
         )
         box.addView(top)
         box.addView(TextView(this).apply {
@@ -425,12 +425,6 @@ class MainActivity : AppCompatActivity() {
         for (t in d.tags) {
             tagRow.addView(small(t, p.ch, p.sb), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
         }
-        tagRow.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        tagRow.addView(TextView(this).apply {
-            text = "到 ${d.until.monthValue}/${d.until.dayOfMonth}"
-            textSize = 12f
-            setTextColor(p.sb)
-        })
         box.addView(tagRow)
         val wrap = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         wrap.addView(box, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })

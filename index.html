@@ -31,7 +31,7 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .credit{font-size:12px;font-style:italic;color:var(--gold)}
 .frow{display:flex;gap:8px}
 .fbtn{display:flex;align-items:center;justify-content:space-between;min-width:0;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:10px 12px 10px 14px;font-size:13px;text-align:left}
-.fbtn.reg{flex:1.25}.fbtn.cat{flex:1}
+.fbtn.reg{flex:1}.fbtn.cat{flex:1}
 .fbtn.open{border:1px solid var(--gold)}
 .fbtn .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fbtn span.k{color:var(--sb)}
@@ -70,8 +70,8 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .dist{font-size:12px;font-weight:700;color:var(--hi);flex:none}
 .more{display:block;width:100%;margin-top:6px;background:var(--gold);color:var(--ink);font-weight:700;border-radius:12px;padding:11px 0;font-size:14px}
 .upbox{display:flex;flex-direction:column;align-items:flex-end}
-.upbtn{font-size:13px;font-weight:700;color:var(--hi);background:var(--cd);border:1px solid var(--gold);border-radius:16px;padding:6px 14px}
-.cap{font-size:11px;color:var(--sb);margin-top:3px}
+.upbtn{font-size:12px;font-weight:700;color:var(--hi);background:var(--cd);border:1px solid var(--gold);border-radius:16px;padding:6px 12px}
+.cap{font-size:11px;color:var(--sb);text-align:right;margin-top:4px}
 .tabs{display:flex;margin-top:10px}
 .tab{flex:1;text-align:center;font-size:16px;color:var(--sb);padding:8px 0;border-bottom:1px solid var(--ln)}
 .tab.on{color:var(--tx);font-weight:700;border-bottom:3px solid var(--gold)}
@@ -140,13 +140,14 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v1.0</div></div>
+<div id="splash"><div class="ver">v1.1</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v1.0</div></div>
-<div class="upbox"><button class="upbtn" id="refresh">↻ 更新</button><div class="cap" id="cap"></div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.1</div></div>
+<button class="upbtn" id="refresh">↻ 更新</button>
 </div>
+<div class="cap" id="cap"></div>
 <div class="tabs"><button class="tab on" id="tab0">優惠</button><button class="tab" id="tab1">附近</button></div>
 <div class="rule" id="rule"></div>
 <div class="view on" id="vdeals">
@@ -170,7 +171,7 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 <div id="ghost" class="cc"></div>
 <div id="toast"></div>
 <script>
-var VER="v1.0";
+var VER="v1.1";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -342,7 +343,7 @@ function render(){
   var local=vis.filter(function(d){return normCity(d.region)!="全台"}),chain=vis.filter(function(d){return normCity(d.region)=="全台"});
   setCap();
   filterBtn("regbtn","地區",regSummary(),state.panel==1,function(){togglePanel(1)});
-  filterBtn("catbtn","類別",state.category,state.panel==2,function(){togglePanel(2)});
+  filterBtn("catbtn","類別",state.category==ALL?"全部":state.category,state.panel==2,function(){togglePanel(2)});
   document.getElementById("regpanel").style.display=state.panel==1?"block":"none";
   if(state.panel==1)renderRegion();
   var cp=document.getElementById("catpanel");cp.textContent="";cp.style.display=state.panel==2?"block":"none";
@@ -366,14 +367,13 @@ function render(){
     a.onclick=function(){openDetail(d)};
     a.onkeydown=function(e){if(e.key=="Enter"||e.key==" "){e.preventDefault();openDetail(d)}};
     var top=el("div","r1");top.appendChild(el("span","brand",d.brand));
-    top.appendChild(el("span","badge"+(days<=7?" hot":""),days<=0?"今天到期":"剩 "+days+" 天"));
+    top.appendChild(el("span","badge"+(days<=7?" hot":""),"到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()+" · "+(days<=0?"今天到期":"剩 "+days+" 天")));
     a.appendChild(top);
     var of=el("div","offer");hl(of,d.offer||"");a.appendChild(of);
     var tg=el("div","tags");
     tg.appendChild(el("span","tag",whereOf(d)));
     tg.appendChild(el("span","tag",d.category));
     (d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});
-    tg.appendChild(el("span","until","到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()));
     a.appendChild(tg);
     box.appendChild(a);
   })}
@@ -515,7 +515,7 @@ function nbRender(){
   var lb=document.getElementById("nlist"),cd=document.getElementById("ncond");
   var rp=document.getElementById("rngpanel"),cp=document.getElementById("ncatpanel");
   filterBtn("rngbtn","範圍",(RADII[nstate.radius]/1000)+" 公里",nstate.panel==1,function(){nstate.panel=nstate.panel==1?0:1;nbRender()});
-  filterBtn("ncatbtn","類別",nstate.category,nstate.panel==2,function(){nstate.panel=nstate.panel==2?0:2;nbRender()});
+  filterBtn("ncatbtn","類別",nstate.category==ALL?"全部":nstate.category,nstate.panel==2,function(){nstate.panel=nstate.panel==2?0:2;nbRender()});
   rp.textContent="";rp.style.display=nstate.panel==1?"block":"none";
   RADII.forEach(function(r,i){var b=el("button","rngopt"+(i==nstate.radius?" on":""));b.appendChild(el("span",null,(r/1000)+" 公里內"));if(i==nstate.radius)b.appendChild(el("span",null,"✓"));b.onclick=function(e){e.stopPropagation();nstate.radius=i;nstate.panel=0;nbRender()};rp.appendChild(b)});
   cp.textContent="";cp.style.display=nstate.panel==2?"block":"none";

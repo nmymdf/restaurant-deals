@@ -85,36 +85,36 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         val titleBox = LinearLayout(act).apply { orientation = LinearLayout.VERTICAL }
         titleBox.addView(TextView(act).apply {
             text = "餐廳優惠日報"
-            textSize = 19f
+            textSize = 18f
+            maxLines = 1
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.tx)
         })
         titleBox.addView(TextView(act).apply {
-            text = "作者：ArchieKUO　${Theme.VERSION}"
-            textSize = 12f
+            text = "作者：ArchieKUO ${Theme.VERSION}"
+            textSize = 11f
+            maxLines = 1
             setTypeface(null, Typeface.ITALIC)
             setTextColor(Theme.GOLD)
         })
         titleRow.addView(titleBox, LinearLayout.LayoutParams(0, -2, 1f))
-        val upBox = LinearLayout(act).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.END }
-        upBox.addView(TextView(act).apply {
+        titleRow.addView(TextView(act).apply {
             text = "↻ 更新"
-            textSize = 13f
+            textSize = 12f
             setTextColor(p.hi)
             setTypeface(null, Typeface.BOLD)
             background = rect(p.cd, dp(16), Theme.GOLD)
-            setPadding(dp(14), dp(7), dp(14), dp(7))
+            setPadding(dp(12), dp(6), dp(12), dp(6))
             setOnClickListener { onUpdate() }
         })
+        head.addView(titleRow)
         val cap = TextView(act).apply {
             textSize = 11f
             setTextColor(p.sb)
             gravity = Gravity.END
-            setPadding(0, dp(3), 0, 0)
+            setPadding(0, dp(4), 0, 0)
         }
-        upBox.addView(cap)
-        titleRow.addView(upBox)
-        head.addView(titleRow)
+        head.addView(cap, LinearLayout.LayoutParams(-1, -2))
 
         val tabs = LinearLayout(act).apply { setPadding(0, dp(10), 0, 0) }
         val names = listOf("優惠", "附近")

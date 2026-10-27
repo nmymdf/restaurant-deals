@@ -117,7 +117,7 @@ class NearbyActivity : AppCompatActivity() {
         filterBar.removeAllViews()
         filterBar.addView(ui.filterButton("範圍", "${(RADII[radiusIdx] / 1000).toInt()} 公里", openPanel == 1) { togglePanel(1) },
             LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
-        filterBar.addView(ui.filterButton("類別", category, openPanel == 2) { togglePanel(2) },
+        filterBar.addView(ui.filterButton("類別", if (category == Cats.ALL) "全部" else category, openPanel == 2) { togglePanel(2) },
             LinearLayout.LayoutParams(0, -2, 1f))
         panelHolder.removeAllViews()
         if (openPanel == 1) {
