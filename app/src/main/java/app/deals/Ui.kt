@@ -82,6 +82,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
             clipToOutline = true
         }
         titleRow.addView(logo, LinearLayout.LayoutParams(dp(38), dp(38)).apply { rightMargin = dp(10) })
+        // 標題與作者放同一欄，不換行
         val titleBox = LinearLayout(act).apply { orientation = LinearLayout.VERTICAL }
         titleBox.addView(TextView(act).apply {
             text = "餐廳優惠日報"
@@ -99,12 +100,12 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         })
         titleRow.addView(titleBox, LinearLayout.LayoutParams(0, -2, 1f))
         titleRow.addView(TextView(act).apply {
-            text = "↻ 更新"
-            textSize = 12f
+            text = "↻更新"
+            textSize = 10.5f
             setTextColor(p.hi)
             setTypeface(null, Typeface.BOLD)
             background = rect(p.cd, dp(16), Theme.GOLD)
-            setPadding(dp(12), dp(6), dp(12), dp(6))
+            setPadding(dp(9), dp(4), dp(9), dp(4))
             setOnClickListener { onUpdate() }
         })
         head.addView(titleRow)
@@ -114,6 +115,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
             gravity = Gravity.END
             setPadding(0, dp(4), 0, 0)
         }
+        cap.visibility = View.GONE
         head.addView(cap, LinearLayout.LayoutParams(-1, -2))
 
         val tabs = LinearLayout(act).apply { setPadding(0, dp(10), 0, 0) }

@@ -27,8 +27,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .head{display:flex;align-items:center;gap:10px}
 .logo{width:38px;height:38px;border-radius:10px;flex:none}
 .ttl{flex:1;min-width:0}
-h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
-.credit{font-size:12px;font-style:italic;color:var(--gold)}
+h1{font-size:18px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
+.credit{white-space:nowrap;font-size:11px;font-style:italic;color:var(--gold)}
 .frow{display:flex;gap:8px}
 .fbtn{display:flex;align-items:center;justify-content:space-between;min-width:0;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:10px 12px 10px 14px;font-size:13px;text-align:left}
 .fbtn.reg{flex:1}.fbtn.cat{flex:1}
@@ -70,8 +70,8 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 .dist{font-size:12px;font-weight:700;color:var(--hi);flex:none}
 .more{display:block;width:100%;margin-top:6px;background:var(--gold);color:var(--ink);font-weight:700;border-radius:12px;padding:11px 0;font-size:14px}
 .upbox{display:flex;flex-direction:column;align-items:flex-end}
-.upbtn{font-size:12px;font-weight:700;color:var(--hi);background:var(--cd);border:1px solid var(--gold);border-radius:16px;padding:6px 12px}
-.cap{font-size:11px;color:var(--sb);text-align:right;margin-top:4px}
+.upbtn{font-size:10.5px;white-space:nowrap;font-weight:700;color:var(--hi);background:var(--cd);border:1px solid var(--gold);border-radius:16px;padding:4px 9px}
+.cap{display:none;font-size:11px;color:var(--sb);text-align:right;margin-top:4px}
 .tabs{display:flex;margin-top:10px}
 .tab{flex:1;text-align:center;font-size:16px;color:var(--sb);padding:8px 0;border-bottom:1px solid var(--ln)}
 .tab.on{color:var(--tx);font-weight:700;border-bottom:3px solid var(--gold)}
@@ -145,7 +145,7 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
 <div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.1</div></div>
-<button class="upbtn" id="refresh">↻ 更新</button>
+<button class="upbtn" id="refresh">↻更新</button>
 </div>
 <div class="cap" id="cap"></div>
 <div class="tabs"><button class="tab on" id="tab0">優惠</button><button class="tab" id="tab1">附近</button></div>
