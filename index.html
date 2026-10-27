@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>餐廳優惠日報</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="餐廳優惠日報">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' rx='24' fill='%231F1B16'/%3E%3Cpath d='M40 26L66 54M49 22L75 50' stroke='%23F1DD8A' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M26 54H82A28 28 0 0 1 26 54Z' fill='%23C9A227'/%3E%3Crect x='42' y='80' width='24' height='5' rx='2.5' fill='%23C9A227'/%3E%3Cpath d='M34 64H74' stroke='%231F1B16' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 :root{--pg:#F7F4EC;--cd:#fff;--tx:#1F1B16;--sb:#6B6558;--ln:#E8E2D2;--ch:#EFE9D6;--rd:#B3261E;--rdbg:#FBE9E7;--hi:#A8860F;--gold:#C9A227;--ink:#1F1B16}
@@ -103,14 +110,23 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 #sheet .pn .t{font-size:12px;color:var(--sb);text-align:center;padding:4px 0 8px}
 #sheet .pn a,#sheet .pn button{display:block;width:100%;text-align:center;text-decoration:none;color:var(--tx);padding:13px 0;font-size:15px;border-top:.5px solid var(--ln)}
 #toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%);background:#1F1B16;color:#F2EEE4;font-size:13px;padding:8px 16px;border-radius:18px;z-index:90;display:none}
+#a2hs{position:fixed;inset:0;z-index:95;display:none}
+#a2hs .bk{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+#a2hs .pn{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;background:var(--cd);border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom))}
+#a2hs h3{margin:0;font-size:19px}
+#a2hs .st{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:.5px solid var(--ln);font-size:17px;line-height:1.5}
+#a2hs .n{flex:none;width:30px;height:30px;border-radius:15px;background:var(--gold);color:var(--ink);font-weight:700;text-align:center;line-height:30px}
+#a2hs .go{display:block;width:100%;background:var(--gold);color:var(--ink);font-weight:700;border-radius:12px;padding:13px 0;font-size:17px;margin-top:8px;text-align:center}
+#a2hs .no{display:block;width:100%;color:var(--sb);font-size:14px;padding:12px 0 0;text-align:center}
+#a2hs .ar{text-align:center;color:var(--hi);font-size:14px;padding-top:8px}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v0.6</div></div>
+<div id="splash"><div class="ver">v0.7</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.6</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO　v0.7</div></div>
 <button class="refresh" id="refresh" aria-label="重新整理">↻</button>
 </div>
 <div id="info"></div>
@@ -124,9 +140,10 @@ h1{font-size:19px;line-height:1.25;margin:0;font-weight:700}
 <div id="nearby"><div class="wrap" id="nwrap"></div></div>
 <div id="detail"><div class="wrap" id="dwrap"></div></div>
 <div id="sheet"><div class="bk" id="sheetbk"></div><div class="pn" id="sheetpn"></div></div>
+<div id="a2hs"><div class="bk" id="a2bk"></div><div class="pn" id="a2pn"></div></div>
 <div id="toast"></div>
 <script>
-var VER="v0.6";
+var VER="v0.7";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -434,8 +451,24 @@ function load(manual){
     render();if(manual)toast("已更新");
   }).catch(function(){if(manual)toast("無法更新，請檢查網路")});
 }
+function a2hs(){
+  var ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform=="MacIntel"&&navigator.maxTouchPoints>1);
+  if(!ios||navigator.standalone||/CriOS|FxiOS|EdgiOS/.test(ua))return;
+  try{if(localStorage.getItem("deals-a2hs")=="no")return}catch(e){}
+  var pn=document.getElementById("a2pn");pn.textContent="";
+  pn.appendChild(el("h3",null,"把它放到手機主畫面"));
+  pn.appendChild(el("div","credit","作者：ArchieKUO　"+VER));
+  [["點最下面的「分享」按鈕（方塊加向上箭頭）"],["往上滑，點「加入主畫面」"],["點右上角「加入」"]].forEach(function(t,i){
+    var r=el("div","st");r.appendChild(el("span","n",String(i+1)));r.appendChild(el("span",null,t[0]));pn.appendChild(r)});
+  var g=el("button","go","我知道了");g.onclick=function(){document.getElementById("a2hs").style.display="none"};pn.appendChild(g);
+  var n=el("button","no","不再提醒");n.onclick=function(){try{localStorage.setItem("deals-a2hs","no")}catch(e){}document.getElementById("a2hs").style.display="none"};pn.appendChild(n);
+  pn.appendChild(el("div","ar","▼ 分享鈕在畫面最下方"));
+  document.getElementById("a2hs").style.display="block";
+}
+document.getElementById("a2bk").onclick=function(){document.getElementById("a2hs").style.display="none"};
 document.getElementById("refresh").onclick=function(){load(true)};
 render();loadRegions();load(false);
+setTimeout(a2hs,1400);
 setTimeout(function(){var s=document.getElementById("splash");s.className="out";setTimeout(function(){s.style.display="none"},400)},800);
 </script>
 </body>
