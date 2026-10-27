@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26 08:30",
+ "updated": "2026-10-27 08:30",
  "picks": [
   {
    "id": "tpe-maoyuan",
@@ -645,6 +645,456 @@
    ],
    "award": "必比登 2025",
    "url": "https://safood.tw/taichung-bib-gourmand3"
+  },
+  {
+   "id": "tn-lianwujiao",
+   "name": "蓮霧腳羊肉湯",
+   "city": "台南市",
+   "district": "新化區",
+   "category": "中式港式",
+   "address": "台南市新化區中正路361號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-amei",
+   "name": "阿美飯店",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區民權路二段98號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-futai",
+   "name": "福泰飯桌第三代",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區民族路二段219號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-luocheng",
+   "name": "落成米糕",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區民族路二段241號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-xiaogongyuan",
+   "name": "小公園擔仔麵",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區西門路二段321號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-axing",
+   "name": "阿星鹹粥",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區民族路三段289號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-huangjia",
+   "name": "黃家蝦捲",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區西和路268號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-chengshi",
+   "name": "誠實鍋燒意麵",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區西門路一段702巷12號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-yejia",
+   "name": "葉家小卷米粉",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區國華街二段142號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-babaobin",
+   "name": "八寶彬圓仔惠",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "飲料甜點",
+   "address": "台南市中西區國華街二段99號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-sanhao",
+   "name": "三好一公道當歸鴨",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區府前路一段2號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-tianhou",
+   "name": "添厚",
+   "city": "台南市",
+   "district": "中西區",
+   "category": "中式港式",
+   "address": "台南市中西區新美街125巷3號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-xianzheng",
+   "name": "鮮蒸蝦仁肉圓",
+   "city": "台南市",
+   "district": "東區",
+   "category": "中式港式",
+   "address": "台南市東區裕農路609號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-axingshiyu",
+   "name": "阿興虱目魚",
+   "city": "台南市",
+   "district": "北區",
+   "category": "中式港式",
+   "address": "台南市北區文賢路252號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "tn-xiluodian",
+   "name": "西羅殿牛肉湯",
+   "city": "台南市",
+   "district": "北區",
+   "category": "中式港式",
+   "address": "台南市北區公園南路98號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/pack/355933"
+  },
+  {
+   "id": "ks-caisan",
+   "name": "北港蔡三代筒仔米糕",
+   "city": "高雄市",
+   "district": "鹽埕區",
+   "category": "中式港式",
+   "address": "高雄市鹽埕區河西路167號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-baiyulou",
+   "name": "白玉樓",
+   "city": "高雄市",
+   "district": "前鎮區",
+   "category": "中式港式",
+   "address": "高雄市前鎮區中華五路789號6樓",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-niulaoda",
+   "name": "牛老大涮牛肉 (高雄總店)",
+   "city": "高雄市",
+   "district": "前金區",
+   "category": "火鍋",
+   "address": "高雄市前金區自強二路18號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-zhaoming",
+   "name": "昭明海產家庭料理",
+   "city": "高雄市",
+   "district": "前金區",
+   "category": "中式港式",
+   "address": "高雄市前金區自強一路53號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-qianjin",
+   "name": "前金肉燥飯",
+   "city": "高雄市",
+   "district": "前金區",
+   "category": "中式港式",
+   "address": "高雄市前金區大同二路26號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-yongyan",
+   "name": "永筵小館",
+   "city": "高雄市",
+   "district": "前金區",
+   "category": "中式港式",
+   "address": "高雄市前金區成功一路528號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-miyuanzi",
+   "name": "米院子油飯",
+   "city": "高雄市",
+   "district": "新興區",
+   "category": "中式港式",
+   "address": "高雄市新興區南海街30號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-chunlan",
+   "name": "春蘭割包",
+   "city": "高雄市",
+   "district": "新興區",
+   "category": "中式港式",
+   "address": "高雄市新興區復興一路5號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-houji",
+   "name": "侯記鴨肉飯",
+   "city": "高雄市",
+   "district": "三民區",
+   "category": "中式港式",
+   "address": "高雄市三民區自強一路201號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-liangjia",
+   "name": "良佳豬腳",
+   "city": "高雄市",
+   "district": "三民區",
+   "category": "中式港式",
+   "address": "高雄市三民區陽明路229號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-maiyan",
+   "name": "賣塩順台菜",
+   "city": "高雄市",
+   "district": "鼓山區",
+   "category": "中式港式",
+   "address": "高雄市鼓山區青海路173號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-zhengzong",
+   "name": "正宗鴨肉飯",
+   "city": "高雄市",
+   "district": "左營區",
+   "category": "中式港式",
+   "address": "高雄市左營區裕誠路245號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-hongji",
+   "name": "弘記肉燥飯舖",
+   "city": "高雄市",
+   "district": "左營區",
+   "category": "中式港式",
+   "address": "高雄市左營區立文路96號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-yangbaobao",
+   "name": "楊寶寶蒸餃 (朝明路)",
+   "city": "高雄市",
+   "district": "楠梓區",
+   "category": "中式港式",
+   "address": "高雄市楠梓區朝明路106號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
+  },
+  {
+   "id": "ks-jiushi",
+   "name": "舊市羊肉 (岡山)",
+   "city": "高雄市",
+   "district": "岡山區",
+   "category": "中式港式",
+   "address": "高雄市岡山區河華路111號",
+   "phone": "",
+   "hours": "",
+   "why": [
+    "michelin"
+   ],
+   "award": "必比登 2025",
+   "url": "https://supertaste.tvbs.com.tw/food/355948"
   }
  ]
 }
