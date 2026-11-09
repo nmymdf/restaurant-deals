@@ -145,11 +145,11 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v1.3</div></div>
+<div id="splash"><div class="ver">v1.4</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.3</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.4</div></div>
 <button class="upbtn" id="refresh">↻更新</button>
 </div>
 <div class="cap" id="cap"></div>
@@ -176,7 +176,7 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 <div id="ghost" class="cc"></div>
 <div id="toast"></div>
 <script>
-var VER="v1.3";
+var VER="v1.4";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -450,7 +450,7 @@ document.getElementById("rapply").onclick=function(e){e.stopPropagation();state.
 document.getElementById("regpanel").onclick=function(e){e.stopPropagation()};
 document.getElementById("sheetbk").onclick=closeSheet;
 var picks=[],picksReady=false,picksUpdated="",userLoc=null,nbStop=false,nbCoords={},nbBusy=false,nbChecked=0,userCity="",nbStarted=false,nbErr="";
-var RADII=[2000,5000,10000];
+var RADII=[1000,2000,5000,10000];
 try{nbCoords=JSON.parse(localStorage.getItem("deals-geo")||"{}")}catch(e){}
 function saveGeo(){try{localStorage.setItem("deals-geo",JSON.stringify(nbCoords))}catch(e){}}
 function fmtN(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",")}

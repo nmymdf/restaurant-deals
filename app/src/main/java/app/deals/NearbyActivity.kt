@@ -28,7 +28,7 @@ class NearbyActivity : AppCompatActivity() {
 
     companion object {
         const val PICKS_URL = "https://raw.githubusercontent.com/nmymdf/restaurant-deals/main/picks.json"
-        val RADII = listOf(2000.0, 5000.0, 10000.0)
+        val RADII = listOf(1000.0, 2000.0, 5000.0, 10000.0)
     }
 
     private lateinit var p: Pal
