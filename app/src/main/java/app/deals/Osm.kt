@@ -25,22 +25,23 @@ class Place(
 object Osm {
     private val ENDPOINTS = listOf(
         "https://overpass-api.de/api/interpreter",
-        "https://overpass.kumi.systems/api/interpreter"
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter"
     )
     private const val AMEN = "restaurant|fast_food|cafe|food_court|pub|bar"
 
     /** 成功回傳清單（可能是空的），兩個伺服器都失敗回傳 null。 */
     fun fetch(lat: Double, lng: Double, radius: Int): List<Place>? {
-        val q = "[out:json][timeout:25];(" +
+        val q = "[out:json][timeout:25][maxsize:100000000];(" +
             "node(around:$radius,$lat,$lng)[\"amenity\"~\"^($AMEN)\$\"][\"name\"];" +
             "way(around:$radius,$lat,$lng)[\"amenity\"~\"^($AMEN)\$\"][\"name\"];" +
-            ");out center 800;"
+            ");out center 600;"
         for (ep in ENDPOINTS) {
             val text = runCatching {
                 val conn = URL(ep).openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.connectTimeout = 10000
-                conn.readTimeout = 30000
+                conn.readTimeout = 35000
                 conn.doOutput = true
                 conn.setRequestProperty("User-Agent", "RestaurantDeals/1.2")
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
@@ -48,6 +49,12 @@ object Osm {
                 if (conn.responseCode != 200) error("http")
                 conn.inputStream.bufferedReader().use { it.readText() }
             }.getOrNull() ?: continue
+            // 伺服器忙碌或超時時，會回 200 但只有 remark 沒有資料：這不是「沒有餐廳」，要換一台再試
+            val bad = runCatching {
+                val remark = JSONObject(text).optString("remark", "")
+                remark.contains("error", true) || remark.contains("timed out", true) || remark.contains("out of memory", true)
+            }.getOrDefault(true)
+            if (bad) continue
             val list = runCatching { parse(text) }.getOrNull() ?: continue
             return list
         }
@@ -117,4 +124,23 @@ object Osm {
             else -> "其他"
         }
     }
+
+    fun encode(list: List<Place>): String {
+        val arr = org.json.JSONArray()
+        for (p in list) arr.put(JSONObject().put("k", p.key).put("n", p.name).put("la", p.lat).put("ln", p.lng)
+            .put("c", p.category).put("a", p.address).put("p", p.phone).put("h", p.hours).put("u", p.url))
+        return JSONObject().put("t", System.currentTimeMillis()).put("l", arr).toString()
+    }
+
+    /** 超過 6 小時的快取視為過期，回傳 null */
+    fun decode(text: String): List<Place>? = runCatching {
+        val o = JSONObject(text)
+        if (System.currentTimeMillis() - o.optLong("t") > 6 * 3600_000L) return null
+        val arr = o.getJSONArray("l")
+        (0 until arr.length()).map {
+            val e = arr.getJSONObject(it)
+            Place(e.getString("k"), e.getString("n"), e.getDouble("la"), e.getDouble("ln"), e.optString("c", "其他"),
+                e.optString("a"), e.optString("p"), e.optString("h"), e.optString("u"), null)
+        }
+    }.getOrNull()
 }

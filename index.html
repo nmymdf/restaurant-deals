@@ -145,11 +145,11 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v1.4</div></div>
+<div id="splash"><div class="ver">v1.5</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.4</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.5</div></div>
 <button class="upbtn" id="refresh">↻更新</button>
 </div>
 <div class="cap" id="cap"></div>
@@ -176,7 +176,7 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 <div id="ghost" class="cc"></div>
 <div id="toast"></div>
 <script>
-var VER="v1.4";
+var VER="v1.5";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -515,7 +515,7 @@ function nbGeocode(){
 }
 function nbNote(t){return el("div","note",t)}
 var osmCache={},osmLoading=false,osmFailed=false,nshown=20,widened=-1;
-var OSMEP=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
+var OSMEP=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://overpass.private.coffee/api/interpreter"];
 function mapCat(t,name){
   var cu=(t.cuisine||"").toLowerCase(),am=t.amenity||"";
   function c(){for(var i=0;i<arguments.length;i++)if(cu.indexOf(arguments[i])>=0)return true;return false}
@@ -559,14 +559,17 @@ function osmParse(j){
 function osmLoad(){
   if(!userLoc)return;var idx=nstate.radius;
   if(osmCache[idx]){nbRender();return}
+  var ckey="deals-osm-"+userLoc[0].toFixed(3)+"-"+userLoc[1].toFixed(3)+"-"+RADII[idx];
+  try{var cc=JSON.parse(localStorage.getItem(ckey)||"null");if(cc&&Date.now()-cc.t<6*3600e3){osmCache[idx]=cc.l;osmFailed=false;nbRender();return}}catch(e){}
   osmLoading=true;osmFailed=false;nbRender();
   var r=RADII[idx],am="restaurant|fast_food|cafe|food_court|pub|bar";
-  var q='[out:json][timeout:25];(node(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];way(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];);out center 800;';
+  var q='[out:json][timeout:25][maxsize:100000000];(node(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];way(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];);out center 600;';
   function tryEp(i){
     if(i>=OSMEP.length){osmLoading=false;osmFailed=true;nbRender();return}
     fetch(OSMEP[i],{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)})
      .then(function(x){if(!x.ok)throw 0;return x.json()}).then(function(j){
-       osmCache[idx]=osmParse(j);osmLoading=false;
+       if(j.remark&&/error|timed out|out of memory/i.test(j.remark))throw 0;
+       osmCache[idx]=osmParse(j);osmLoading=false;try{localStorage.setItem(ckey,JSON.stringify({t:Date.now(),l:osmCache[idx]}))}catch(e){}
        if(idx==nstate.radius&&idx<RADII.length-1&&!mergedList(idx).length&&!nbBusy){widened=idx;nstate.radius=idx+1;osmLoad()}else nbRender();
      }).catch(function(){tryEp(i+1)});
   }
@@ -616,10 +619,12 @@ function nbRender(){
   if(nstate.radius>0)conds.push([km+" 公里",function(){nstate.radius=0;widened=-1;nshown=20;osmLoad()}]);
   if(nstate.category!=ALL)conds.push([nstate.category,function(){nstate.category=ALL;nshown=20;nbRender()}]);
   condBox(cd,conds,"符合 "+withCat.length+" 家"+(withCat.length?"（"+parts+"）":"")+(nbBusy?"　· 正在比對名單地址":""));
-  if(osmFailed)lb.appendChild(nbNote("暫時查不到開放地圖的資料，先顯示我們整理的名單。請檢查網路後按右上角「更新」。"));
+  if(osmLoading)lb.appendChild(nbNote("正在查更多附近的餐廳…先顯示我們整理的名單。"));
+  if(osmFailed)lb.appendChild(nbNote("查詢逾時，暫時只有我們整理的名單。請按右上角「更新」再試一次。"));
   if(widened>=0)lb.appendChild(nbNote(RADII[widened]/1000+" 公里內沒有餐廳，已自動擴大到 "+km+" 公里。"));
   if(!withCat.length){
-    if(nstate.category!=ALL&&all.length)lb.appendChild(emptyBox(km+" 公里內沒有「"+nstate.category+"」的店","移除"+nstate.category+"，看全部 "+all.length+" 家",function(){nstate.category=ALL;nshown=20;nbRender()}));
+    if(osmFailed)lb.appendChild(emptyBox("查詢逾時，暫時查不到附近餐廳。\n這不代表附近沒有店。","再試一次",function(){delete osmCache[idx];osmLoad()}));
+    else if(nstate.category!=ALL&&all.length)lb.appendChild(emptyBox(km+" 公里內沒有「"+nstate.category+"」的店","移除"+nstate.category+"，看全部 "+all.length+" 家",function(){nstate.category=ALL;nshown=20;nbRender()}));
     else if(idx<RADII.length-1)lb.appendChild(emptyBox(km+" 公里內找不到餐廳","範圍擴大到 "+(RADII[idx+1]/1000)+" 公里",function(){nstate.radius=idx+1;widened=-1;osmLoad()}));
     else msg(km+" 公里內找不到餐廳。\n開放地圖在這個地區可能還沒有資料。");
     return;
@@ -696,7 +701,7 @@ function a2hs(){
   document.getElementById("a2hs").style.display="block";
 }
 document.getElementById("a2bk").onclick=function(){document.getElementById("a2hs").style.display="none"};
-document.getElementById("refresh").onclick=function(){if(tabIdx==0)load(true);else loadPicks(true).then(function(){nbRender()})};
+document.getElementById("refresh").onclick=function(){if(tabIdx==0)load(true);else{osmCache={};try{Object.keys(localStorage).filter(function(k){return k.indexOf("deals-osm-")==0}).forEach(function(k){localStorage.removeItem(k)})}catch(e){}osmLoad();loadPicks(true).then(function(){nbRender()})}};
 setTab(0);loadRegions();load(false);
 setTimeout(a2hs,1400);
 setTimeout(function(){var s=document.getElementById("splash");s.className="out";setTimeout(function(){s.style.display="none"},400)},800);

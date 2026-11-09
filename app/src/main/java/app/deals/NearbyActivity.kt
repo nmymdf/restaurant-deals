@@ -328,15 +328,26 @@ class NearbyActivity : AppCompatActivity() {
         val l = loc ?: return
         val idx = radiusIdx
         if (osmCache.containsKey(idx)) { refresh(); return }
+        val key = String.format(Locale.US, "osm_%.3f_%.3f_%d.json", l.latitude, l.longitude, RADII[idx].toInt())
+        val file = java.io.File(cacheDir, key)
+        // 同一個地方 6 小時內查過，直接用手機裡的結果，幾乎立刻出現
+        val cached = runCatching { if (file.exists()) Osm.decode(file.readText()) else null }.getOrNull()
+        if (cached != null) {
+            osmCache[idx] = cached
+            osmFailed = false
+            refresh()
+            return
+        }
         osmLoading = true
         osmFailed = false
         refresh()
         io.execute {
             val res = Osm.fetch(l.latitude, l.longitude, RADII[idx].toInt())
+            if (res != null) runCatching { file.writeText(Osm.encode(res)) }
             handler.post {
                 osmLoading = false
                 if (res != null) osmCache[idx] = res else osmFailed = true
-                // 這個範圍完全沒有店，就自動往外擴大一級
+                // 這個範圍真的沒有店（不是查詢失敗），才自動往外擴大一級
                 if (res != null && idx == radiusIdx && idx < RADII.size - 1 && merged(idx).isEmpty() && !geocoding) {
                     widenedFrom = idx
                     radiusIdx = idx + 1
@@ -426,10 +437,15 @@ class NearbyActivity : AppCompatActivity() {
 
         listBox.removeAllViews()
         val sp = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) }
-        if (osmFailed) listBox.addView(note("暫時查不到開放地圖的資料，先顯示我們整理的名單。請檢查網路後按右上角「更新」。"), sp)
+        if (osmLoading) listBox.addView(note("正在查更多附近的餐廳…先顯示我們整理的名單。"), sp)
+        if (osmFailed) listBox.addView(note("查詢逾時，暫時只有我們整理的名單。請按右上角「更新」再試一次。"), sp)
         if (widenedFrom >= 0) listBox.addView(note("${(RADII[widenedFrom] / 1000).toInt()} 公里內沒有餐廳，已自動擴大到 $km 公里。"), sp)
         if (ordered.isEmpty()) {
             when {
+                osmFailed ->
+                    listBox.addView(ui.emptyState("查詢逾時，暫時查不到附近餐廳。\n這不代表附近沒有店。", "再試一次") {
+                        osmCache.remove(idx); loadOsm()
+                    })
                 category != Cats.ALL && all.isNotEmpty() ->
                     listBox.addView(ui.emptyState("$km 公里內沒有「$category」的店", "移除$category，看全部 ${all.size} 家") {
                         category = Cats.ALL; shown = 20; drawFilters(); refresh()
