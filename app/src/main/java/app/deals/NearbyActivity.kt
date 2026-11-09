@@ -323,14 +323,6 @@ class NearbyActivity : AppCompatActivity() {
         }
     }
 
-    private fun note(t: String) = TextView(this).apply {
-        text = t
-        textSize = 12f
-        setTextColor(p.sb)
-        background = rect(p.ch, dp(10))
-        setPadding(dp(12), dp(8), dp(12), dp(8))
-    }
-
     // ---- 開放地圖：附近所有餐廳 ----
     private fun loadOsm() {
         val l = loc ?: return
