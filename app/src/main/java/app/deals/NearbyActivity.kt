@@ -134,7 +134,7 @@ class NearbyActivity : AppCompatActivity() {
                 val sel = i == radiusIdx
                 box.addView(TextView(this).apply {
                     text = "${(RADII[i] / 1000).toInt()} 公里內" + if (sel) "  ✓" else ""
-                    textSize = 14f
+                    textSize = 16f
                     setTextColor(if (sel) p.hi else p.tx)
                     if (sel) setTypeface(null, Typeface.BOLD)
                     setPadding(dp(16), dp(12), dp(16), dp(12))
@@ -158,7 +158,7 @@ class NearbyActivity : AppCompatActivity() {
         listBox.removeAllViews()
         listBox.addView(TextView(this).apply {
             text = msg
-            textSize = 14f
+            textSize = 16f
             setTextColor(p.sb)
             setLineSpacing(0f, 1.25f)
             gravity = Gravity.CENTER
@@ -169,7 +169,7 @@ class NearbyActivity : AppCompatActivity() {
 
     private fun button(label: String, onClick: () -> Unit): TextView = TextView(this).apply {
         text = label
-        textSize = 14f
+        textSize = 16f
         gravity = Gravity.CENTER
         setTextColor(Theme.INK)
         setTypeface(null, Typeface.BOLD)
@@ -381,7 +381,7 @@ class NearbyActivity : AppCompatActivity() {
 
     private fun note(t: String) = TextView(this).apply {
         text = t
-        textSize = 14f
+        textSize = 16f
         setTextColor(p.sb)
         background = rect(p.ch, dp(10))
         setPadding(dp(12), dp(10), dp(12), dp(10))
@@ -447,7 +447,7 @@ class NearbyActivity : AppCompatActivity() {
             val t = p.tier()
             if (t != lastTier) {
                 lastTier = t
-                listBox.addView(ui.sectionTitle(Theme.tierName(t), tierCount[t] ?: 0).apply { textSize = 15f })
+                listBox.addView(ui.sectionTitle(Theme.tierName(t), tierCount[t] ?: 0).apply { textSize = 17f })
             }
             listBox.addView(card(p, d, t))
         }
@@ -464,7 +464,7 @@ class NearbyActivity : AppCompatActivity() {
 
     private fun chip(text: String) = TextView(this).apply {
         this.text = text
-        textSize = 13f
+        textSize = 15f
         setTextColor(p.sb)
         background = rect(p.ch, dp(9))
         setPadding(dp(9), dp(3), dp(9), dp(3))
@@ -494,13 +494,13 @@ class NearbyActivity : AppCompatActivity() {
         val top = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         top.addView(TextView(this).apply {
             text = pl.name
-            textSize = 17f
+            textSize = 19f
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.tx)
         }, LinearLayout.LayoutParams(0, -2, 1f))
         top.addView(TextView(this).apply {
             text = Theme.dist(dist)
-            textSize = 14f
+            textSize = 16f
             setTextColor(p.hi)
             setTypeface(null, Typeface.BOLD)
         })
@@ -508,7 +508,7 @@ class NearbyActivity : AppCompatActivity() {
         if (tier < 3) {
             box.addView(TextView(this).apply {
                 text = if (tier == 1) "★ 好餐廳" else "✓ 口碑不錯"
-                textSize = 13f
+                textSize = 15f
                 setTypeface(null, Typeface.BOLD)
                 setTextColor(if (tier == 1) Theme.INK else android.graphics.Color.WHITE)
                 background = rect(if (tier == 1) Theme.GOLD else blue, dp(10))
@@ -519,14 +519,14 @@ class NearbyActivity : AppCompatActivity() {
         for (r in lines) {
             box.addView(TextView(this).apply {
                 text = r
-                textSize = 14f
+                textSize = 16f
                 setTextColor(if (pl.pick == null) p.sb else p.tx)
                 setPadding(0, dp(5), 0, 0)
             })
         }
         if (pl.address.isNotEmpty()) box.addView(TextView(this).apply {
             text = pl.address
-            textSize = 13f
+            textSize = 15f
             setTextColor(p.sb)
             setPadding(0, dp(4), 0, 0)
         })

@@ -33,7 +33,7 @@ class PickActivity : AppCompatActivity() {
 
     private fun chip(text: String) = TextView(this).apply {
         this.text = text
-        textSize = 11f
+        textSize = 14f
         setTextColor(p.sb)
         background = rect(p.ch, dp(9))
         setPadding(dp(8), dp(2), dp(8), dp(2))
@@ -56,7 +56,7 @@ class PickActivity : AppCompatActivity() {
         bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         bar.addView(TextView(this).apply {
             text = "作者：ArchieKUO　${Theme.VERSION}"
-            textSize = 12f
+            textSize = 14f
             setTypeface(null, Typeface.ITALIC)
             setTextColor(Theme.GOLD)
         })
@@ -68,13 +68,13 @@ class PickActivity : AppCompatActivity() {
         }
         titleRow.addView(TextView(this).apply {
             text = k.name
-            textSize = 22f
+            textSize = 24f
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.tx)
         }, LinearLayout.LayoutParams(0, -2, 1f))
         if (dist >= 0) titleRow.addView(TextView(this).apply {
             text = Theme.dist(dist)
-            textSize = 12f
+            textSize = 14f
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.hi)
             background = rect(p.ch, dp(10))
@@ -93,12 +93,12 @@ class PickActivity : AppCompatActivity() {
             background = rect(p.cd, dp(14), p.ln)
             setPadding(dp(14), dp(12), dp(14), dp(14))
         }
-        why.addView(TextView(this).apply { text = "為什麼推薦"; textSize = 11f; setTextColor(p.sb) })
+        why.addView(TextView(this).apply { text = "為什麼推薦"; textSize = 14f; setTextColor(p.sb) })
         val rs = Theme.reasons(k)
         for (r in if (rs.isEmpty()) listOf("尚無評價資料") else rs) {
             why.addView(TextView(this).apply {
                 text = r
-                textSize = 14.5f
+                textSize = 16.5f
                 setTextColor(p.tx)
                 setLineSpacing(0f, 1.2f)
                 setPadding(0, dp(5), 0, 0)
@@ -124,7 +124,7 @@ class PickActivity : AppCompatActivity() {
 
         content.addView(TextView(this).apply {
             text = if (runCatching { JSONObject(k.raw).optBoolean("osm") }.getOrDefault(false)) "這家店的資料來自開放地圖（OpenStreetMap），沒有評價資料，內容可能與現況略有差異。" else "評價與點閱數為整理當日的公開資料，可能與現況略有差異。"
-            textSize = 11f
+            textSize = 14f
             setTextColor(p.sb)
             setPadding(0, dp(14), 0, 0)
         })
@@ -137,10 +137,10 @@ class PickActivity : AppCompatActivity() {
             setPadding(0, dp(10), 0, dp(10))
             if (onClick != null) setOnClickListener { onClick() }
         }
-        box.addView(TextView(this).apply { text = label; textSize = 11f; setTextColor(p.sb) })
+        box.addView(TextView(this).apply { text = label; textSize = 14f; setTextColor(p.sb) })
         box.addView(TextView(this).apply {
             text = value
-            textSize = 14f
+            textSize = 16f
             setTextColor(if (tappable) p.hi else p.tx)
             if (tappable) setTypeface(null, Typeface.BOLD)
             setPadding(0, dp(2), 0, 0)
@@ -153,7 +153,7 @@ class PickActivity : AppCompatActivity() {
 
     private fun button(label: String, primary: Boolean, onClick: () -> Unit): TextView = TextView(this).apply {
         text = label
-        textSize = 14f
+        textSize = 16f
         gravity = Gravity.CENTER
         setPadding(0, dp(11), 0, dp(11))
         if (primary) {

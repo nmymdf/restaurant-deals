@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         val foot = LinearLayout(this).apply { setPadding(dp(12), dp(10), dp(12), dp(10)) }
         foot.addView(TextView(this).apply {
             text = "清除"
-            textSize = 14f
+            textSize = 16f
             gravity = Gravity.CENTER
             setTextColor(p.tx)
             background = rect(p.cd, dp(12), p.ln)
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener { pendCity = "全台"; pendDistricts.clear(); renderRegionPanel() }
         }, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
         applyBtn = TextView(this).apply {
-            textSize = 14f
+            textSize = 16f
             gravity = Gravity.CENTER
             setTextColor(Theme.INK)
             setTypeface(null, Typeface.BOLD)
@@ -228,7 +228,7 @@ class MainActivity : AppCompatActivity() {
         leftCol.removeAllViews()
         fun label(t: String) = TextView(this).apply {
             text = t
-            textSize = 11f
+            textSize = 14f
             setTextColor(p.sb)
             setPadding(dp(14), dp(10), dp(14), dp(4))
         }
@@ -247,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                 }, LinearLayout.LayoutParams(dp(3), dp(24)))
                 addView(TextView(this@MainActivity).apply {
                     text = name
-                    textSize = 14f
+                    textSize = 16f
                     setTextColor(if (sel) p.tx else p.sb)
                     if (sel) setTypeface(null, Typeface.BOLD)
                     setPadding(dp(11), dp(11), dp(8), dp(11))
@@ -267,20 +267,20 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener { onClick() }
             addView(TextView(this@MainActivity).apply {
                 this.text = text
-                textSize = 14f
+                textSize = 16f
                 setTextColor(if (checked) p.hi else p.tx)
                 if (checked) setTypeface(null, Typeface.BOLD)
             }, LinearLayout.LayoutParams(0, -2, 1f))
             if (checked) addView(TextView(this@MainActivity).apply {
                 this.text = "✓"
-                textSize = 14f
+                textSize = 16f
                 setTextColor(p.hi)
             })
         }
         if (pendCity == "全台") {
             rightCol.addView(TextView(this).apply {
                 text = "顯示全台的優惠\n\n想看特定地區，請從左邊選縣市"
-                textSize = 13f
+                textSize = 15f
                 setTextColor(p.sb)
                 setLineSpacing(0f, 1.2f)
                 setPadding(dp(16), dp(16), dp(16), dp(16))
@@ -302,7 +302,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun small(textValue: String, bg: Int, fg: Int): TextView = TextView(this).apply {
         text = textValue
-        textSize = 11f
+        textSize = 14f
         setTextColor(fg)
         background = rect(bg, dp(9))
         setPadding(dp(8), dp(2), dp(8), dp(2))
@@ -369,7 +369,7 @@ class MainActivity : AppCompatActivity() {
         } else if (region != "全台") {
             listBox.addView(TextView(this).apply {
                 text = "${regionSummary()}目前沒有在地優惠，以下是全台連鎖"
-                textSize = 12f
+                textSize = 14f
                 setTextColor(p.sb)
                 background = rect(p.ch, dp(10))
                 setPadding(dp(12), dp(8), dp(12), dp(8))
@@ -381,7 +381,7 @@ class MainActivity : AppCompatActivity() {
         }
         listBox.addView(TextView(this).apply {
             text = "點一筆看詳細資訊"
-            textSize = 12f
+            textSize = 14f
             setTextColor(p.sb)
             gravity = Gravity.CENTER
             setPadding(dp(16), dp(8), dp(16), dp(8))
@@ -401,7 +401,7 @@ class MainActivity : AppCompatActivity() {
         val top = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         top.addView(TextView(this).apply {
             text = d.brand
-            textSize = 15f
+            textSize = 17f
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.tx)
         }, LinearLayout.LayoutParams(0, -2, 1f))
@@ -412,7 +412,7 @@ class MainActivity : AppCompatActivity() {
         box.addView(top)
         box.addView(TextView(this).apply {
             text = Theme.highlighted(d.offer, p.hi)
-            textSize = 13f
+            textSize = 15f
             setTextColor(p.tx)
             setLineSpacing(0f, 1.2f)
             setPadding(0, dp(6), 0, dp(8))

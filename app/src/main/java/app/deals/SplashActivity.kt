@@ -29,7 +29,7 @@ class SplashActivity : AppCompatActivity() {
         )
         val ver = TextView(this).apply {
             text = Theme.VERSION
-            textSize = 13f
+            textSize = 15f
             letterSpacing = 0.15f
             setTypeface(null, Typeface.ITALIC)
             setTextColor(Theme.GOLD)

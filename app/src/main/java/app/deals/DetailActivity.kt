@@ -40,7 +40,7 @@ class DetailActivity : AppCompatActivity() {
 
     private fun chip(text: String): TextView = TextView(this).apply {
         this.text = text
-        textSize = 11f
+        textSize = 14f
         setTextColor(p.sb)
         background = rect(p.ch, dp(9))
         setPadding(dp(8), dp(2), dp(8), dp(2))
@@ -67,7 +67,7 @@ class DetailActivity : AppCompatActivity() {
         bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         bar.addView(TextView(this).apply {
             text = "作者：ArchieKUO　${Theme.VERSION}"
-            textSize = 12f
+            textSize = 14f
             setTypeface(null, Typeface.ITALIC)
             setTextColor(Theme.GOLD)
         })
@@ -79,14 +79,14 @@ class DetailActivity : AppCompatActivity() {
         }
         titleRow.addView(TextView(this).apply {
             text = d.brand
-            textSize = 22f
+            textSize = 24f
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.tx)
         }, LinearLayout.LayoutParams(0, -2, 1f))
         val hot = days <= 7
         titleRow.addView(TextView(this).apply {
             text = if (days <= 0) "今天到期" else "剩 $days 天"
-            textSize = 11f
+            textSize = 14f
             setTextColor(if (hot) p.rd else p.sb)
             background = rect(if (hot) p.rdbg else p.ch, dp(10))
             setPadding(dp(9), dp(3), dp(9), dp(3))
@@ -109,12 +109,12 @@ class DetailActivity : AppCompatActivity() {
         }
         offerBox.addView(TextView(this).apply {
             text = "優惠內容"
-            textSize = 11f
+            textSize = 14f
             setTextColor(p.sb)
         })
         offerBox.addView(TextView(this).apply {
             text = Theme.highlighted(d.offer, p.hi)
-            textSize = 15f
+            textSize = 17f
             setTextColor(p.tx)
             setLineSpacing(0f, 1.25f)
             setPadding(0, dp(4), 0, 0)
@@ -168,12 +168,12 @@ class DetailActivity : AppCompatActivity() {
         }
         box.addView(TextView(this).apply {
             text = label
-            textSize = 11f
+            textSize = 14f
             setTextColor(p.sb)
         })
         box.addView(TextView(this).apply {
             text = value
-            textSize = 14f
+            textSize = 16f
             setTextColor(if (tappable) p.hi else p.tx)
             if (tappable) setTypeface(null, Typeface.BOLD)
             setPadding(0, dp(2), 0, 0)
@@ -188,7 +188,7 @@ class DetailActivity : AppCompatActivity() {
 
     private fun button(label: String, primary: Boolean, onClick: () -> Unit): TextView = TextView(this).apply {
         text = label
-        textSize = 14f
+        textSize = 16f
         gravity = Gravity.CENTER
         setPadding(0, dp(11), 0, dp(11))
         if (primary) {

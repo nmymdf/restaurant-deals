@@ -86,14 +86,14 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         val titleBox = LinearLayout(act).apply { orientation = LinearLayout.VERTICAL }
         titleBox.addView(TextView(act).apply {
             text = "餐廳優惠日報"
-            textSize = 18f
+            textSize = 20f
             maxLines = 1
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.tx)
         })
         titleBox.addView(TextView(act).apply {
             text = "作者：ArchieKUO ${Theme.VERSION}"
-            textSize = 11f
+            textSize = 14f
             maxLines = 1
             setTypeface(null, Typeface.ITALIC)
             setTextColor(Theme.GOLD)
@@ -101,7 +101,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         titleRow.addView(titleBox, LinearLayout.LayoutParams(0, -2, 1f))
         titleRow.addView(TextView(act).apply {
             text = "↻更新"
-            textSize = 10.5f
+            textSize = 14f
             setTextColor(p.hi)
             setTypeface(null, Typeface.BOLD)
             background = rect(p.cd, dp(16), Theme.GOLD)
@@ -110,7 +110,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         })
         head.addView(titleRow)
         val cap = TextView(act).apply {
-            textSize = 11f
+            textSize = 14f
             setTextColor(p.sb)
             gravity = Gravity.END
             setPadding(0, dp(4), 0, 0)
@@ -128,7 +128,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
             }
             col.addView(TextView(act).apply {
                 text = names[i]
-                textSize = 16f
+                textSize = 18f
                 gravity = Gravity.CENTER
                 setPadding(0, dp(8), 0, dp(8))
                 setTextColor(if (sel) p.tx else p.sb)
@@ -142,7 +142,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         head.addView(tabs)
         head.addView(TextView(act).apply {
             text = if (tabIdx == 0) "30 天內有效的優惠，依到期日排序" else "你所在位置周圍的餐廳，依距離排序"
-            textSize = 12f
+            textSize = 14f
             setTextColor(p.sb)
             setPadding(0, dp(8), 0, dp(8))
         })
@@ -169,12 +169,12 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
             setOnClickListener { onClick() }
             addView(TextView(act).apply {
                 text = sp
-                textSize = 13f
+                textSize = 15f
                 setTextColor(p.tx)
                 maxLines = 1
                 ellipsize = android.text.TextUtils.TruncateAt.END
             }, LinearLayout.LayoutParams(0, -2, 1f))
-            addView(TextView(act).apply { text = if (open) "▴" else "▾"; textSize = 13f; setTextColor(p.sb) })
+            addView(TextView(act).apply { text = if (open) "▴" else "▾"; textSize = 15f; setTextColor(p.sb) })
         }
     }
 
@@ -186,12 +186,12 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         }
         if (items.isNotEmpty()) {
             val row = LinearLayout(act).apply { gravity = Gravity.CENTER_VERTICAL }
-            row.addView(TextView(act).apply { text = "目前條件"; textSize = 12f; setTextColor(p.sb) },
+            row.addView(TextView(act).apply { text = "目前條件"; textSize = 14f; setTextColor(p.sb) },
                 LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(8) })
             for ((label, remove) in items) {
                 row.addView(TextView(act).apply {
                     text = "$label  ✕"
-                    textSize = 12.5f
+                    textSize = 14.5f
                     setTextColor(p.hi)
                     background = rect(p.ch, dp(14), Theme.GOLD)
                     setPadding(dp(11), dp(5), dp(11), dp(5))
@@ -205,7 +205,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         }
         box.addView(TextView(act).apply {
             text = countLine
-            textSize = 13f
+            textSize = 15f
             setTypeface(null, Typeface.BOLD)
             setTextColor(p.tx)
             setPadding(0, dp(if (items.isEmpty()) 0 else 8), 0, 0)
@@ -215,7 +215,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
 
     fun sectionTitle(text: String, n: Int): TextView = TextView(act).apply {
         this.text = "$text　$n"
-        textSize = 12f
+        textSize = 14f
         setTypeface(null, Typeface.BOLD)
         setTextColor(p.hi)
         setPadding(dp(2), dp(8), 0, dp(6))
@@ -229,14 +229,14 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         }
         box.addView(TextView(act).apply {
             text = msg
-            textSize = 14f
+            textSize = 16f
             setTextColor(p.sb)
             setLineSpacing(0f, 1.25f)
             gravity = Gravity.CENTER
         })
         if (btnLabel != null && onClick != null) box.addView(TextView(act).apply {
             text = btnLabel
-            textSize = 14f
+            textSize = 16f
             gravity = Gravity.CENTER
             setTextColor(Theme.INK)
             setTypeface(null, Typeface.BOLD)
@@ -268,12 +268,12 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
             setOnClickListener { onPick(Cats.ALL) }
             addView(TextView(act).apply {
                 text = if (all) "${Cats.ALL} ✓" else Cats.ALL
-                textSize = 15f
+                textSize = 17f
                 gravity = Gravity.CENTER
                 setTypeface(null, Typeface.BOLD)
                 setTextColor(p.hi)
             }, LinearLayout.LayoutParams(0, -2, 1f))
-            addView(TextView(act).apply { text = total.toString(); textSize = 13f; setTextColor(p.hi) })
+            addView(TextView(act).apply { text = total.toString(); textSize = 15f; setTextColor(p.hi) })
         }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(6) })
 
         val fullOrder = Cats.order(act, known + counts.keys, selected)
@@ -291,7 +291,7 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         }
         panel.addView(TextView(act).apply {
             text = "長按卡片可以拖動排序　·　恢復預設順序"
-            textSize = 12f
+            textSize = 14f
             gravity = Gravity.CENTER
             setTextColor(p.hi)
             setPadding(0, dp(10), 0, dp(6))
@@ -319,12 +319,12 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
             setPadding(dp(12), dp(13), dp(12), dp(13))
             addView(TextView(act).apply {
                 text = if (sel) "$n ✓" else n
-                textSize = 15f
+                textSize = 17f
                 if (sel) setTypeface(null, Typeface.BOLD)
                 setTextColor(if (sel) p.hi else p.tx)
                 maxLines = 1
             }, LinearLayout.LayoutParams(0, -2, 1f))
-            addView(TextView(act).apply { text = count.toString(); textSize = 13f; setTextColor(p.sb) })
+            addView(TextView(act).apply { text = count.toString(); textSize = 15f; setTextColor(p.sb) })
             setOnClickListener { onPick(n) }
             setOnLongClickListener { v ->
                 v.startDragAndDrop(ClipData.newPlainText("cat", n), View.DragShadowBuilder(v), null, 0)
