@@ -123,7 +123,7 @@ class PickActivity : AppCompatActivity() {
         content.addView(btns, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(14) })
 
         content.addView(TextView(this).apply {
-            text = "評價與點閱數為整理當日的公開資料，可能與現況略有差異。"
+            text = if (runCatching { JSONObject(k.raw).optBoolean("osm") }.getOrDefault(false)) "這家店的資料來自開放地圖（OpenStreetMap），沒有評價資料，內容可能與現況略有差異。" else "評價與點閱數為整理當日的公開資料，可能與現況略有差異。"
             textSize = 11f
             setTextColor(p.sb)
             setPadding(0, dp(14), 0, 0)
@@ -169,8 +169,11 @@ class PickActivity : AppCompatActivity() {
 
     private fun openMap(k: Pick) {
         val q = if (k.address.isNotEmpty()) k.address else k.name
+        val geo = if (k.address.isEmpty() && k.lat != null && k.lng != null)
+            "geo:${k.lat},${k.lng}?q=${k.lat},${k.lng}(${Uri.encode(k.name)})"
+        else "geo:0,0?q=" + Uri.encode(q)
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + Uri.encode(q))))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(geo)))
         } catch (e: ActivityNotFoundException) {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=" + Uri.encode(q))))
         }

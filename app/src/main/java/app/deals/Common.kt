@@ -61,7 +61,7 @@ class Pal(
 )
 
 object Theme {
-    const val VERSION = "v1.1"
+    const val VERSION = "v1.2"
     val GOLD = Color.parseColor("#C9A227")
     val INK = Color.parseColor("#1F1B16")
 
