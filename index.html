@@ -142,14 +142,31 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 #a2hs .go{display:block;width:100%;background:var(--gold);color:var(--ink);font-weight:700;border-radius:12px;padding:13px 0;font-size:19px;margin-top:8px;text-align:center}
 #a2hs .no{display:block;width:100%;color:var(--sb);font-size:16px;padding:12px 0 0;text-align:center}
 #a2hs .ar{text-align:center;color:var(--hi);font-size:16px;padding-top:8px}
+#nq{width:100%;font:inherit;font-size:17px;color:var(--tx);background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:11px 14px;outline:none}
+#nq:focus{border:2px solid var(--hi);padding:10px 13px}
+#nmsg{display:none;font-size:15px;padding:6px 4px 0}
+#nmsg.err{color:var(--rd)}#nmsg.ok{color:var(--vg)}#nmsg.info{color:var(--sb)}
+.sug{background:var(--cd);border:.5px solid var(--ln);border-radius:12px;margin-top:6px;overflow:hidden}
+.sug .st{font-size:14px;color:var(--sb);padding:8px 14px 2px}
+.sug button{display:block;width:100%;text-align:left;font-size:17px;padding:12px 14px;border-top:.5px solid var(--ln)}
+.sug button:first-of-type{border-top:0}
+.obtn{flex:1;background:var(--cd);border:.5px solid var(--ln);border-radius:12px;padding:10px 0;font-size:16px;font-weight:700;text-align:center}
+#mapbox{display:none;margin-top:8px}
+#map{height:300px;border-radius:12px;overflow:hidden;background:var(--ch);position:relative;z-index:0}
+.legend{position:absolute;right:6px;top:6px;z-index:500;background:var(--cd);border:.5px solid var(--ln);border-radius:6px;padding:3px 8px;font-size:14px}
+#selbar{display:none;margin-top:6px;background:var(--cd);border:2px solid var(--hi);border-radius:12px;padding:11px 14px;font-size:17px;font-weight:700;width:100%;text-align:left}
+.cbar{display:flex;align-items:center;gap:10px;background:var(--ch);border-radius:12px;padding:8px 12px;margin:8px 0;font-size:16px}
+.cbar #ctext{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cbar button{color:var(--hi);font-weight:700;font-size:15px;white-space:nowrap}
+.dot{border-radius:50%;border:2px solid #fff;box-sizing:border-box}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v1.5</div></div>
+<div id="splash"><div class="ver">v1.6</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.5</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.6</div></div>
 <button class="upbtn" id="refresh">↻更新</button>
 </div>
 <div class="cap" id="cap"></div>
@@ -163,6 +180,11 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 <div id="list"></div>
 </div>
 <div class="view" id="vnear">
+<input id="nq" type="search" enterkeyhint="search" autocomplete="off" placeholder="打地址、地標、捷運站，按 Enter">
+<div id="nmsg"></div><div id="nsug"></div>
+<div class="frow" style="margin-top:8px"><button class="obtn" id="mylocbtn">◎ 我的位置</button><button class="obtn" id="mapbtn">地圖選點</button></div>
+<div id="mapbox"><div id="map"><div class="legend">金＝好餐廳　藍＝口碑不錯　灰＝其他</div></div><button id="selbar"></button><div class="hint" style="text-align:left;margin-top:6px">按住地圖上任一點（電腦按右鍵），改用那裡找。點圖釘看店名。</div></div>
+<div class="cbar"><span id="ctext">中心：我的位置</span><button id="cgoogle">Google 地圖 ›</button></div>
 <div class="frow"><button class="fbtn reg" id="rngbtn"></button><button class="fbtn cat" id="ncatbtn"></button></div>
 <div id="rngpanel"></div>
 <div id="ncatpanel"></div>
@@ -176,7 +198,7 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 <div id="ghost" class="cc"></div>
 <div id="toast"></div>
 <script>
-var VER="v1.5";
+var VER="v1.6";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -489,9 +511,11 @@ function nbStart(){
   nbStarted=true;nbStop=false;nbRender();
   if(!navigator.geolocation){nbErr="這個瀏覽器不支援定位。";nbRender();return}
   navigator.geolocation.getCurrentPosition(function(p){
-    userLoc=[p.coords.latitude,p.coords.longitude];
+    gpsLoc=[p.coords.latitude,p.coords.longitude];
+    if(centerName)return;
+    userLoc=gpsLoc;updateMap(true);
     osmLoad();loadPicks(false).then(function(){reverseCity(function(){nbRender();nbGeocode()})});
-  },function(){nbStarted=false;nbErr="取不到你的位置。請在瀏覽器允許「位置」，並開啟手機的定位服務。";nbRender()},{enableHighAccuracy:false,timeout:15000,maximumAge:300000});
+  },function(){nbStarted=false;nbErr="取不到你的位置。也可以在上面直接打地址或地標。\n要用目前位置，請在瀏覽器允許「位置」，並開啟手機的定位服務。";nbRender()},{enableHighAccuracy:false,timeout:15000,maximumAge:300000});
 }
 function reverseCity(done){
   fetch("https://nominatim.openstreetmap.org/reverse?format=json&accept-language=zh-TW&zoom=5&lat="+userLoc[0]+"&lon="+userLoc[1])
@@ -556,21 +580,24 @@ function osmParse(j){
   });
   return out;
 }
+var osmGen=0;
 function osmLoad(){
   if(!userLoc)return;var idx=nstate.radius;
-  if(osmCache[idx]){nbRender();return}
+  if(osmCache[idx]){osmGen++;osmLoading=false;osmFailed=false;nbRender();return}
   var ckey="deals-osm-"+userLoc[0].toFixed(3)+"-"+userLoc[1].toFixed(3)+"-"+RADII[idx];
-  try{var cc=JSON.parse(localStorage.getItem(ckey)||"null");if(cc&&Date.now()-cc.t<6*3600e3){osmCache[idx]=cc.l;osmFailed=false;nbRender();return}}catch(e){}
-  osmLoading=true;osmFailed=false;nbRender();
+  try{var cc=JSON.parse(localStorage.getItem(ckey)||"null");if(cc&&Date.now()-cc.t<6*3600e3){osmGen++;osmLoading=false;osmCache[idx]=cc.l;osmFailed=false;nbRender();return}}catch(e){}
+  osmLoading=true;osmFailed=false;var gen=++osmGen;nbRender();
   var r=RADII[idx],am="restaurant|fast_food|cafe|food_court|pub|bar";
   var q='[out:json][timeout:25][maxsize:100000000];(node(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];way(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];);out center 600;';
   function tryEp(i){
+    if(gen!=osmGen)return;
     if(i>=OSMEP.length){osmLoading=false;osmFailed=true;nbRender();return}
     fetch(OSMEP[i],{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)})
      .then(function(x){if(!x.ok)throw 0;return x.json()}).then(function(j){
        if(j.remark&&/error|timed out|out of memory/i.test(j.remark))throw 0;
+       if(gen!=osmGen)return;
        osmCache[idx]=osmParse(j);osmLoading=false;try{localStorage.setItem(ckey,JSON.stringify({t:Date.now(),l:osmCache[idx]}))}catch(e){}
-       if(idx==nstate.radius&&idx<RADII.length-1&&!mergedList(idx).length&&!nbBusy){widened=idx;nstate.radius=idx+1;osmLoad()}else nbRender();
+       if(idx==nstate.radius&&idx<RADII.length-1&&!mergedList(idx).length&&!nbBusy){widened=idx;nstate.radius=idx+1;updateMap(true);osmLoad()}else nbRender();
      }).catch(function(){tryEp(i+1)});
   }
   tryEp(0);
@@ -597,14 +624,15 @@ function nbRender(){
   filterBtn("rngbtn","範圍",(RADII[nstate.radius]/1000)+" 公里",nstate.panel==1,function(){nstate.panel=nstate.panel==1?0:1;nbRender()});
   filterBtn("ncatbtn","類別",nstate.category==ALL?"全部":nstate.category,nstate.panel==2,function(){nstate.panel=nstate.panel==2?0:2;nbRender()});
   rp.textContent="";rp.style.display=nstate.panel==1?"block":"none";
-  RADII.forEach(function(r,i){var b=el("button","rngopt"+(i==nstate.radius?" on":""));b.appendChild(el("span",null,(r/1000)+" 公里內"));if(i==nstate.radius)b.appendChild(el("span",null,"✓"));b.onclick=function(e){e.stopPropagation();nstate.radius=i;nstate.panel=0;widened=-1;nshown=20;osmLoad()};rp.appendChild(b)});
+  RADII.forEach(function(r,i){var b=el("button","rngopt"+(i==nstate.radius?" on":""));b.appendChild(el("span",null,(r/1000)+" 公里內"));if(i==nstate.radius)b.appendChild(el("span",null,"✓"));b.onclick=function(e){e.stopPropagation();nstate.radius=i;nstate.panel=0;widened=-1;nshown=20;updateMap(true);osmLoad()};rp.appendChild(b)});
   cp.textContent="";cp.style.display=nstate.panel==2?"block":"none";
   if(nstate.panel==2)buildCats(cp,lastCounts,picks.map(function(k){return k.category||"其他"}),nstate.category,function(n){nstate.category=n;nstate.panel=0;nshown=20;nbRender()});
   lb.textContent="";cd.textContent="";
   function msg(t){lb.appendChild(emptyBox(t))}
-  if(!userLoc){msg(nbErr||"正在取得你的位置…");return}
+  document.getElementById("ctext").textContent="中心："+(centerName||(userLoc?"我的位置":"我的位置（定位中）"));
+  if(!userLoc){nbOrdered=[];msg(nbErr||"正在取得你的位置…");return}
   var idx=nstate.radius,all=mergedList(idx);
-  if(!all.length&&(osmLoading||(!osmCache[idx]&&!osmFailed))){msg("正在查附近的餐廳…");return}
+  if(!all.length&&(osmLoading||(!osmCache[idx]&&!osmFailed))){nbOrdered=[];updateMap(false);msg("正在查附近的餐廳…");return}
   var withCat=nstate.category==ALL?all:all.filter(function(o){return o[0].category==nstate.category});
   lastCounts={};all.forEach(function(o){lastCounts[o[0].category]=(lastCounts[o[0].category]||0)+1});
   withCat.sort(function(a,b){
@@ -612,6 +640,7 @@ function nbRender(){
     if(ta<3){var ra=(a[0].pick&&a[0].pick.rating&&a[0].pick.rating.score)||0,rb=(b[0].pick&&b[0].pick.rating&&b[0].pick.rating.score)||0;if(ra!=rb)return rb-ra}
     return a[1]-b[1];
   });
+  nbOrdered=withCat;updateMap(false);
   var tc={1:0,2:0,3:0};withCat.forEach(function(o){tc[placeTier(o[0])]++});
   var km=RADII[idx]/1000;
   var parts=[1,2,3].filter(function(t){return tc[t]}).map(function(t){return TIERN[t]+" "+tc[t]}).join("、");
@@ -667,11 +696,131 @@ function openPick(k,dist){
   var dt=document.getElementById("detail");dt.style.display="block";dt.scrollTop=0;
   history.pushState({pick:1},"");
 }
+// ---- 找地點：搜尋、我的位置、地圖選點、Google 地圖連結 ----
+var gpsLoc=null,centerName=null,nbOrdered=[],mapOpen=false,lmap=null,mlayer=null,leafletP=null;
+var ZOOMS=[15,14,13,12];
+function nmsg(t,k){var m=document.getElementById("nmsg");if(!t){m.style.display="none";return}m.textContent=t;m.className=k||"info";m.style.display="block"}
+function recentList(){try{return JSON.parse(localStorage.getItem("deals-recent")||"[]")}catch(e){return []}}
+function remember(sp){var l=[sp].concat(recentList().filter(function(x){return x.name!=sp.name})).slice(0,5);try{localStorage.setItem("deals-recent",JSON.stringify(l))}catch(e){}}
+function sugRows(title,list){
+  var b=document.getElementById("nsug");b.textContent="";if(!list.length)return;
+  var c=el("div","sug");c.appendChild(el("div","st",title));
+  list.forEach(function(sp){var r=el("button",null,sp.label||sp.name);r.onmousedown=function(e){e.preventDefault()};r.onclick=function(e){e.stopPropagation();applySpot(sp)};c.appendChild(r)});
+  b.appendChild(c);
+}
+function isLink(s){return /https?:\/\//i.test(s)}
+function coordsIn(raw){
+  var s=raw;try{s=decodeURIComponent(raw)}catch(e){}
+  var pats=[/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,/[?&](?:q|ll|query|center|destination|daddr)=(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/,/\/maps\/(?:search|place|dir)\/[^@]*?(-?\d{1,2}\.\d{3,})\s*,\s*\+?(-?\d{2,3}\.\d{3,})/,/@(-?\d+\.\d+),(-?\d+\.\d+)/,/geo:(-?\d+\.\d+),(-?\d+\.\d+)/];
+  for(var i=0;i<pats.length;i++){var m=s.match(pats[i]);if(!m)continue;var a=parseFloat(m[1]),o=parseFloat(m[2]);if(Math.abs(a)<=90&&Math.abs(o)<=180&&(a||o))return [a,o]}
+  return null;
+}
+function nameIn(raw){
+  var s=raw.replace(/\+/g,"%20");try{s=decodeURIComponent(s)}catch(e){}
+  var m=s.match(/\/maps\/place\/([^\/@?]+)/);if(m)return m[1].trim();
+  m=s.match(/[?&](?:q|query)=([^&]+)/);if(m&&!/^-?\d+\.\d+\s*,/.test(m[1]))return m[1].trim();
+  return null;
+}
+function nominatim(q){
+  return fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=tw&accept-language=zh-TW&q="+encodeURIComponent(q))
+   .then(function(r){return r.json()}).then(function(arr){
+     var out=[];(arr||[]).forEach(function(o){
+       var parts=(o.display_name||"").split(",").map(function(x){return x.trim()}).filter(function(x){return x});
+       var name=o.name||parts[0]||q;
+       var area=parts.filter(function(x){return /[區市縣鄉鎮]$/.test(x)}).reverse().join("");
+       var sp={name:name,label:area?name+"・"+area:name,lat:parseFloat(o.lat),lng:parseFloat(o.lon)};
+       if(!out.some(function(x){return x.label==sp.label||(Math.abs(x.lat-sp.lat)<5e-4&&Math.abs(x.lng-sp.lng)<5e-4)}))out.push(sp);
+     });
+     return out;
+   });
+}
+function fromLink(text){
+  var um=text.match(/https?:\/\/\S+/),url=um?um[0]:"";
+  var lines=text.split(/\n/).map(function(x){return x.trim()}).filter(function(x){return x&&!isLink(x)});
+  var name=lines[0]||nameIn(url);
+  var c=coordsIn(url);
+  if(c)return Promise.resolve([{name:name||"Google 地圖的地點",label:name||"Google 地圖的地點",lat:c[0],lng:c[1]}]);
+  var q=lines[1]||name;
+  if(q)return nominatim(q).then(function(l){return l.slice(0,1).map(function(x){return {name:name||x.name,label:name||x.label,lat:x.lat,lng:x.lng}})});
+  return Promise.resolve(null);
+}
+function doSearch(raw){
+  var q=(raw||"").trim();if(!q)return;
+  document.getElementById("nsug").textContent="";
+  var link=isLink(q);
+  nmsg(link?"正在讀取 Google 地圖連結…":"正在找「"+q+"」…");
+  (link?fromLink(q):nominatim(q)).then(function(list){
+    if(list===null){nmsg("這是短網址，網頁版解不開。請在 App 用「分享」，或改打地點名稱。","err");return}
+    if(!list.length){nmsg(link?"讀不出這個連結的位置，請改打地點名稱。":"找不到「"+q+"」。可以加上縣市再試，例如「台中 中正路」。","err");return}
+    if(list.length==1)applySpot(list[0]);else{nmsg("");sugRows("找到 "+list.length+" 個地點，請點一個：",list)}
+  }).catch(function(){nmsg("查不到，請檢查網路後再試一次。","err")});
+}
+function applySpot(sp){
+  remember(sp);var q=document.getElementById("nq");q.value="";q.blur();
+  document.getElementById("nsug").textContent="";nmsg("");
+  setCenter(sp.lat,sp.lng,sp.name);
+}
+function setCenter(lat,lng,name){
+  centerName=name;userLoc=[lat,lng];osmCache={};nshown=20;widened=-1;nbErr="";
+  document.getElementById("selbar").style.display="none";
+  updateMap(true);osmLoad();
+  if(!picksReady)loadPicks(false).then(function(){nbRender();nbGeocode()});else{nbRender();nbGeocode()}
+}
+function useMyLoc(){
+  nmsg("");document.getElementById("nsug").textContent="";centerName=null;
+  if(gpsLoc)setCenter(gpsLoc[0],gpsLoc[1],null);else{userLoc=null;nbStarted=false;nbErr="";nbStart()}
+}
+function loadLeaflet(){
+  if(leafletP)return leafletP;
+  leafletP=new Promise(function(ok,no){
+    var c=document.createElement("link");c.rel="stylesheet";c.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";document.head.appendChild(c);
+    var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";s.onload=ok;s.onerror=function(){leafletP=null;no()};document.head.appendChild(s);
+  });
+  return leafletP;
+}
+function toggleMap(){
+  mapOpen=!mapOpen;document.getElementById("mapbtn").textContent=mapOpen?"收起地圖":"地圖選點";
+  document.getElementById("mapbox").style.display=mapOpen?"block":"none";
+  if(!mapOpen)return;
+  loadLeaflet().then(function(){
+    if(!lmap){
+      lmap=L.map("map",{zoomControl:true,attributionControl:true});
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(lmap);
+      mlayer=L.layerGroup().addTo(lmap);
+      lmap.on("contextmenu",function(e){nmsg("");setCenter(e.latlng.lat,e.latlng.lng,"地圖上選的點")});
+      lmap.setView(userLoc||[25.0478,121.5170],ZOOMS[nstate.radius]);
+    }
+    lmap.invalidateSize();updateMap(true);
+  }).catch(function(){toast("地圖載入失敗，請檢查網路")});
+}
+function dotIcon(color,size){return L.divIcon({className:"",html:'<div class="dot" style="width:'+size+'px;height:'+size+'px;background:'+color+'"></div>',iconSize:[size,size],iconAnchor:[size/2,size/2]})}
+function updateMap(recenter){
+  if(!mapOpen||!lmap||!userLoc)return;
+  mlayer.clearLayers();
+  L.circle(userLoc,{radius:RADII[nstate.radius],color:"#378ADD",weight:2,fillColor:"#378ADD",fillOpacity:.08,interactive:false}).addTo(mlayer);
+  nbOrdered.slice(0,300).reverse().forEach(function(o){
+    var p=o[0],t=placeTier(p);
+    var m=L.marker([p.lat,p.lng],{icon:dotIcon(t==1?"#C9A227":t==2?"#378ADD":"#888780",t<3?20:16)}).addTo(mlayer);
+    m.on("click",function(){var sb=document.getElementById("selbar");sb.textContent=p.name+"　"+fmtDist(o[1])+"　看詳細 ›";sb.onclick=function(){openPick(p.pick||p,o[1])};sb.style.display="block"});
+  });
+  L.marker(userLoc,{icon:dotIcon("#E24B4A",24),interactive:false}).addTo(mlayer);
+  if(recenter){document.getElementById("selbar").style.display="none";lmap.setView(userLoc,ZOOMS[nstate.radius])}
+}
+(function(){
+  var q=document.getElementById("nq");
+  q.addEventListener("keydown",function(e){if(e.key=="Enter"&&!e.isComposing){e.preventDefault();doSearch(q.value)}});
+  q.addEventListener("focus",function(){if(!q.value)sugRows("最近搜過的地點",recentList())});
+  q.addEventListener("input",function(){nmsg("");if(!q.value)sugRows("最近搜過的地點",recentList());else document.getElementById("nsug").textContent=""});
+  q.addEventListener("blur",function(){setTimeout(function(){if(document.activeElement!=q)document.getElementById("nsug").textContent=""},150)});
+  document.getElementById("mylocbtn").onclick=useMyLoc;
+  document.getElementById("mapbtn").onclick=toggleMap;
+  document.getElementById("cgoogle").onclick=function(){if(!userLoc)return;window.open("https://www.google.com/maps/search/?api=1&query="+userLoc[0]+","+userLoc[1],"_blank","noopener")};
+})();
 function setTab(i){
   tabIdx=i;state.panel=0;nstate.panel=0;
   document.getElementById("tab0").className="tab"+(i==0?" on":"");document.getElementById("tab1").className="tab"+(i==1?" on":"");
   document.getElementById("vdeals").className="view"+(i==0?" on":"");document.getElementById("vnear").className="view"+(i==1?" on":"");
-  document.getElementById("rule").textContent=i==0?"30 天內有效的優惠，依到期日排序":"你所在位置周圍的餐廳，依距離排序";
+  document.getElementById("rule").textContent=i==0?"30 天內有效的優惠，依到期日排序":"中心周圍的餐廳：好餐廳在前，其他依距離";
   if(i==0)render();else nbStart();
 }
 document.getElementById("tab0").onclick=function(){setTab(0)};
