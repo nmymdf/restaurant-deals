@@ -13,12 +13,25 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONObject
+import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Polygon
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Locale
@@ -42,6 +55,9 @@ class NearbyActivity : AppCompatActivity() {
     private var category = Cats.ALL
     private var lastCounts: Map<String, Int> = emptyMap()
     private val io = Executors.newSingleThreadExecutor()
+    private val geoIo = Executors.newSingleThreadExecutor()   // 找地點，不要排在慢的查詢後面
+    private val osmIo = Executors.newCachedThreadPool()
+    private var osmGen = 0
     private val handler = Handler(Looper.getMainLooper())
 
     private var picks: List<Pick> = emptyList()
@@ -59,6 +75,21 @@ class NearbyActivity : AppCompatActivity() {
     private var shown = 20
     private var widenedFrom = -1
 
+    // 中心：null＝我的位置，否則是搜尋／地圖選點／分享進來的地點名稱
+    private var gpsLoc: Location? = null
+    private var centerName: String? = null
+    private lateinit var searchBox: EditText
+    private lateinit var searchMsg: TextView
+    private lateinit var suggestBox: LinearLayout
+    private lateinit var centerText: TextView
+    private lateinit var mapBtn: TextView
+    private lateinit var mapHolder: LinearLayout
+    private lateinit var selBar: TextView
+    private var mapView: MapView? = null
+    private var mapOpen = false
+    private var lastOrdered: List<Pair<Place, Double>> = emptyList()
+    private val ZOOMS = listOf(15.5, 14.5, 13.0, 12.0)
+
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     private fun rect(fill: Int, r: Int, stroke: Int = 0) = Theme.roundRect(fill, r, stroke, 1)
 
@@ -69,6 +100,7 @@ class NearbyActivity : AppCompatActivity() {
         Regions.load(this)
         buildUi()
         loadPicks()
+        handleShare(intent)
         if (hasPermission()) locate() else requestPermissions(
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 7
         )
@@ -81,7 +113,7 @@ class NearbyActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(code: Int, perms: Array<out String>, res: IntArray) {
         super.onRequestPermissionsResult(code, perms, res)
         if (hasPermission()) locate()
-        else showMessage("需要位置權限才能找附近的店。\n請到手機設定 → 應用程式 → 餐廳優惠日報 → 權限，開啟「位置」。", "重新授權") {
+        else if (centerName == null) showMessage("需要位置權限才能找你附近的店。\n也可以在上面直接打地址或地標。\n開啟權限：手機設定 → 應用程式 → 餐廳優惠日報 → 權限 → 位置。", "重新授權") {
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 7
             )
@@ -92,9 +124,11 @@ class NearbyActivity : AppCompatActivity() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(p.pg)
+            isFocusableInTouchMode = true // 開啟時不要自動跳出鍵盤
         }
-        header = ui.header(1, "名單更新") { osmCache.clear(); loadOsm(); loadPicks(true) }
+        header = ui.header(1, "名單更新") { osmCache.clear(); loadOsm(force = true); loadPicks(true) }
         root.addView(header.view)
+        root.addView(buildSearch(), LinearLayout.LayoutParams(-1, -2).apply { leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(8) })
         filterBar = LinearLayout(this).apply { setPadding(dp(16), 0, dp(16), 0) }
         root.addView(filterBar)
         panelHolder = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
@@ -138,7 +172,7 @@ class NearbyActivity : AppCompatActivity() {
                     setTextColor(if (sel) p.hi else p.tx)
                     if (sel) setTypeface(null, Typeface.BOLD)
                     setPadding(dp(16), dp(12), dp(16), dp(12))
-                    setOnClickListener { radiusIdx = i; widenedFrom = -1; shown = 20; openPanel = 0; drawFilters(); loadOsm(); refresh() }
+                    setOnClickListener { radiusIdx = i; widenedFrom = -1; shown = 20; openPanel = 0; drawFilters(); updateMap(true); loadOsm(); refresh() }
                 })
             }
             panelHolder.addView(box)
@@ -214,7 +248,7 @@ class NearbyActivity : AppCompatActivity() {
 
     // ---- 定位 ----
     private fun locate() {
-        showMessage("正在取得你的位置…")
+        if (centerName == null) showMessage("正在取得你的位置…")
         val lm = getSystemService(LOCATION_SERVICE) as LocationManager
         var best: Location? = null
         for (prov in listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER)) {
@@ -235,6 +269,7 @@ class NearbyActivity : AppCompatActivity() {
             when {
                 l != null -> gotLocation(l)
                 b != null -> gotLocation(b)
+                centerName != null -> {}
                 else -> showMessage("取不到你的位置。\n請確認手機的定位服務已開啟，到戶外或窗邊再試一次。", "再試一次") { locate() }
             }
         }
@@ -258,8 +293,14 @@ class NearbyActivity : AppCompatActivity() {
     }
 
     private fun gotLocation(l: Location) {
+        gpsLoc = l
+        if (centerName != null) return
         loc = l
         osmCache.clear()
+        shown = 20
+        widenedFrom = -1
+        drawCenter()
+        updateMap(true)
         loadOsm()
         io.execute {
             // 反查所在縣市，用來決定先處理哪些店（失敗也沒關係）
@@ -324,15 +365,18 @@ class NearbyActivity : AppCompatActivity() {
     }
 
     // ---- 開放地圖：附近所有餐廳 ----
-    private fun loadOsm() {
+    private fun loadOsm(force: Boolean = false) {
         val l = loc ?: return
         val idx = radiusIdx
-        if (osmCache.containsKey(idx)) { refresh(); return }
+        if (osmCache.containsKey(idx)) { osmGen++; osmLoading = false; osmFailed = false; refresh(); return }
         val key = String.format(Locale.US, "osm_%.3f_%.3f_%d.json", l.latitude, l.longitude, RADII[idx].toInt())
         val file = java.io.File(cacheDir, key)
+        if (force) runCatching { file.delete() }
         // 同一個地方 6 小時內查過，直接用手機裡的結果，幾乎立刻出現
         val cached = runCatching { if (file.exists()) Osm.decode(file.readText()) else null }.getOrNull()
         if (cached != null) {
+            osmGen++
+            osmLoading = false
             osmCache[idx] = cached
             osmFailed = false
             refresh()
@@ -340,11 +384,13 @@ class NearbyActivity : AppCompatActivity() {
         }
         osmLoading = true
         osmFailed = false
+        val gen = ++osmGen
         refresh()
-        io.execute {
+        osmIo.execute {
             val res = Osm.fetch(l.latitude, l.longitude, RADII[idx].toInt())
             if (res != null) runCatching { file.writeText(Osm.encode(res)) }
             handler.post {
+                if (gen != osmGen) return@post   // 中心或範圍已經換了，舊結果不要用
                 osmLoading = false
                 if (res != null) osmCache[idx] = res else osmFailed = true
                 // 這個範圍真的沒有店（不是查詢失敗），才自動往外擴大一級
@@ -352,6 +398,7 @@ class NearbyActivity : AppCompatActivity() {
                     widenedFrom = idx
                     radiusIdx = idx + 1
                     drawFilters()
+                    updateMap(true)
                     loadOsm()
                 } else refresh()
             }
@@ -405,6 +452,8 @@ class NearbyActivity : AppCompatActivity() {
         val idx = radiusIdx
         val all = merged(idx)
         if (all.isEmpty() && (osmLoading || (!osmCache.containsKey(idx) && !osmFailed))) {
+            lastOrdered = emptyList()
+            if (mapOpen) updateMap(false)
             showMessage("正在查附近的餐廳…")
             return
         }
@@ -423,6 +472,8 @@ class NearbyActivity : AppCompatActivity() {
             }
             a.second.compareTo(b.second)
         })
+        lastOrdered = ordered
+        if (mapOpen) updateMap(false)
         val tierCount = ordered.groupingBy { it.first.tier() }.eachCount()
         val km = (RADII[idx] / 1000).toInt()
 
@@ -502,10 +553,7 @@ class NearbyActivity : AppCompatActivity() {
                 else -> rect(p.cd, dp(14), p.ln)
             }
             setPadding(dp(14), dp(14), dp(14), dp(14))
-            setOnClickListener {
-                startActivity(Intent(this@NearbyActivity, PickActivity::class.java)
-                    .putExtra("pick", pl.detailJson()).putExtra("dist", dist))
-            }
+            setOnClickListener { openDetail(pl, dist) }
         }
         val top = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         top.addView(TextView(this).apply {
@@ -552,5 +600,346 @@ class NearbyActivity : AppCompatActivity() {
         val wrap = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         wrap.addView(box, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
         return wrap
+    }
+
+    // ---- 找地點：搜尋框、我的位置、地圖選點 ----
+    private fun outlineBtn(label: String, onClick: () -> Unit) = TextView(this).apply {
+        text = label
+        textSize = 16f
+        gravity = Gravity.CENTER
+        setTextColor(p.tx)
+        setTypeface(null, Typeface.BOLD)
+        background = rect(p.cd, dp(10), p.ln)
+        setPadding(0, dp(10), 0, dp(10))
+        setOnClickListener { onClick() }
+    }
+
+    private fun buildSearch(): View {
+        val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        searchBox = EditText(this).apply {
+            hint = "打地址、地標、捷運站，按 Enter"
+            textSize = 17f
+            setTextColor(p.tx)
+            setHintTextColor(p.sb)
+            isSingleLine = true
+            imeOptions = EditorInfo.IME_ACTION_SEARCH
+            background = rect(p.cd, dp(10), p.ln)
+            setPadding(dp(14), dp(11), dp(14), dp(11))
+            setOnEditorActionListener { _, actionId, ev ->
+                val enter = actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE ||
+                    (ev != null && ev.keyCode == KeyEvent.KEYCODE_ENTER && ev.action == KeyEvent.ACTION_DOWN)
+                if (enter) doSearch(text.toString())
+                enter
+            }
+            setOnFocusChangeListener { _, has ->
+                background = if (has) Theme.roundRect(p.cd, dp(10), p.hi, dp(2)) else rect(p.cd, dp(10), p.ln)
+                if (has && text.isEmpty()) showRecent() else if (!has) suggestBox.removeAllViews()
+            }
+            addTextChangedListener(object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) {
+                    searchMsg.visibility = View.GONE
+                    if (s.isNullOrEmpty() && hasFocus()) showRecent() else suggestBox.removeAllViews()
+                }
+            })
+        }
+        box.addView(searchBox, LinearLayout.LayoutParams(-1, -2))
+        searchMsg = TextView(this).apply {
+            textSize = 15f
+            visibility = View.GONE
+            setPadding(dp(4), dp(6), dp(4), 0)
+        }
+        box.addView(searchMsg)
+        suggestBox = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        box.addView(suggestBox, LinearLayout.LayoutParams(-1, -2))
+
+        val row = LinearLayout(this)
+        row.addView(outlineBtn("◎ 我的位置") { useMyLocation() }, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
+        mapBtn = outlineBtn("地圖選點") { toggleMap() }
+        row.addView(mapBtn, LinearLayout.LayoutParams(0, -2, 1f))
+        box.addView(row, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+
+        mapHolder = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; visibility = View.GONE }
+        box.addView(mapHolder, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+
+        val cbar = LinearLayout(this).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            background = rect(p.ch, dp(10))
+            setPadding(dp(12), dp(8), dp(12), dp(8))
+        }
+        centerText = TextView(this).apply {
+            textSize = 16f
+            setTextColor(p.tx)
+            isSingleLine = true
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+        cbar.addView(centerText, LinearLayout.LayoutParams(0, -2, 1f))
+        cbar.addView(TextView(this).apply {
+            text = "Google 地圖 ›"
+            textSize = 15f
+            setTextColor(p.hi)
+            setTypeface(null, Typeface.BOLD)
+            setPadding(dp(10), dp(2), 0, dp(2))
+            setOnClickListener { openCenterInGoogle() }
+        })
+        box.addView(cbar, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+        drawCenter()
+        return box
+    }
+
+    private fun drawCenter() {
+        if (!::centerText.isInitialized) return
+        centerText.text = "中心：" + (centerName ?: if (loc == null) "我的位置（定位中）" else "我的位置")
+    }
+
+    private fun openCenterInGoogle() {
+        val l = loc ?: return
+        val nm = android.net.Uri.encode(centerName ?: "我的位置")
+        runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("geo:${l.latitude},${l.longitude}?q=${l.latitude},${l.longitude}($nm)")))
+        }.onFailure {
+            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://www.google.com/maps/search/?api=1&query=${l.latitude},${l.longitude}")))
+        }
+    }
+
+    private fun hideKeyboard() {
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(searchBox.windowToken, 0)
+        searchBox.clearFocus()
+    }
+
+    private fun msg(text: String, kind: Int) { // 0 說明、1 錯誤（紅）、2 成功（綠）
+        searchMsg.text = text
+        searchMsg.setTextColor(when (kind) { 1 -> p.rd; 2 -> p.vg; else -> p.sb })
+        searchMsg.visibility = View.VISIBLE
+    }
+
+    private fun suggestRows(title: String, list: List<Spot>) {
+        suggestBox.removeAllViews()
+        if (list.isEmpty()) return
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = rect(p.cd, dp(10), p.ln)
+        }
+        card.addView(TextView(this).apply {
+            text = title
+            textSize = 14f
+            setTextColor(p.sb)
+            setPadding(dp(14), dp(8), dp(14), dp(2))
+        })
+        list.forEachIndexed { i, s ->
+            if (i > 0) card.addView(View(this).apply { setBackgroundColor(p.ln) }, LinearLayout.LayoutParams(-1, 1))
+            card.addView(TextView(this).apply {
+                text = s.label
+                textSize = 17f
+                setTextColor(p.tx)
+                setPadding(dp(14), dp(12), dp(14), dp(12))
+                setOnClickListener { applySpot(s) }
+            })
+        }
+        suggestBox.addView(card, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
+    }
+
+    private fun showRecent() = suggestRows("最近搜過的地點", GeoSearch.recent(this))
+
+    private fun doSearch(raw: String) {
+        val q = raw.trim()
+        if (q.isEmpty()) return
+        suggestBox.removeAllViews()
+        msg(if (GeoSearch.isLink(q)) "正在讀取 Google 地圖連結…" else "正在找「$q」…", 0)
+        geoIo.execute {
+            val list = if (GeoSearch.isLink(q)) listOfNotNull(GeoSearch.fromShared(this, q)) else GeoSearch.search(this, q)
+            handler.post {
+                when {
+                    list.isEmpty() -> msg(
+                        if (GeoSearch.isLink(q)) "讀不出這個連結的位置，請改打地點名稱。"
+                        else "找不到「$q」。可以加上縣市再試，例如「台中 中正路」。", 1)
+                    list.size == 1 -> applySpot(list[0])
+                    else -> { searchMsg.visibility = View.GONE; suggestRows("找到 ${list.size} 個地點，請點一個：", list) }
+                }
+            }
+        }
+    }
+
+    private fun applySpot(s: Spot, note: String? = null) {
+        GeoSearch.remember(this, s)
+        suggestBox.removeAllViews()
+        searchBox.setText("")
+        hideKeyboard()
+        if (note != null) msg(note, 2) else searchMsg.visibility = View.GONE
+        setCenter(s.lat, s.lng, s.name)
+    }
+
+    private fun setCenter(lat: Double, lng: Double, name: String?) {
+        centerName = name
+        loc = Location("pick").apply { latitude = lat; longitude = lng }
+        osmCache.clear()
+        shown = 20
+        widenedFrom = -1
+        drawCenter()
+        updateMap(true)
+        loadOsm()
+        refresh()
+    }
+
+    private fun useMyLocation() {
+        searchMsg.visibility = View.GONE
+        suggestBox.removeAllViews()
+        hideKeyboard()
+        centerName = null
+        val g = gpsLoc
+        if (g != null) setCenter(g.latitude, g.longitude, null)
+        else if (hasPermission()) { loc = null; drawCenter(); locate() }
+        else requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 7)
+    }
+
+    // ---- 從 Google 地圖「分享」過來 ----
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleShare(intent)
+    }
+
+    private fun handleShare(src: Intent?) {
+        val it = src ?: return
+        if (it.action != Intent.ACTION_SEND) return
+        val text = listOfNotNull(it.getStringExtra(Intent.EXTRA_SUBJECT), it.getStringExtra(Intent.EXTRA_TEXT))
+            .joinToString("\n").trim()
+        if (text.isEmpty()) return
+        it.action = null
+        msg("正在讀取 Google 地圖分享的地點…", 0)
+        geoIo.execute {
+            val s = GeoSearch.fromShared(this, text)
+            handler.post {
+                if (s == null) msg("讀不出這個分享的位置，請改在上面打地點名稱。", 1)
+                else applySpot(s, "已收到 Google 地圖的地點：${s.name}")
+            }
+        }
+    }
+
+    // ---- 地圖（開放地圖，免費） ----
+    private fun toggleMap() {
+        mapOpen = !mapOpen
+        mapBtn.text = if (mapOpen) "收起地圖" else "地圖選點"
+        hideKeyboard()
+        if (mapOpen && mapView == null) buildMap()
+        mapHolder.visibility = if (mapOpen) View.VISIBLE else View.GONE
+        if (mapOpen) { mapView?.onResume(); updateMap(true) } else mapView?.onPause()
+    }
+
+    private fun buildMap() {
+        val cfg = Configuration.getInstance()
+        cfg.load(this, getSharedPreferences("osmdroid", MODE_PRIVATE))
+        cfg.userAgentValue = "app.deals/1.6"
+        cfg.osmdroidBasePath = java.io.File(cacheDir, "osmdroid")
+        cfg.osmdroidTileCache = java.io.File(cacheDir, "osmdroid/tiles")
+        val mv = MapView(this).apply {
+            setTileSource(TileSourceFactory.MAPNIK)
+            setMultiTouchControls(true)
+            zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
+            minZoomLevel = 7.0
+            maxZoomLevel = 19.0
+        }
+        mapView = mv
+        val frame = android.widget.FrameLayout(this).apply { background = rect(p.ch, dp(10)) }
+        frame.addView(mv, android.widget.FrameLayout.LayoutParams(-1, -1))
+        frame.addView(TextView(this).apply {
+            text = "金＝好餐廳　藍＝口碑不錯　灰＝其他"
+            textSize = 14f
+            setTextColor(p.tx)
+            background = rect(p.cd, dp(6), p.ln)
+            setPadding(dp(8), dp(3), dp(8), dp(3))
+        }, android.widget.FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM or Gravity.START).apply { leftMargin = dp(6); bottomMargin = dp(6) })
+        mapHolder.addView(frame, LinearLayout.LayoutParams(-1, dp(300)))
+        selBar = TextView(this).apply {
+            textSize = 17f
+            setTextColor(p.tx)
+            setTypeface(null, Typeface.BOLD)
+            background = Theme.roundRect(p.cd, dp(10), p.hi, dp(2))
+            setPadding(dp(14), dp(11), dp(14), dp(11))
+            visibility = View.GONE
+        }
+        mapHolder.addView(selBar, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
+        mapHolder.addView(TextView(this).apply {
+            text = "按住地圖上任一點，改用那裡找。點圖釘看店名。"
+            textSize = 15f
+            setTextColor(p.sb)
+            setPadding(dp(2), dp(6), dp(2), 0)
+        })
+    }
+
+    private fun dot(color: Int, size: Int, stroke: Int) = android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.OVAL
+        setColor(color)
+        setStroke(dp(stroke), android.graphics.Color.WHITE)
+        setSize(dp(size), dp(size))
+    }
+
+    private fun updateMap(recenter: Boolean) {
+        val mv = mapView ?: return
+        if (!mapOpen) return
+        val l = loc ?: return
+        val c = GeoPoint(l.latitude, l.longitude)
+        mv.overlays.clear()
+        mv.overlays.add(MapEventsOverlay(object : MapEventsReceiver {
+            override fun singleTapConfirmedHelper(pt: GeoPoint?): Boolean = false
+            override fun longPressHelper(pt: GeoPoint?): Boolean {
+                if (pt == null) return false
+                selBar.visibility = View.GONE
+                searchMsg.visibility = View.GONE
+                setCenter(pt.latitude, pt.longitude, "地圖上選的點")
+                return true
+            }
+        }))
+        mv.overlays.add(Polygon().apply {
+            points = Polygon.pointsAsCircle(c, RADII[radiusIdx])
+            fillPaint.color = 0x1A378ADD
+            outlinePaint.color = android.graphics.Color.parseColor("#378ADD")
+            outlinePaint.strokeWidth = dp(2).toFloat()
+            setOnClickListener { _, _, _ -> false }
+        })
+        val blue = android.graphics.Color.parseColor("#378ADD")
+        val gray = android.graphics.Color.parseColor("#888780")
+        // 灰的先畫，金的最後畫，才會疊在最上面
+        for ((pl, d) in lastOrdered.take(300).reversed()) {
+            val t = pl.tier()
+            mv.overlays.add(Marker(mv).apply {
+                position = GeoPoint(pl.lat, pl.lng)
+                icon = dot(when (t) { 1 -> Theme.GOLD; 2 -> blue; else -> gray }, if (t < 3) 20 else 16, 2)
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                setOnMarkerClickListener { _, _ ->
+                    selBar.text = "${pl.name}　${Theme.dist(d)}　看詳細 ›"
+                    selBar.setOnClickListener { openDetail(pl, d) }
+                    selBar.visibility = View.VISIBLE
+                    true
+                }
+            })
+        }
+        mv.overlays.add(Marker(mv).apply {
+            position = c
+            icon = dot(android.graphics.Color.parseColor("#E24B4A"), 24, 3)
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            setOnMarkerClickListener { _, _ -> true }
+        })
+        if (recenter) {
+            selBar.visibility = View.GONE
+            mv.controller.setZoom(ZOOMS[radiusIdx])
+            mv.controller.setCenter(c)
+        }
+        mv.invalidate()
+    }
+
+    private fun openDetail(pl: Place, dist: Double) {
+        startActivity(Intent(this, PickActivity::class.java).putExtra("pick", pl.detailJson()).putExtra("dist", dist))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mapOpen) mapView?.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
     }
 }
