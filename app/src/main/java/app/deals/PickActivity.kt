@@ -116,11 +116,25 @@ class PickActivity : AppCompatActivity() {
         info.addView(row("營業時間", k.hours.ifEmpty { "未提供" }, last = true))
         content.addView(info, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10) })
 
+        content.addView(TextView(this).apply {
+            text = "★ Google 評價與照片"
+            textSize = 19f
+            gravity = Gravity.CENTER
+            setTypeface(null, Typeface.BOLD)
+            val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+            val blue = android.graphics.Color.parseColor(if (night) "#7FA6F0" else "#3F6FC6")
+            setTextColor(if (night) android.graphics.Color.parseColor("#BBD0F7") else android.graphics.Color.parseColor("#1F3F7A"))
+            background = Theme.roundRect(android.graphics.Color.parseColor(if (night) "#1A2438" else "#EAF1FF"), dp(14), blue, dp(2))
+            setPadding(0, dp(14), 0, dp(14))
+            setOnClickListener { openReviews(k) }
+        }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
+
         val btns = LinearLayout(this)
         btns.addView(button("導航", true) { openMap(k) }, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
         btns.addView(button("撥打", false) { dial(k) }, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
         btns.addView(button("資料來源", false) { openUrl(k) }, LinearLayout.LayoutParams(0, -2, 1f))
-        content.addView(btns, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(14) })
+        content.addView(btns, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10) })
 
         content.addView(TextView(this).apply {
             text = if (runCatching { JSONObject(k.raw).optBoolean("osm") }.getOrDefault(false)) "這家店的資料來自開放地圖（OpenStreetMap），沒有評價資料，內容可能與現況略有差異。" else "評價與點閱數為整理當日的公開資料，可能與現況略有差異。"
@@ -177,6 +191,16 @@ class PickActivity : AppCompatActivity() {
         } catch (e: ActivityNotFoundException) {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=" + Uri.encode(q))))
         }
+    }
+
+    /** 用「店名＋地址」在 Google 地圖搜尋，通常直接停在店家頁面，往下滑就是星等和評論 */
+    private fun openReviews(k: Pick) {
+        val url = if (k.address.isNotEmpty())
+            "https://www.google.com/maps/search/?api=1&query=" + Uri.encode(k.name + " " + k.address)
+        else if (k.lat != null && k.lng != null)
+            "https://www.google.com/maps/search/" + Uri.encode(k.name) + "/@${k.lat},${k.lng},17z"
+        else "https://www.google.com/maps/search/?api=1&query=" + Uri.encode(k.name)
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
     private fun dial(k: Pick) {

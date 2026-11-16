@@ -11,8 +11,8 @@ android {
         applicationId = "app.deals"
         minSdk = 28
         targetSdk = 34
-        versionCode = 16
-        versionName = "1.7"
+        versionCode = 17
+        versionName = "1.8"
     }
 
     signingConfigs {

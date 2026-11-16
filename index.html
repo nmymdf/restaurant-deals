@@ -159,14 +159,16 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 .cbar #ctext{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cbar button{color:var(--hi);font-weight:700;font-size:15px;white-space:nowrap}
 .dot{border-radius:50%;border:2px solid #fff;box-sizing:border-box}
+.rvbtn{display:block;margin-top:12px;text-align:center;font-size:19px;font-weight:700;text-decoration:none;padding:14px 0;border-radius:14px;border:2px solid #3F6FC6;background:#EAF1FF;color:#1F3F7A}
+@media(prefers-color-scheme:dark){.rvbtn{background:#1A2438;border-color:#7FA6F0;color:#BBD0F7}}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v1.7</div></div>
+<div id="splash"><div class="ver">v1.8</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.7</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.8</div></div>
 <button class="upbtn" id="refresh">↻更新</button>
 </div>
 <div class="cap" id="cap"></div>
@@ -198,7 +200,7 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 <div id="ghost" class="cc"></div>
 <div id="toast"></div>
 <script>
-var VER="v1.7";
+var VER="v1.8";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
@@ -687,6 +689,9 @@ function openPick(k,dist){
   if(k.address)info.appendChild(irow("地址",k.address+"　›",true,function(){openSheet(d)}));else info.appendChild(irow("地址",d.ll?"以位置導航　›":"未提供",!!d.ll,function(){openSheet(d)}));
   if(k.phone)info.appendChild(irow("電話",k.phone+"　›",true,function(){location.href="tel:"+k.phone.replace(/[^0-9+]/g,"")}));else info.appendChild(irow("電話","未提供"));
   info.appendChild(irow("營業時間",k.hours||"未提供"));w.appendChild(info);
+  var rv=el("a","rvbtn","★ Google 評價與照片");
+  rv.href=k.address?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(k.name+" "+k.address):(k.lat!=null?"https://www.google.com/maps/search/"+encodeURIComponent(k.name)+"/@"+k.lat+","+k.lng+",17z":"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(k.name));
+  rv.target="_blank";rv.rel="noopener";w.appendChild(rv);
   var bs=el("div","btns");
   var nav=el("button","g","導航");nav.onclick=function(){openSheet(d)};bs.appendChild(nav);
   var tel=el("button",null,"撥打");tel.onclick=function(){if(k.phone)location.href="tel:"+k.phone.replace(/[^0-9+]/g,"");else toast("沒有電話資料")};bs.appendChild(tel);
