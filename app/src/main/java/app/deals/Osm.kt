@@ -31,12 +31,13 @@ object Osm {
     private const val AMEN = "restaurant|fast_food|cafe|food_court|pub|bar"
 
     /** 成功回傳清單（可能是空的），兩個伺服器都失敗回傳 null。 */
-    fun fetch(lat: Double, lng: Double, radius: Int): List<Place>? {
+    fun fetch(lat: Double, lng: Double, radius: Int, onStage: ((Int) -> Unit)? = null): List<Place>? {
         val q = "[out:json][timeout:25][maxsize:100000000];(" +
             "node(around:$radius,$lat,$lng)[\"amenity\"~\"^($AMEN)\$\"][\"name\"];" +
             "way(around:$radius,$lat,$lng)[\"amenity\"~\"^($AMEN)\$\"][\"name\"];" +
             ");out center 600;"
         for (ep in ENDPOINTS) {
+            onStage?.invoke(0)
             val text = runCatching {
                 val conn = URL(ep).openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
@@ -46,6 +47,7 @@ object Osm {
                 conn.setRequestProperty("User-Agent", "RestaurantDeals/1.2")
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
                 conn.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
+                onStage?.invoke(1)
                 if (conn.responseCode != 200) error("http")
                 conn.inputStream.bufferedReader().use { it.readText() }
             }.getOrNull() ?: continue
@@ -55,6 +57,7 @@ object Osm {
                 remark.contains("error", true) || remark.contains("timed out", true) || remark.contains("out of memory", true)
             }.getOrDefault(true)
             if (bad) continue
+            onStage?.invoke(2)
             val list = runCatching { parse(text) }.getOrNull() ?: continue
             return list
         }

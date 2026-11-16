@@ -12,6 +12,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -51,9 +52,21 @@ class NearbyActivity : AppCompatActivity() {
     private lateinit var panelHolder: LinearLayout
     private lateinit var condHolder: LinearLayout
     private lateinit var listBox: LinearLayout
-    private var openPanel = 0 // 0 收合、1 範圍、2 類別
+    private var openPanel = 0 // 0 收合、1 範圍
     private var category = Cats.ALL
-    private var lastCounts: Map<String, Int> = emptyMap()
+    private val GOOD = "★ 好評推薦"
+    // 四步流程：0 設條件、1 搜尋中、2 選類別、3 看清單
+    private var phase = 0
+    private var stage = 0
+    private var startedAt = 0L
+    private var searchedAt = 0L
+    private var errorKind = 0 // 1 逾時、2 範圍內沒有店
+    private lateinit var scrollView: ScrollView
+    private val tick = object : Runnable {
+        override fun run() {
+            if (phase == 1) { render(); handler.postDelayed(this, 1000) }
+        }
+    }
     private val io = Executors.newSingleThreadExecutor()
     private val geoIo = Executors.newSingleThreadExecutor()   // 找地點，不要排在慢的查詢後面
     private val osmIo = Executors.newCachedThreadPool()
@@ -126,7 +139,7 @@ class NearbyActivity : AppCompatActivity() {
             setBackgroundColor(p.pg)
             isFocusableInTouchMode = true // 開啟時不要自動跳出鍵盤
         }
-        header = ui.header(1, "名單更新") { osmCache.clear(); loadOsm(force = true); loadPicks(true) }
+        header = ui.header(1, "名單更新") { osmCache.clear(); loadPicks(true); if (phase != 0) startSearch(true) }
         root.addView(header.view)
         // 只固定標題和分頁，其餘（搜尋、按鈕、範圍類別、清單）全部一起往上滑
         val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
@@ -144,10 +157,11 @@ class NearbyActivity : AppCompatActivity() {
             setPadding(dp(14), dp(4), dp(14), dp(28))
         }
         content.addView(listBox)
-        root.addView(ScrollView(this).apply {
+        scrollView = ScrollView(this).apply {
             isFillViewport = true
             addView(content)
-        }, LinearLayout.LayoutParams(-1, 0, 1f))
+        }
+        root.addView(scrollView, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(root)
         drawFilters()
         showMessage("正在取得你的位置…")
@@ -158,13 +172,13 @@ class NearbyActivity : AppCompatActivity() {
         drawFilters()
     }
 
+    /** 範圍只在第 1 步（設條件）出現；搜尋之後就收起來，畫面只留當下需要的東西 */
     private fun drawFilters() {
         filterBar.removeAllViews()
-        filterBar.addView(ui.filterButton("範圍", "${(RADII[radiusIdx] / 1000).toInt()} 公里", openPanel == 1) { togglePanel(1) },
-            LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
-        filterBar.addView(ui.filterButton("類別", if (category == Cats.ALL) "全部" else category, openPanel == 2) { togglePanel(2) },
-            LinearLayout.LayoutParams(0, -2, 1f))
         panelHolder.removeAllViews()
+        if (phase != 0) return
+        filterBar.addView(ui.filterButton("範圍", "${(RADII[radiusIdx] / 1000).toInt()} 公里內", openPanel == 1) { togglePanel(1) },
+            LinearLayout.LayoutParams(-1, -2))
         if (openPanel == 1) {
             val box = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
@@ -174,22 +188,14 @@ class NearbyActivity : AppCompatActivity() {
                 val sel = i == radiusIdx
                 box.addView(TextView(this).apply {
                     text = "${(RADII[i] / 1000).toInt()} 公里內" + if (sel) "  ✓" else ""
-                    textSize = 16f
+                    textSize = 17f
                     setTextColor(if (sel) p.hi else p.tx)
                     if (sel) setTypeface(null, Typeface.BOLD)
-                    setPadding(dp(16), dp(12), dp(16), dp(12))
-                    setOnClickListener { radiusIdx = i; widenedFrom = -1; shown = 20; openPanel = 0; drawFilters(); updateMap(true); loadOsm(); refresh() }
+                    setPadding(dp(16), dp(13), dp(16), dp(13))
+                    setOnClickListener { radiusIdx = i; openPanel = 0; onConditionChanged() }
                 })
             }
             panelHolder.addView(box)
-        } else if (openPanel == 2) {
-            val known = picks.map { it.category } + lastCounts.keys
-            panelHolder.addView(
-                ui.categoryPanel(lastCounts, known, category,
-                    onPick = { category = it; shown = 20; openPanel = 0; drawFilters(); refresh() },
-                    onReorder = { drawFilters() }),
-                LinearLayout.LayoutParams(-1, -2)
-            )
         }
     }
 
@@ -303,11 +309,8 @@ class NearbyActivity : AppCompatActivity() {
         if (centerName != null) return
         loc = l
         osmCache.clear()
-        shown = 20
-        widenedFrom = -1
         drawCenter()
-        updateMap(true)
-        loadOsm()
+        onConditionChanged()
         io.execute {
             // 反查所在縣市，用來決定先處理哪些店（失敗也沒關係）
             val city = runCatching {
@@ -315,9 +318,8 @@ class NearbyActivity : AppCompatActivity() {
                 val a: List<Address>? = Geocoder(this, Locale.TAIWAN).getFromLocation(l.latitude, l.longitude, 1)
                 Regions.normalize(a?.firstOrNull()?.adminArea ?: "")
             }.getOrDefault("")
-            handler.post { userCity = city; refresh() }
+            handler.post { userCity = city; render() }
         }
-        refresh()
     }
 
     // ---- 座標 ----
@@ -371,44 +373,101 @@ class NearbyActivity : AppCompatActivity() {
     }
 
     // ---- 開放地圖：附近所有餐廳 ----
-    private fun loadOsm(force: Boolean = false) {
+    private fun cacheFile(): java.io.File? {
+        val l = loc ?: return null
+        return java.io.File(cacheDir, String.format(Locale.US, "osm_%.3f_%.3f_%d.json", l.latitude, l.longitude, RADII[radiusIdx].toInt()))
+    }
+
+    /** 條件（中心、範圍）一改，舊結果作廢，回到第 1 步；但 6 小時內查過同一處，就直接顯示上次的類別 */
+    private fun onConditionChanged() {
+        osmGen++
+        osmLoading = false
+        osmFailed = false
+        errorKind = 0
+        category = Cats.ALL
+        shown = 20
+        widenedFrom = -1
+        handler.removeCallbacks(tick)
+        phase = 0
+        val f = cacheFile()
+        val cached = runCatching {
+            if (f != null && f.exists() && System.currentTimeMillis() - f.lastModified() < 6 * 3600e3) Osm.decode(f.readText()) else null
+        }.getOrNull()
+        if (cached != null) {
+            osmCache[radiusIdx] = cached
+            searchedAt = f!!.lastModified()
+            if (merged(radiusIdx).isNotEmpty()) phase = 2
+        }
+        openPanel = 0
+        drawFilters()
+        updateMap(true)
+        render()
+    }
+
+    private fun startSearch(force: Boolean = false) {
+        if (loc == null) { showMessage("還沒有取得位置。\n請稍等，或在上面打地址或地標。"); return }
+        if (force) { osmCache.remove(radiusIdx); cacheFile()?.let { runCatching { it.delete() } } }
+        errorKind = 0
+        category = Cats.ALL
+        shown = 20
+        hideKeyboard()
+        if (osmCache.containsKey(radiusIdx)) { finishSearch(); return }
+        phase = 1
+        stage = 0
+        startedAt = SystemClock.elapsedRealtime()
+        handler.removeCallbacks(tick)
+        handler.postDelayed(tick, 1000)
+        drawFilters()
+        loadOsm()
+        render()
+    }
+
+    private fun cancelSearch() {
+        osmGen++
+        osmLoading = false
+        handler.removeCallbacks(tick)
+        phase = 0
+        drawFilters()
+        render()
+    }
+
+    private fun loadOsm() {
         val l = loc ?: return
         val idx = radiusIdx
-        if (osmCache.containsKey(idx)) { osmGen++; osmLoading = false; osmFailed = false; refresh(); return }
-        val key = String.format(Locale.US, "osm_%.3f_%.3f_%d.json", l.latitude, l.longitude, RADII[idx].toInt())
-        val file = java.io.File(cacheDir, key)
-        if (force) runCatching { file.delete() }
-        // 同一個地方 6 小時內查過，直接用手機裡的結果，幾乎立刻出現
-        val cached = runCatching { if (file.exists()) Osm.decode(file.readText()) else null }.getOrNull()
-        if (cached != null) {
-            osmGen++
-            osmLoading = false
-            osmCache[idx] = cached
-            osmFailed = false
-            refresh()
-            return
-        }
+        val file = cacheFile() ?: return
         osmLoading = true
         osmFailed = false
         val gen = ++osmGen
-        refresh()
         osmIo.execute {
-            val res = Osm.fetch(l.latitude, l.longitude, RADII[idx].toInt())
+            val res = Osm.fetch(l.latitude, l.longitude, RADII[idx].toInt()) { st ->
+                handler.post { if (gen == osmGen && st != stage) { stage = st; render() } }
+            }
             if (res != null) runCatching { file.writeText(Osm.encode(res)) }
             handler.post {
                 if (gen != osmGen) return@post   // 中心或範圍已經換了，舊結果不要用
                 osmLoading = false
                 if (res != null) osmCache[idx] = res else osmFailed = true
-                // 這個範圍真的沒有店（不是查詢失敗），才自動往外擴大一級
-                if (res != null && idx == radiusIdx && idx < RADII.size - 1 && merged(idx).isEmpty() && !geocoding) {
-                    widenedFrom = idx
-                    radiusIdx = idx + 1
-                    drawFilters()
-                    updateMap(true)
-                    loadOsm()
-                } else refresh()
+                finishSearch()
             }
         }
+    }
+
+    private fun finishSearch() {
+        handler.removeCallbacks(tick)
+        val idx = radiusIdx
+        val all = merged(idx)
+        searchedAt = System.currentTimeMillis()
+        category = Cats.ALL
+        shown = 20
+        when {
+            osmFailed && all.isEmpty() -> { phase = 0; errorKind = 1 }
+            all.isEmpty() -> { phase = 0; errorKind = 2 }
+            else -> { phase = 2; errorKind = if (osmFailed) 1 else 0 }
+        }
+        drawFilters()
+        updateMap(true)
+        render()
+        scrollView.post { scrollView.scrollTo(0, 0) }
     }
 
     private fun normName(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
@@ -451,21 +510,86 @@ class NearbyActivity : AppCompatActivity() {
         setPadding(dp(12), dp(10), dp(12), dp(10))
     }
 
-    // ---- 顯示 ----
-    private fun refresh() {
-        val l = loc ?: return
+    // ---- 顯示：依步驟畫不同的畫面 ----
+    private fun refresh() = render()
+
+    private val itemLp get() = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) }
+
+    private fun ago(t: Long): String {
+        val m = ((System.currentTimeMillis() - t) / 60000).toInt()
+        return when {
+            m < 1 -> "剛剛"
+            m < 60 -> "$m 分鐘前"
+            else -> "${m / 60} 小時前"
+        }
+    }
+
+    private fun centerLabel() = centerName ?: "我的位置"
+
+    private fun render() {
+        if (loc == null) return
         startGeocoding()
+        condHolder.removeAllViews()
+        listBox.removeAllViews()
+        if (phase != 3 && phase != 2) { lastOrdered = emptyList(); if (mapOpen) updateMap(false) }
+        when (phase) {
+            0 -> renderStart()
+            1 -> renderProgress()
+            2 -> renderCategories()
+            else -> renderList()
+        }
+    }
+
+    private fun renderStart() {
+        val idx = radiusIdx
+        val km = (RADII[idx] / 1000).toInt()
+        val v = when (errorKind) {
+            1 -> ui.noticeCard("查詢逾時", "開放地圖的免費伺服器現在比較忙。\n這不代表附近沒有店，請再試一次。", "再試一次", { startSearch(true) })
+            2 -> ui.noticeCard("$km 公里內找不到餐廳",
+                "開放地圖在這個範圍沒有資料。" + if (idx < RADII.size - 1) "可以把範圍放大再找。" else "",
+                if (idx < RADII.size - 1) "範圍擴大到 ${(RADII[idx + 1] / 1000).toInt()} 公里，再搜尋" else null,
+                { radiusIdx = idx + 1; onConditionChanged(); startSearch() })
+            else -> ui.startCard("準備搜尋附近餐廳", listOf("中心：${centerLabel()}", "範圍：$km 公里內"), "開始搜尋") { startSearch() }
+        }
+        listBox.addView(v, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+    }
+
+    private fun renderProgress() {
+        val sec = ((SystemClock.elapsedRealtime() - startedAt) / 1000).toInt()
+        val el = "已等 $sec 秒" + if (sec >= 15) "　伺服器比較忙，請再等一下" else ""
+        listBox.addView(
+            ui.progressCard("正在搜尋附近餐廳", listOf("連線伺服器", "查詢附近餐廳", "整理分類"), stage, el) { cancelSearch() },
+            LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+    }
+
+    private fun renderCategories() {
+        val idx = radiusIdx
+        val km = (RADII[idx] / 1000).toInt()
+        val all = merged(idx)
+        val counts = all.groupingBy { it.first.category }.eachCount()
+        val good = all.count { it.first.tier() < 3 }
+        lastOrdered = all.sortedBy { it.second }
+        if (mapOpen) updateMap(false)
+        listBox.addView(ui.infoStrip("${centerLabel()}　·　$km 公里內共 ${all.size} 家\n上次搜尋：${ago(searchedAt)}", "改條件") {
+            phase = 0; errorKind = 0; drawFilters(); render()
+        }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6); bottomMargin = dp(12) })
+        if (errorKind == 1) listBox.addView(note("開放地圖查詢逾時，目前只有我們整理的名單。按「改條件」再搜尋一次。"), itemLp)
+        listBox.addView(TextView(this).apply {
+            text = "請選類別"
+            textSize = 17f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.tx)
+            setPadding(dp(2), 0, 0, dp(8))
+        })
+        listBox.addView(ui.categoryTiles(counts, picks.map { it.category }, Triple(GOOD, good, true),
+            onPick = { category = it; shown = 20; phase = 3; render(); scrollView.post { scrollView.scrollTo(0, 0) } },
+            onReorder = { render() }))
+    }
+
+    private fun renderList() {
         val idx = radiusIdx
         val all = merged(idx)
-        if (all.isEmpty() && (osmLoading || (!osmCache.containsKey(idx) && !osmFailed))) {
-            lastOrdered = emptyList()
-            if (mapOpen) updateMap(false)
-            showMessage("正在查附近的餐廳…")
-            return
-        }
-        val withCat = if (category == Cats.ALL) all else all.filter { it.first.category == category }
-        lastCounts = all.groupingBy { it.first.category }.eachCount()
-
+        val withCat = if (category == GOOD) all.filter { it.first.tier() < 3 } else all.filter { it.first.category == category }
         // 好餐廳、口碑不錯：依評價高低；其他：依距離
         val ordered = withCat.sortedWith(Comparator { a, b ->
             val ta = a.first.tier()
@@ -481,56 +605,25 @@ class NearbyActivity : AppCompatActivity() {
         lastOrdered = ordered
         if (mapOpen) updateMap(false)
         val tierCount = ordered.groupingBy { it.first.tier() }.eachCount()
-        val km = (RADII[idx] / 1000).toInt()
-
-        val conds = ArrayList<Pair<String, () -> Unit>>()
-        if (radiusIdx > 0) conds.add("$km 公里" to { radiusIdx = 0; widenedFrom = -1; shown = 20; drawFilters(); loadOsm(); refresh() })
-        if (category != Cats.ALL) conds.add(category to { category = Cats.ALL; shown = 20; drawFilters(); refresh() })
-        val parts = (1..3).filter { (tierCount[it] ?: 0) > 0 }.joinToString("、") { "${Theme.tierName(it)} ${tierCount[it]}" }
-        val progress = if (geocoding) "　· 正在比對名單地址" else ""
-        val countLine = "符合 ${ordered.size} 家" + (if (ordered.isNotEmpty()) "（$parts）" else "") + progress
-        condHolder.removeAllViews()
-        condHolder.addView(ui.conditions(conds, countLine), LinearLayout.LayoutParams(-1, -2))
-
-        listBox.removeAllViews()
-        val sp = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) }
-        if (osmLoading) listBox.addView(note("正在查更多附近的餐廳…先顯示我們整理的名單。"), sp)
-        if (osmFailed) listBox.addView(note("查詢逾時，暫時只有我們整理的名單。請按右上角「更新」再試一次。"), sp)
-        if (widenedFrom >= 0) listBox.addView(note("${(RADII[widenedFrom] / 1000).toInt()} 公里內沒有餐廳，已自動擴大到 $km 公里。"), sp)
+        listBox.addView(ui.backBar(category, ordered.size, "家") {
+            phase = 2; render(); scrollView.post { scrollView.scrollTo(0, 0) }
+        }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6); bottomMargin = dp(12) })
         if (ordered.isEmpty()) {
-            when {
-                osmFailed ->
-                    listBox.addView(ui.emptyState("查詢逾時，暫時查不到附近餐廳。\n這不代表附近沒有店。", "再試一次") {
-                        osmCache.remove(idx); loadOsm()
-                    })
-                category != Cats.ALL && all.isNotEmpty() ->
-                    listBox.addView(ui.emptyState("$km 公里內沒有「$category」的店", "移除$category，看全部 ${all.size} 家") {
-                        category = Cats.ALL; shown = 20; drawFilters(); refresh()
-                    })
-                idx < RADII.size - 1 ->
-                    listBox.addView(ui.emptyState("$km 公里內找不到餐廳", "範圍擴大到 ${(RADII[idx + 1] / 1000).toInt()} 公里") {
-                        radiusIdx = idx + 1; widenedFrom = -1; drawFilters(); loadOsm()
-                    })
-                else -> listBox.addView(ui.emptyState("$km 公里內找不到餐廳。\n開放地圖在這個地區可能還沒有資料。", null, null))
-            }
+            listBox.addView(ui.emptyState("這個類別目前沒有店", null, null))
             return
         }
         var lastTier = 0
-        for ((p, d) in ordered.take(shown)) {
-            val t = p.tier()
+        for ((pl, d) in ordered.take(shown)) {
+            val t = pl.tier()
             if (t != lastTier) {
                 lastTier = t
                 listBox.addView(ui.sectionTitle(Theme.tierName(t), tierCount[t] ?: 0).apply { textSize = 17f })
             }
-            listBox.addView(card(p, d, t))
+            listBox.addView(card(pl, d, t))
         }
         if (ordered.size > shown) {
             val more = minOf(20, ordered.size - shown)
-            listBox.addView(button("顯示更多（再 $more 家）") { shown += 20; refresh() },
-                LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
-        } else if (idx < RADII.size - 1) {
-            val next = (RADII[idx + 1] / 1000).toInt()
-            listBox.addView(button("範圍擴大到 $next 公里") { radiusIdx = idx + 1; widenedFrom = -1; shown = 20; drawFilters(); loadOsm() },
+            listBox.addView(ui.goldButton("顯示更多（再 $more 家）") { shown += 20; render() },
                 LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
         }
     }
@@ -780,12 +873,8 @@ class NearbyActivity : AppCompatActivity() {
         centerName = name
         loc = Location("pick").apply { latitude = lat; longitude = lng }
         osmCache.clear()
-        shown = 20
-        widenedFrom = -1
         drawCenter()
-        updateMap(true)
-        loadOsm()
-        refresh()
+        onConditionChanged()
     }
 
     private fun useMyLocation() {

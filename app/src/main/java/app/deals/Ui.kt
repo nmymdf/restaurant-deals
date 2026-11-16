@@ -304,28 +304,247 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         }
     }
 
+    // ================= 四步流程共用元件（優惠、附近長得一樣） =================
+
+    val night: Boolean get() = (act.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+        android.content.res.Configuration.UI_MODE_NIGHT_YES
+    val goldBg: Int get() = Color.parseColor(if (night) "#2E2711" else "#FFF4D0")
+    val goldInk: Int get() = Color.parseColor(if (night) "#F2D675" else "#6B4E00")
+    val blue: Int get() = Color.parseColor(if (night) "#7FA6F0" else "#3F6FC6")
+    val blueBg: Int get() = Color.parseColor(if (night) "#1A2438" else "#EAF1FF")
+
+    private fun card(pad: Int = 18): LinearLayout = LinearLayout(act).apply {
+        orientation = LinearLayout.VERTICAL
+        background = rect(p.cd, dp(18), p.ln)
+        setPadding(dp(pad), dp(pad), dp(pad), dp(pad))
+    }
+
+    fun goldButton(label: String, onClick: () -> Unit): TextView = TextView(act).apply {
+        text = label
+        textSize = 19f
+        gravity = Gravity.CENTER
+        setTextColor(Theme.INK)
+        setTypeface(null, Typeface.BOLD)
+        background = rect(Theme.GOLD, dp(14))
+        setPadding(0, dp(15), 0, dp(15))
+        setOnClickListener { onClick() }
+    }
+
+    fun outlineButton(label: String, onClick: () -> Unit): TextView = TextView(act).apply {
+        text = label
+        textSize = 16f
+        gravity = Gravity.CENTER
+        setTextColor(p.tx)
+        setTypeface(null, Typeface.BOLD)
+        background = rect(p.pg, dp(12), p.ln)
+        setPadding(0, dp(11), 0, dp(11))
+        setOnClickListener { onClick() }
+    }
+
+    /** 第 1 步：條件都選好之後，按這張卡的大按鈕才開始搜尋 */
+    fun startCard(title: String, summary: List<String>, button: String, onStart: () -> Unit): View {
+        val c = card(20)
+        c.addView(TextView(act).apply {
+            text = title
+            textSize = 20f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.tx)
+        })
+        for (s in summary) c.addView(TextView(act).apply {
+            text = s
+            textSize = 16f
+            setTextColor(p.sb)
+            setLineSpacing(0f, 1.2f)
+            setPadding(0, dp(6), 0, 0)
+        })
+        c.addView(goldButton(button, onStart), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(18) })
+        return c
+    }
+
+    /** 第 2 步：階段進度。stageIdx 之前的打勾，stageIdx 是進行中。 */
+    fun progressCard(title: String, stages: List<String>, stageIdx: Int, elapsed: String, onCancel: (() -> Unit)?): View {
+        val c = card(20)
+        c.addView(TextView(act).apply {
+            text = title
+            textSize = 20f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.tx)
+        })
+        val bar = LinearLayout(act)
+        for (i in stages.indices) {
+            bar.addView(View(act).apply {
+                background = rect(if (i <= stageIdx) Theme.GOLD else p.ln, dp(4))
+                alpha = if (i == stageIdx) 0.55f else 1f
+            }, LinearLayout.LayoutParams(0, dp(8), 1f).apply { if (i > 0) leftMargin = dp(5) })
+        }
+        c.addView(bar, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(16); bottomMargin = dp(12) })
+        for (i in stages.indices) {
+            val mark = if (i < stageIdx) "✓" else if (i == stageIdx) "●" else "○"
+            c.addView(TextView(act).apply {
+                text = "$mark　${stages[i]}" + if (i == stageIdx) "…" else ""
+                textSize = 17f
+                setTextColor(if (i < stageIdx) p.vg else if (i == stageIdx) p.tx else p.sb)
+                if (i == stageIdx) setTypeface(null, Typeface.BOLD)
+                setPadding(0, dp(5), 0, dp(5))
+            })
+        }
+        if (elapsed.isNotEmpty()) c.addView(TextView(act).apply {
+            text = elapsed
+            textSize = 15f
+            setTextColor(p.sb)
+            setPadding(0, dp(8), 0, 0)
+        })
+        if (onCancel != null) c.addView(outlineButton("取消", onCancel), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(16) })
+        return c
+    }
+
+    /** 失敗或沒結果時的提示卡（有按鈕可以重來） */
+    fun noticeCard(title: String, body: String, button: String?, onClick: (() -> Unit)?, secondary: String? = null, onSecondary: (() -> Unit)? = null): View {
+        val c = card(20)
+        c.addView(TextView(act).apply {
+            text = title
+            textSize = 19f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.tx)
+        })
+        c.addView(TextView(act).apply {
+            text = body
+            textSize = 16f
+            setTextColor(p.sb)
+            setLineSpacing(0f, 1.25f)
+            setPadding(0, dp(6), 0, 0)
+        })
+        if (button != null && onClick != null) c.addView(goldButton(button, onClick), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(16) })
+        if (secondary != null && onSecondary != null) c.addView(outlineButton(secondary, onSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+        return c
+    }
+
+    /** 結果畫面最上面的一行：條件摘要 ＋「改條件」 */
+    fun infoStrip(text: String, action: String, onAction: () -> Unit): View = LinearLayout(act).apply {
+        gravity = Gravity.CENTER_VERTICAL
+        background = rect(p.ch, dp(12))
+        setPadding(dp(14), dp(10), dp(8), dp(10))
+        addView(TextView(act).apply {
+            this.text = text
+            textSize = 15f
+            setTextColor(p.tx)
+            setLineSpacing(0f, 1.15f)
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+        addView(TextView(act).apply {
+            this.text = action
+            textSize = 15f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.hi)
+            setPadding(dp(12), dp(6), dp(12), dp(6))
+            background = rect(p.cd, dp(10), Theme.GOLD)
+            setOnClickListener { onAction() }
+        })
+    }
+
+    /** 第 4 步最上面：‹ 回類別　＋　類別名稱與筆數 */
+    fun backBar(title: String, count: Int, unit: String, onBack: () -> Unit): View = LinearLayout(act).apply {
+        gravity = Gravity.CENTER_VERTICAL
+        addView(TextView(act).apply {
+            text = "‹ 類別"
+            textSize = 16f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.hi)
+            background = rect(p.cd, dp(12), Theme.GOLD)
+            setPadding(dp(14), dp(9), dp(14), dp(9))
+            setOnClickListener { onBack() }
+        }, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(12) })
+        addView(TextView(act).apply {
+            text = "$title　$count $unit"
+            textSize = 19f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.tx)
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }, LinearLayout.LayoutParams(0, -2, 1f))
+    }
+
+    /**
+     * 第 3 步：類別格。special 是排在最前面的特別一格（好評推薦／全台連鎖），沒有就傳 null。
+     * 筆數是 0 的類別不顯示；順序照使用者拖動後記住的。
+     */
+    fun categoryTiles(
+        counts: Map<String, Int>, known: Collection<String>,
+        special: Triple<String, Int, Boolean>?, onPick: (String) -> Unit, onReorder: () -> Unit
+    ): View {
+        val box = LinearLayout(act).apply { orientation = LinearLayout.VERTICAL }
+        if (special != null && special.second > 0) {
+            val gold = special.third
+            box.addView(LinearLayout(act).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                background = if (gold) Theme.roundRect(goldBg, dp(16), Theme.GOLD, dp(2)) else rect(p.cd, dp(16), p.ln)
+                setPadding(dp(18), dp(18), dp(18), dp(18))
+                setOnClickListener { onPick(special.first) }
+                addView(TextView(act).apply {
+                    text = special.first
+                    textSize = 20f
+                    setTypeface(null, Typeface.BOLD)
+                    setTextColor(if (gold) goldInk else p.tx)
+                }, LinearLayout.LayoutParams(0, -2, 1f))
+                addView(TextView(act).apply {
+                    text = "${special.second}　›"
+                    textSize = 19f
+                    setTypeface(null, Typeface.BOLD)
+                    setTextColor(if (gold) goldInk else p.hi)
+                })
+            }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
+        }
+        val fullOrder = Cats.order(act, known + counts.keys, Cats.ALL)
+        val names = fullOrder.filter { (counts[it] ?: 0) > 0 }
+        var i = 0
+        while (i < names.size) {
+            val row = LinearLayout(act)
+            for (j in 0..1) {
+                val lp = LinearLayout.LayoutParams(0, -2, 1f).apply { if (j == 0) rightMargin = dp(10) }
+                if (i + j < names.size) row.addView(cell(names[i + j], counts[names[i + j]] ?: 0, "", fullOrder, onPick, onReorder, true), lp)
+                else row.addView(View(act), lp)
+            }
+            box.addView(row, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
+            i += 2
+        }
+        box.addView(TextView(act).apply {
+            text = "長按類別可以拖動排序　·　恢復預設順序"
+            textSize = 14f
+            gravity = Gravity.CENTER
+            setTextColor(p.hi)
+            setPadding(0, dp(8), 0, dp(6))
+            setOnClickListener { Cats.reset(act); onReorder() }
+        })
+        return box
+    }
+
     private fun cell(
         n: String, count: Int, selected: String, fullOrder: List<String>,
-        onPick: (String) -> Unit, onReorder: () -> Unit
+        onPick: (String) -> Unit, onReorder: () -> Unit, big: Boolean = false
     ): View {
         val sel = n == selected
         val bg = GradientDrawable().apply {
-            cornerRadius = dp(10).toFloat()
+            cornerRadius = dp(if (big) 14 else 10).toFloat()
             if (sel) { setColor(p.ch); setStroke(dp(1), Theme.GOLD) }
+            else if (big) { setColor(p.cd); setStroke(dp(1), p.ln) }
             else { setColor(p.pg); setStroke(dp(1), p.ln) }
         }
         return LinearLayout(act).apply {
             gravity = Gravity.CENTER_VERTICAL
             background = bg
-            setPadding(dp(12), dp(13), dp(12), dp(13))
+            setPadding(dp(14), dp(if (big) 20 else 13), dp(14), dp(if (big) 20 else 13))
             addView(TextView(act).apply {
                 text = if (sel) "$n ✓" else n
-                textSize = 17f
+                textSize = if (big) 18f else 17f
                 if (sel) setTypeface(null, Typeface.BOLD)
                 setTextColor(if (sel) p.hi else p.tx)
                 maxLines = 1
             }, LinearLayout.LayoutParams(0, -2, 1f))
-            addView(TextView(act).apply { text = count.toString(); textSize = 15f; setTextColor(p.sb) })
+            addView(TextView(act).apply {
+                text = count.toString()
+                textSize = if (big) 18f else 15f
+                if (big) setTypeface(null, Typeface.BOLD)
+                setTextColor(if (big) p.hi else p.sb)
+            })
             setOnClickListener { onPick(n) }
             setOnLongClickListener { v ->
                 v.startDragAndDrop(ClipData.newPlainText("cat", n), View.DragShadowBuilder(v), null, 0)

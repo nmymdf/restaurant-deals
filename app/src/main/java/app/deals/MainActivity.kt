@@ -4,6 +4,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
@@ -32,7 +34,14 @@ class MainActivity : AppCompatActivity() {
     private var pendCity = "全台"
     private val pendDistricts = LinkedHashSet<String>()
     private var category = Cats.ALL
-    private var openPanel = 0 // 0 收合、1 地區、2 類別
+    private val CHAIN = "全台連鎖"
+    private var openPanel = 0 // 0 收合、1 地區
+    // 四步流程：0 設條件、1 整理中、2 選類別、3 看清單
+    private var phase = 0
+    private var stage = 0
+    private var shown = 20
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var scrollView: ScrollView
     private var deals: List<Deal> = emptyList()
 
     private lateinit var filterBar: LinearLayout
@@ -41,8 +50,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rightCol: LinearLayout
     private lateinit var rightScroll: ScrollView
     private lateinit var applyBtn: TextView
-    private lateinit var catHolder: LinearLayout
-    private lateinit var condHolder: LinearLayout
     private lateinit var listBox: LinearLayout
 
     private val io = Executors.newSingleThreadExecutor()
@@ -62,6 +69,7 @@ class MainActivity : AppCompatActivity() {
             assets.open("data.json").bufferedReader().use { it.readText() }
         }.getOrNull()
         if (first != null) runCatching { applyJson(first) }
+        restoreLast()
         render()
         fetchRemote(false)
     }
@@ -74,8 +82,10 @@ class MainActivity : AppCompatActivity() {
         header = ui.header(0, "資料更新") { fetchRemote(true) }
         root.addView(header.view)
 
-        filterBar = LinearLayout(this).apply { setPadding(dp(16), 0, dp(16), 0) }
-        root.addView(filterBar)
+        // 只固定標題和分頁，其餘全部一起往上滑
+        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        filterBar = LinearLayout(this).apply { setPadding(dp(16), dp(10), dp(16), 0) }
+        content.addView(filterBar)
 
         regPanel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -116,30 +126,25 @@ class MainActivity : AppCompatActivity() {
                 region = pendCity
                 districts = LinkedHashSet(pendDistricts)
                 openPanel = 0
+                phase = 0
                 render()
             }
         }
         foot.addView(applyBtn, LinearLayout.LayoutParams(0, -2, 2f))
         regPanel.addView(foot)
-        root.addView(regPanel, LinearLayout.LayoutParams(-1, -2).apply {
+        content.addView(regPanel, LinearLayout.LayoutParams(-1, -2).apply {
             leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(4)
         })
-
-        catHolder = LinearLayout(this)
-        root.addView(catHolder, LinearLayout.LayoutParams(-1, -2).apply {
-            leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(4)
-        })
-
-        condHolder = LinearLayout(this)
-        root.addView(condHolder, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
-
-        val scroll = ScrollView(this)
         listBox = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(14), dp(4), dp(14), dp(20))
+            setPadding(dp(14), dp(4), dp(14), dp(28))
         }
-        scroll.addView(listBox)
-        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
+        content.addView(listBox)
+        scrollView = ScrollView(this).apply {
+            isFillViewport = true
+            addView(content)
+        }
+        root.addView(scrollView, LinearLayout.LayoutParams(-1, 0, 1f))
 
         setContentView(root)
     }
@@ -195,13 +200,40 @@ class MainActivity : AppCompatActivity() {
                 dc == "全台" || (dc == city && (ds.isEmpty() || d.districts.isEmpty() || d.districts.any { it in ds }))
             }
         }
-        if (cat != Cats.ALL) list = list.filter { it.category == cat }
+        if (cat == CHAIN) list = list.filter { cityOf(it) == "全台" }
+        else if (cat != Cats.ALL) list = list.filter { it.category == cat }
         return list.sortedBy { it.until }
     }
 
     /** 每個類別在目前地區下有幾筆（不受已選類別影響） */
     private fun categoryCounts(): Map<String, Int> =
         filtered(region, districts, Cats.ALL).groupingBy { it.category }.eachCount()
+
+    // ---- 記住上次的搜尋條件（資料在手機裡，下次打開直接顯示類別）----
+    private fun saveLast() {
+        getSharedPreferences("deals", MODE_PRIVATE).edit()
+            .putString("last_search", region + "|" + districts.joinToString(",")).apply()
+    }
+
+    private fun restoreLast() {
+        val v = getSharedPreferences("deals", MODE_PRIVATE).getString("last_search", null) ?: return
+        val parts = v.split("|")
+        region = parts.getOrNull(0)?.ifEmpty { "全台" } ?: "全台"
+        districts = parts.getOrNull(1)?.split(",")?.filter { it.isNotEmpty() }?.toSet() ?: emptySet()
+        pendCity = region
+        phase = 2
+    }
+
+    private fun startSearch() {
+        phase = 1
+        stage = 0
+        openPanel = 0
+        render()
+        handler.postDelayed({ if (phase == 1) { stage = 1; render() } }, 350)
+        handler.postDelayed({
+            if (phase == 1) { saveLast(); category = Cats.ALL; shown = 20; phase = 2; render(); scrollView.post { scrollView.scrollTo(0, 0) } }
+        }, 800)
+    }
 
     private fun togglePanel(which: Int) {
         if (openPanel == which) {
@@ -297,7 +329,7 @@ class MainActivity : AppCompatActivity() {
                 })
             }
         }
-        applyBtn.text = "套用，看 ${filtered(pendCity, pendDistricts, category).size} 筆"
+        applyBtn.text = "套用，共 ${filtered(pendCity, pendDistricts, Cats.ALL).size} 筆"
     }
 
     private fun small(textValue: String, bg: Int, fg: Int): TextView = TextView(this).apply {
@@ -308,84 +340,93 @@ class MainActivity : AppCompatActivity() {
         setPadding(dp(8), dp(2), dp(8), dp(2))
     }
 
+    private val itemLp get() = LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) }
+
     private fun render() {
-        val today = LocalDate.now()
-        val items = filtered(region, districts, category)
-        val local = items.filter { cityOf(it) != "全台" }
-        val chain = items.filter { cityOf(it) == "全台" }
-
         header.caption.text = "資料更新　" + ui.fetchedText("fetched_deals")
-
         filterBar.removeAllViews()
-        filterBar.addView(ui.filterButton("地區", regionSummary(), openPanel == 1) { togglePanel(1) },
-            LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(8) })
-        filterBar.addView(ui.filterButton("類別", if (category == Cats.ALL) "全部" else category, openPanel == 2) { togglePanel(2) },
-            LinearLayout.LayoutParams(0, -2, 1f))
-
-        regPanel.visibility = if (openPanel == 1) View.VISIBLE else View.GONE
-        if (openPanel == 1) renderRegionPanel()
-
-        catHolder.removeAllViews()
-        if (openPanel == 2) {
-            val known = deals.map { it.category }.distinct()
-            catHolder.addView(
-                ui.categoryPanel(categoryCounts(), known, category,
-                    onPick = { category = it; openPanel = 0; render() },
-                    onReorder = { render() }),
-                LinearLayout.LayoutParams(-1, dp(380))
-            )
-        }
-
-        val conds = ArrayList<Pair<String, () -> Unit>>()
-        if (region != "全台") conds.add(regionSummary() to { region = "全台"; districts = emptySet(); render() })
-        if (category != Cats.ALL) conds.add(category to { category = Cats.ALL; render() })
-        val countLine = if (items.isEmpty()) "符合 0 筆"
-            else "符合 ${items.size} 筆（在地 ${local.size}、全台連鎖 ${chain.size}）"
-        condHolder.removeAllViews()
-        condHolder.addView(ui.conditions(conds, countLine), LinearLayout.LayoutParams(-1, -2))
-
         listBox.removeAllViews()
+        regPanel.visibility = View.GONE
+        if (phase == 0) {
+            filterBar.addView(ui.filterButton("地區", regionSummary(), openPanel == 1) { togglePanel(1) }, LinearLayout.LayoutParams(-1, -2))
+            if (openPanel == 1) { regPanel.visibility = View.VISIBLE; renderRegionPanel() }
+        }
+        when (phase) {
+            0 -> listBox.addView(
+                ui.startCard("準備查看優惠", listOf("地區：${regionSummary()}", "30 天內有效的優惠，依到期日排序"), "開始搜尋") { startSearch() },
+                LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10) })
+            1 -> listBox.addView(
+                ui.progressCard("正在整理優惠", listOf("讀取優惠資料", "依地區與日期整理"), stage, "", null),
+                LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10) })
+            2 -> renderCategories()
+            else -> renderList()
+        }
+    }
+
+    private fun renderCategories() {
+        val items = filtered(region, districts, Cats.ALL)
+        listBox.addView(ui.infoStrip("${regionSummary()}　·　共 ${items.size} 筆優惠\n資料更新：" + ui.fetchedText("fetched_deals"), "改條件") {
+            phase = 0; render()
+        }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10); bottomMargin = dp(12) })
         if (items.isEmpty()) {
-            val noCat = if (category != Cats.ALL) filtered(region, districts, Cats.ALL) else emptyList()
             val where = if (region == "全台") "全台" else regionSummary()
-            if (category != Cats.ALL && noCat.isNotEmpty()) {
-                listBox.addView(ui.emptyState("$where 目前沒有「$category」的優惠", "移除$category，看 ${noCat.size} 筆") {
-                    category = Cats.ALL; render()
-                })
-            } else if (region != "全台") {
-                val all = filtered("全台", emptySet(), category)
-                listBox.addView(ui.emptyState("$where 目前沒有符合的優惠",
-                    if (all.isNotEmpty()) "移除地區，看全台 ${all.size} 筆" else null) {
-                    region = "全台"; districts = emptySet(); render()
-                })
-            } else {
-                listBox.addView(ui.emptyState("目前沒有優惠", null, null))
-            }
+            val all = if (region != "全台") filtered("全台", emptySet(), Cats.ALL) else emptyList()
+            listBox.addView(ui.noticeCard("$where 目前沒有優惠",
+                if (all.isNotEmpty()) "可以改看全台，共 ${all.size} 筆。" else "請之後再來看看。",
+                if (all.isNotEmpty()) "改看全台" else null,
+                { region = "全台"; districts = emptySet(); pendCity = "全台"; saveLast(); render() }))
             return
         }
-        if (local.isNotEmpty()) {
-            listBox.addView(ui.sectionTitle("在地優惠", local.size))
-            for (d in local) listBox.addView(card(d, today))
-        } else if (region != "全台") {
+        val counts = items.groupingBy { it.category }.eachCount()
+        val chain = items.count { cityOf(it) == "全台" }
+        listBox.addView(TextView(this).apply {
+            text = "請選類別"
+            textSize = 17f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(p.tx)
+            setPadding(dp(2), 0, 0, dp(8))
+        })
+        val known = deals.map { it.category }.distinct()
+        listBox.addView(ui.categoryTiles(counts, known, Triple(CHAIN, chain, false),
+            onPick = { category = it; shown = 20; phase = 3; render(); scrollView.post { scrollView.scrollTo(0, 0) } },
+            onReorder = { render() }))
+    }
+
+    private fun renderList() {
+        val today = LocalDate.now()
+        val items = filtered(region, districts, category)
+        listBox.addView(ui.backBar(category, items.size, "筆") {
+            phase = 2; render(); scrollView.post { scrollView.scrollTo(0, 0) }
+        }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10); bottomMargin = dp(12) })
+        if (items.isEmpty()) {
+            listBox.addView(ui.emptyState("這個類別目前沒有優惠", null, null))
+            return
+        }
+        val local = items.filter { cityOf(it) != "全台" }
+        val chainList = items.filter { cityOf(it) == "全台" }
+        val ordered = local + chainList
+        var lastSec = ""
+        for (d in ordered.take(shown)) {
+            val sec = if (cityOf(d) == "全台") "全台連鎖" else "在地優惠"
+            if (sec != lastSec && (category != CHAIN)) {
+                lastSec = sec
+                listBox.addView(ui.sectionTitle(sec, if (sec == "在地優惠") local.size else chainList.size).apply { textSize = 17f })
+            }
+            listBox.addView(card(d, today))
+        }
+        if (ordered.size > shown) {
+            val more = minOf(20, ordered.size - shown)
+            listBox.addView(ui.goldButton("顯示更多（再 $more 筆）") { shown += 20; render() },
+                LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
+        } else {
             listBox.addView(TextView(this).apply {
-                text = "${regionSummary()}目前沒有在地優惠，以下是全台連鎖"
+                text = "點一筆看詳細資訊"
                 textSize = 14f
                 setTextColor(p.sb)
-                background = rect(p.ch, dp(10))
-                setPadding(dp(12), dp(8), dp(12), dp(8))
-            }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
+                gravity = Gravity.CENTER
+                setPadding(dp(16), dp(10), dp(16), dp(8))
+            })
         }
-        if (chain.isNotEmpty()) {
-            listBox.addView(ui.sectionTitle("全台連鎖", chain.size))
-            for (d in chain) listBox.addView(card(d, today))
-        }
-        listBox.addView(TextView(this).apply {
-            text = "點一筆看詳細資訊"
-            textSize = 14f
-            setTextColor(p.sb)
-            gravity = Gravity.CENTER
-            setPadding(dp(16), dp(8), dp(16), dp(8))
-        })
     }
 
     private fun card(d: Deal, today: LocalDate): View {
