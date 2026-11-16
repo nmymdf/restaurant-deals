@@ -141,10 +141,11 @@ class Ui(private val act: AppCompatActivity, val p: Pal) {
         }
         head.addView(tabs)
         head.addView(TextView(act).apply {
-            text = if (tabIdx == 0) "30 天內有效的優惠，依到期日排序" else "中心周圍的餐廳：好餐廳在前，其他依距離"
+            text = if (tabIdx == 0) "30 天內有效的優惠，依到期日排序" else ""
             textSize = 14f
             setTextColor(p.sb)
-            setPadding(0, dp(8), 0, dp(8))
+            setPadding(0, dp(if (tabIdx == 0) 8 else 4), 0, dp(if (tabIdx == 0) 8 else 0))
+            if (tabIdx != 0) visibility = View.GONE
         })
         cap.text = "$captionLabel　" + fetchedText(if (tabIdx == 0) "fetched_deals" else "fetched_picks")
         return Header(head, cap)

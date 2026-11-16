@@ -128,20 +128,26 @@ class NearbyActivity : AppCompatActivity() {
         }
         header = ui.header(1, "名單更新") { osmCache.clear(); loadOsm(force = true); loadPicks(true) }
         root.addView(header.view)
-        root.addView(buildSearch(), LinearLayout.LayoutParams(-1, -2).apply { leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(8) })
+        // 只固定標題和分頁，其餘（搜尋、按鈕、範圍類別、清單）全部一起往上滑
+        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        content.addView(buildSearch(), LinearLayout.LayoutParams(-1, -2).apply { leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(2) })
         filterBar = LinearLayout(this).apply { setPadding(dp(16), 0, dp(16), 0) }
-        root.addView(filterBar)
+        content.addView(filterBar)
         panelHolder = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        root.addView(panelHolder, LinearLayout.LayoutParams(-1, -2).apply {
+        content.addView(panelHolder, LinearLayout.LayoutParams(-1, -2).apply {
             leftMargin = dp(16); rightMargin = dp(16); topMargin = dp(4)
         })
         condHolder = LinearLayout(this)
-        root.addView(condHolder, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
+        content.addView(condHolder, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
         listBox = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(14), dp(4), dp(14), dp(28))
         }
-        root.addView(ScrollView(this).apply { addView(listBox) }, LinearLayout.LayoutParams(-1, 0, 1f))
+        content.addView(listBox)
+        root.addView(ScrollView(this).apply {
+            isFillViewport = true
+            addView(content)
+        }, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(root)
         drawFilters()
         showMessage("正在取得你的位置…")
@@ -182,7 +188,7 @@ class NearbyActivity : AppCompatActivity() {
                 ui.categoryPanel(lastCounts, known, category,
                     onPick = { category = it; shown = 20; openPanel = 0; drawFilters(); refresh() },
                     onReorder = { drawFilters() }),
-                LinearLayout.LayoutParams(-1, dp(380))
+                LinearLayout.LayoutParams(-1, -2)
             )
         }
     }
@@ -839,6 +845,11 @@ class NearbyActivity : AppCompatActivity() {
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
             minZoomLevel = 7.0
             maxZoomLevel = 19.0
+            // 地圖在整頁捲動裡面：手指在地圖上時，拖動是移動地圖，不是捲動頁面
+            setOnTouchListener { v, ev ->
+                v.parent.requestDisallowInterceptTouchEvent(ev.action != android.view.MotionEvent.ACTION_UP && ev.action != android.view.MotionEvent.ACTION_CANCEL)
+                false
+            }
         }
         mapView = mv
         val frame = android.widget.FrameLayout(this).apply { background = rect(p.ch, dp(10)) }
