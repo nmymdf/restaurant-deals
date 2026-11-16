@@ -161,25 +161,47 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 .dot{border-radius:50%;border:2px solid #fff;box-sizing:border-box}
 .rvbtn{display:block;margin-top:12px;text-align:center;font-size:19px;font-weight:700;text-decoration:none;padding:14px 0;border-radius:14px;border:2px solid #3F6FC6;background:#EAF1FF;color:#1F3F7A}
 @media(prefers-color-scheme:dark){.rvbtn{background:#1A2438;border-color:#7FA6F0;color:#BBD0F7}}
+#nfilter{margin-top:8px}
+.rule:empty{display:none}
+.fcard{background:var(--cd);border:.5px solid var(--ln);border-radius:18px;padding:20px;margin-top:10px}
+.ft{font-size:20px;font-weight:700}
+.fl{font-size:16px;color:var(--sb);line-height:1.5;margin-top:6px;white-space:pre-line}
+.gbtn{display:block;width:100%;background:var(--gold);color:var(--ink);font-weight:700;font-size:19px;border-radius:14px;padding:15px 0;text-align:center}
+.obtn2{display:block;width:100%;background:var(--pg);border:.5px solid var(--ln);font-weight:700;font-size:16px;border-radius:12px;padding:11px 0;text-align:center}
+.pbar{display:flex;gap:5px;margin:16px 0 12px}.pbar i{flex:1;height:8px;border-radius:4px;background:var(--ln)}.pbar i.on{background:var(--gold)}.pbar i.cur{animation:pls 1s ease-in-out infinite alternate}
+@keyframes pls{from{opacity:.4}to{opacity:1}}
+.ps{font-size:17px;color:var(--sb);padding:5px 0}.ps.done{color:var(--vg)}.ps.cur{color:var(--tx);font-weight:700}
+.istrip{display:flex;align-items:center;gap:8px;background:var(--ch);border-radius:12px;padding:10px 8px 10px 14px;margin:10px 0 12px;font-size:15px;line-height:1.45}
+.istrip .it{flex:1;min-width:0}
+.istrip .ia{flex:none;font-weight:700;color:var(--hi);background:var(--cd);border:1px solid var(--gold);border-radius:10px;padding:6px 12px;font-size:15px}
+.bbar{display:flex;align-items:center;gap:12px;margin:10px 0 12px}
+.bbar .bb{flex:none;font-weight:700;font-size:16px;color:var(--hi);background:var(--cd);border:1px solid var(--gold);border-radius:12px;padding:9px 14px}
+.bbar .bt{font-size:19px;font-weight:700;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sptile{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;border-radius:16px;padding:18px;margin-bottom:10px;background:var(--cd);border:.5px solid var(--ln);font-size:20px;font-weight:700}
+.sptile b{font-size:19px;color:var(--hi)}
+.sptile.gold{background:#FFF4D0;border:2px solid var(--gold);color:#6B4E00}.sptile.gold b{color:#6B4E00}
+@media(prefers-color-scheme:dark){.sptile.gold{background:#2E2711;color:#F2D675}.sptile.gold b{color:#F2D675}}
+.ctitle{font-size:17px;font-weight:700;margin:2px 2px 8px}
+.cg.big{gap:10px}
+.cc.big{padding:20px 14px;font-size:18px;background:var(--cd);border-radius:14px}
+.cc.big b{font-size:18px;font-weight:700;color:var(--hi)}
 </style>
 </head>
 <body>
-<div id="splash"><div class="ver">v1.8</div></div>
+<div id="splash"><div class="ver">v1.9</div></div>
 <div class="wrap" id="main">
 <div class="head">
 <svg class="logo" viewBox="0 0 108 108" aria-hidden="true"><rect width="108" height="108" fill="#1F1B16"/><path d="M40 26L66 54M49 22L75 50" stroke="#F1DD8A" stroke-width="3.2" stroke-linecap="round"/><path d="M26 54H82A28 28 0 0 1 26 54Z" fill="#C9A227"/><rect x="42" y="80" width="24" height="5" rx="2.5" fill="#C9A227"/><path d="M34 64H74" stroke="#1F1B16" stroke-width="2.4" stroke-linecap="round"/></svg>
-<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.8</div></div>
+<div class="ttl"><h1>餐廳優惠日報</h1><div class="credit">作者：ArchieKUO v1.9</div></div>
 <button class="upbtn" id="refresh">↻更新</button>
 </div>
 <div class="cap" id="cap"></div>
 <div class="tabs"><button class="tab on" id="tab0">優惠</button><button class="tab" id="tab1">附近</button></div>
 <div class="rule" id="rule"></div>
 <div class="view on" id="vdeals">
-<div class="frow"><button class="fbtn reg" id="regbtn"></button><button class="fbtn cat" id="catbtn"></button></div>
-<div id="regpanel"><div class="rbody"><div class="rl" id="rl"></div><div class="rr" id="rr"></div></div><div class="rfoot"><button class="c" id="rclear">清除</button><button class="a" id="rapply"></button></div></div>
-<div id="catpanel"></div>
-<div class="cond" id="cond"></div>
-<div id="list"></div>
+<div id="dfilter"><div class="frow" style="margin-top:10px"><button class="fbtn reg" id="regbtn"></button></div>
+<div id="regpanel"><div class="rbody"><div class="rl" id="rl"></div><div class="rr" id="rr"></div></div><div class="rfoot"><button class="c" id="rclear">清除</button><button class="a" id="rapply"></button></div></div></div>
+<div id="dmain"></div>
 </div>
 <div class="view" id="vnear">
 <input id="nq" type="search" enterkeyhint="search" autocomplete="off" placeholder="打地址、地標、捷運站，按 Enter">
@@ -187,10 +209,8 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 <div class="frow" style="margin-top:8px"><button class="obtn" id="mylocbtn">◎ 我的位置</button><button class="obtn" id="mapbtn">地圖選點</button></div>
 <div id="mapbox"><div id="map"><div class="legend">金＝好餐廳　藍＝口碑不錯　灰＝其他</div></div><button id="selbar"></button><div class="hint" style="text-align:left;margin-top:6px">按住地圖上任一點（電腦按右鍵），改用那裡找。點圖釘看店名。</div></div>
 <div class="cbar"><span id="ctext">中心：我的位置</span><button id="cgoogle">Google 地圖 ›</button></div>
-<div class="frow"><button class="fbtn reg" id="rngbtn"></button><button class="fbtn cat" id="ncatbtn"></button></div>
-<div id="rngpanel"></div>
-<div id="ncatpanel"></div>
-<div class="cond" id="ncond"></div>
+<div id="nfilter"><div class="frow"><button class="fbtn reg" id="rngbtn"></button></div>
+<div id="rngpanel"></div></div>
 <div id="nlist"></div>
 </div>
 </div>
@@ -200,12 +220,12 @@ h1{font-size:20px;white-space:nowrap;line-height:1.25;margin:0;font-weight:700}
 <div id="ghost" class="cc"></div>
 <div id="toast"></div>
 <script>
-var VER="v1.8";
+var VER="v1.9";
 var GROUPS=[];
 var HI=/[0-9,]+\s*元|[0-9.]+\s*折|[一二三四五六七八九十]+折|買[一二1]送[一二1]|[四五六七八九十]人同行[一二]人免費|免費|半價/g;
 var ALL="全部類別";
-var state={region:"全台",districts:[],pendCity:"全台",pendDs:[],category:ALL,panel:0,deals:[],updated:""};
-var tabIdx=0,nstate={radius:0,category:ALL,panel:0},lastCounts={};
+var state={region:"全台",districts:[],pendCity:"全台",pendDs:[],category:ALL,panel:0,deals:[],updated:"",phase:0,stage:0,shown:20,loaded:false};
+var tabIdx=0,nstate={radius:0,category:ALL,panel:0,phase:0,stage:0,started:0,searchedAt:0,err:0},nbTick=null;
 function fetchedText(k){var t=0;try{t=+localStorage.getItem("deals-f-"+k)||0}catch(e){}if(!t)return "尚未更新";var d=new Date(t),n=new Date(),p=function(x){return x<10?"0"+x:""+x},hm=p(d.getHours())+":"+p(d.getMinutes());return d.toDateString()==n.toDateString()?"今天 "+hm:(d.getMonth()+1)+"/"+d.getDate()+" "+hm}
 function markFetched(k){try{localStorage.setItem("deals-f-"+k,String(Date.now()))}catch(e){}}
 function setCap(){document.getElementById("cap").textContent=(tabIdx==0?"資料更新　":"名單更新　")+fetchedText(tabIdx==0?"deals":"picks")}
@@ -246,20 +266,32 @@ function moveCat(from,to){
   if(from==to)return;var l=curOrder.slice();l.splice(l.indexOf(from),1);var i=l.indexOf(to);l.splice(i<0?l.length:i,0,from);saveOrder(l);redraw();
 }
 function dealCounts(){var c={};filtered(state.region,state.districts,ALL).forEach(function(d){c[d.category]=(c[d.category]||0)+1});return c}
-function buildCats(cp,counts,known,sel,onPick){
-  var total=0;Object.keys(counts).forEach(function(k){total+=counts[k]});
-  var al=el("button","cgall"+(sel==ALL?" on":""));al.appendChild(el("span",null,sel==ALL?ALL+" ✓":ALL));al.appendChild(el("span",null,String(total)));
-  al.onclick=function(e){e.stopPropagation();onPick(ALL)};cp.appendChild(al);
-  var g=el("div","cg");cp.appendChild(g);
-  curOrder=catOrder(known.concat(Object.keys(counts)),sel);
-  curOrder.filter(function(n){return (counts[n]||0)>0||n==sel}).forEach(function(n){
-    var b=el("div","cc"+(n==sel?" on":""));
-    b.dataset.n=n;b.appendChild(el("span",null,n==sel?n+" ✓":n));b.appendChild(el("b",null,String(counts[n]||0)));
-    attachDrag(b,n,onPick);g.appendChild(b);
-  });
-  var h=el("button","cghint","長按卡片可以拖動排序　·　恢復預設順序");
-  h.onclick=function(e){e.stopPropagation();saveOrder(null);redraw()};cp.appendChild(h);
+var CHAINC="全台連鎖",GOODC="★ 好評推薦";
+function fcard(){return el("div","fcard")}
+function gbtn(label,fn){var b=el("button","gbtn",label);b.onclick=function(e){e.stopPropagation();fn()};return b}
+function obtn2(label,fn){var b=el("button","obtn2",label);b.onclick=function(e){e.stopPropagation();fn()};return b}
+function startCard(title,lines,label,fn){var c=fcard();c.appendChild(el("div","ft",title));lines.forEach(function(x){c.appendChild(el("div","fl",x))});var b=gbtn(label,fn);b.style.marginTop="18px";c.appendChild(b);return c}
+function progressCard(title,stages,idx,elapsed,cancel){
+  var c=fcard();c.appendChild(el("div","ft",title));
+  var bar=el("div","pbar");stages.forEach(function(s,i){bar.appendChild(el("i",i<idx?"on":i==idx?"on cur":""))});c.appendChild(bar);
+  stages.forEach(function(s,i){c.appendChild(el("div","ps"+(i<idx?" done":i==idx?" cur":""),(i<idx?"✓":i==idx?"●":"○")+"　"+s+(i==idx?"…":"")))});
+  if(elapsed)c.appendChild(el("div","fl",elapsed));
+  if(cancel){var b=obtn2("取消",cancel);b.style.marginTop="16px";c.appendChild(b)}
+  return c;
 }
+function noticeCard(title,body,label,fn){var c=fcard();c.appendChild(el("div","ft",title));c.appendChild(el("div","fl",body));if(label){var b=gbtn(label,fn);b.style.marginTop="16px";c.appendChild(b)}return c}
+function infoStrip(text,action,fn){var s=el("div","istrip"),t=el("div","it");text.split("\n").forEach(function(x,i){if(i)t.appendChild(document.createElement("br"));t.appendChild(document.createTextNode(x))});s.appendChild(t);var b=el("button","ia",action);b.onclick=function(e){e.stopPropagation();fn()};s.appendChild(b);return s}
+function backBar(title,count,unit,fn){var r=el("div","bbar");var b=el("button","bb","‹ 類別");b.onclick=function(e){e.stopPropagation();fn()};r.appendChild(b);r.appendChild(el("div","bt",title+"　"+count+" "+unit));return r}
+function buildTiles(box,counts,known,special,onPick){
+  box.appendChild(el("div","ctitle","請選類別"));
+  if(special&&special.n>0){var sp=el("button","sptile"+(special.gold?" gold":""));sp.appendChild(el("span",null,special.label));sp.appendChild(el("b",null,special.n+"　›"));sp.onclick=function(e){e.stopPropagation();onPick(special.label)};box.appendChild(sp)}
+  var g=el("div","cg big");box.appendChild(g);
+  curOrder=catOrder(known.concat(Object.keys(counts)),ALL);
+  curOrder.filter(function(n){return (counts[n]||0)>0}).forEach(function(n){var b=el("div","cc big");b.dataset.n=n;b.appendChild(el("span",null,n));b.appendChild(el("b",null,String(counts[n])));attachDrag(b,n,onPick);g.appendChild(b)});
+  var h=el("button","cghint","長按類別可以拖動排序　·　恢復預設順序");h.onclick=function(e){e.stopPropagation();saveOrder(null);redraw()};box.appendChild(h);
+}
+function top0(){window.scrollTo(0,0)}
+function ago(t){var m=Math.floor((Date.now()-t)/60000);return m<1?"剛剛":m<60?m+" 分鐘前":Math.floor(m/60)+" 小時前"}
 function attachDrag(b,n,onPick){
   var timer=null,dragging=false,sx=0,sy=0,over=null,moved=false;
   var ghost=document.getElementById("ghost");
@@ -308,7 +340,8 @@ function filtered(city,ds,cat){
     var x=d.districts||[];if(!ds.length||!x.length)return true;
     return x.some(function(n){return ds.indexOf(n)>=0});
   });
-  if(cat!=ALL)l=l.filter(function(d){return d.category==cat});
+  if(cat==CHAINC)l=l.filter(function(d){return normCity(d.region)=="全台"});
+  else if(cat!=ALL)l=l.filter(function(d){return d.category==cat});
   l.sort(function(a,b){return a._until-b._until});
   return l;
 }
@@ -345,7 +378,7 @@ function renderRegion(){
     });
   }
   rl.scrollTop=ls;rr.scrollTop=rs;
-  document.getElementById("rapply").textContent="套用，看 "+filtered(state.pendCity,state.pendDs,state.category).length+" 筆";
+  document.getElementById("rapply").textContent="套用，共 "+filtered(state.pendCity,state.pendDs,ALL).length+" 筆";
 }
 function whereOf(d){var c=normCity(d.region);return (c=="全台"?"全台連鎖":c)+((d.districts||[]).length?" · "+d.districts.join("、"):"")}
 function condBox(box,items,line){
@@ -367,49 +400,69 @@ function filterBtn(id,label,val,open,fn){
   var v=el("div","v");v.appendChild(el("span","k",label+"　"));v.appendChild(document.createTextNode(val));b.appendChild(v);b.appendChild(el("i",null,open?"▴":"▾"));
   b.onclick=function(e){e.stopPropagation();fn()};
 }
+function saveLastD(){try{localStorage.setItem("deals-last",state.region+"|"+state.districts.join(","))}catch(e){}}
+function restoreLastD(){try{var v=localStorage.getItem("deals-last");if(!v)return;var p=v.split("|");state.region=p[0]||"全台";state.districts=(p[1]||"").split(",").filter(Boolean);state.pendCity=state.region;state.phase=2}catch(e){}}
+function dStart(){
+  state.phase=1;state.stage=0;state.panel=0;render();
+  setTimeout(function(){if(state.phase==1){state.stage=1;render()}},350);
+  setTimeout(function(){if(state.phase==1){saveLastD();state.category=ALL;state.shown=20;state.phase=2;render();top0()}},800);
+}
+function dealCard(d,t){
+  var days=Math.round((d._until-t)/864e5);
+  var a=el("div","card");a.tabIndex=0;a.setAttribute("role","button");
+  a.onclick=function(){openDetail(d)};
+  a.onkeydown=function(e){if(e.key=="Enter"||e.key==" "){e.preventDefault();openDetail(d)}};
+  var top=el("div","r1");top.appendChild(el("span","brand",d.brand));
+  top.appendChild(el("span","badge"+(days<=7?" hot":""),"到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()+" · "+(days<=0?"今天到期":"剩 "+days+" 天")));
+  a.appendChild(top);
+  var of=el("div","offer");hl(of,d.offer||"");a.appendChild(of);
+  var tg=el("div","tags");
+  tg.appendChild(el("span","tag",whereOf(d)));
+  tg.appendChild(el("span","tag",d.category));
+  (d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});
+  a.appendChild(tg);
+  return a;
+}
 function render(){
-  var t=today(),vis=filtered(state.region,state.districts,state.category);
-  var local=vis.filter(function(d){return normCity(d.region)!="全台"}),chain=vis.filter(function(d){return normCity(d.region)=="全台"});
   setCap();
-  filterBtn("regbtn","地區",regSummary(),state.panel==1,function(){togglePanel(1)});
-  filterBtn("catbtn","類別",state.category==ALL?"全部":state.category,state.panel==2,function(){togglePanel(2)});
-  document.getElementById("regpanel").style.display=state.panel==1?"block":"none";
-  if(state.panel==1)renderRegion();
-  var cp=document.getElementById("catpanel");cp.textContent="";cp.style.display=state.panel==2?"block":"none";
-  if(state.panel==2)buildCats(cp,dealCounts(),state.deals.map(function(d){return d.category}),state.category,function(n){state.category=n;state.panel=0;render()});
-  var conds=[];
-  if(state.region!="全台")conds.push([regSummary(),function(){state.region="全台";state.districts=[];render()}]);
-  if(state.category!=ALL)conds.push([state.category,function(){state.category=ALL;render()}]);
-  condBox(document.getElementById("cond"),conds,vis.length?"符合 "+vis.length+" 筆（在地 "+local.length+"、全台連鎖 "+chain.length+"）":"符合 0 筆");
-  var box=document.getElementById("list");box.textContent="";
-  if(!vis.length){
-    var where=state.region=="全台"?"全台":regSummary();
-    var noCat=state.category!=ALL?filtered(state.region,state.districts,ALL):[];
-    if(state.category!=ALL&&noCat.length)box.appendChild(emptyBox(where+" 目前沒有「"+state.category+"」的優惠","移除"+state.category+"，看 "+noCat.length+" 筆",function(){state.category=ALL;render()}));
-    else if(state.region!="全台"){var all=filtered("全台",[],state.category);box.appendChild(emptyBox(where+" 目前沒有符合的優惠",all.length?"移除地區，看全台 "+all.length+" 筆":null,function(){state.region="全台";state.districts=[];render()}))}
-    else box.appendChild(emptyBox("目前沒有優惠"));
+  var df=document.getElementById("dfilter");df.style.display=state.phase==0?"block":"none";
+  if(state.phase==0){
+    filterBtn("regbtn","地區",regSummary(),state.panel==1,function(){togglePanel(1)});
+    document.getElementById("regpanel").style.display=state.panel==1?"block":"none";
+    if(state.panel==1)renderRegion();
+  }
+  var box=document.getElementById("dmain");box.textContent="";
+  if(state.phase==0)box.appendChild(startCard("準備查看優惠",["地區："+regSummary(),"30 天內有效的優惠，依到期日排序"],"開始搜尋",dStart));
+  else if(state.phase==1)box.appendChild(progressCard("正在整理優惠",["讀取優惠資料","依地區與日期整理"],state.stage,"",null));
+  else if(!state.loaded)box.appendChild(el("div","note","正在讀取優惠資料…"));
+  else if(state.phase==2)dCats(box);
+  else dList(box);
+}
+function dCats(box){
+  var items=filtered(state.region,state.districts,ALL);
+  box.appendChild(infoStrip(regSummary()+"　·　共 "+items.length+" 筆優惠\n資料更新："+fetchedText("deals"),"改條件",function(){state.phase=0;render()}));
+  if(!items.length){
+    var where=state.region=="全台"?"全台":regSummary(),all=state.region!="全台"?filtered("全台",[],ALL):[];
+    box.appendChild(noticeCard(where+" 目前沒有優惠",all.length?"可以改看全台，共 "+all.length+" 筆。":"請之後再來看看。",all.length?"改看全台":null,function(){state.region="全台";state.districts=[];state.pendCity="全台";saveLastD();render()}));
     return;
   }
-  function cards(list){list.forEach(function(d){
-    var days=Math.round((d._until-t)/864e5);
-    var a=el("div","card");a.tabIndex=0;a.setAttribute("role","button");
-    a.onclick=function(){openDetail(d)};
-    a.onkeydown=function(e){if(e.key=="Enter"||e.key==" "){e.preventDefault();openDetail(d)}};
-    var top=el("div","r1");top.appendChild(el("span","brand",d.brand));
-    top.appendChild(el("span","badge"+(days<=7?" hot":""),"到 "+(d._until.getMonth()+1)+"/"+d._until.getDate()+" · "+(days<=0?"今天到期":"剩 "+days+" 天")));
-    a.appendChild(top);
-    var of=el("div","offer");hl(of,d.offer||"");a.appendChild(of);
-    var tg=el("div","tags");
-    tg.appendChild(el("span","tag",whereOf(d)));
-    tg.appendChild(el("span","tag",d.category));
-    (d.tags||[]).forEach(function(x){tg.appendChild(el("span","tag",x))});
-    a.appendChild(tg);
-    box.appendChild(a);
-  })}
-  if(local.length){box.appendChild(el("div","sec","在地優惠　"+local.length));cards(local)}
-  else if(state.region!="全台")box.appendChild(el("div","note",regSummary()+"目前沒有在地優惠，以下是全台連鎖"));
-  if(chain.length){box.appendChild(el("div","sec","全台連鎖　"+chain.length));cards(chain)}
-  box.appendChild(el("div","hint","點一筆看詳細資訊"));
+  var counts={};items.forEach(function(d){counts[d.category]=(counts[d.category]||0)+1});
+  var chain=items.filter(function(d){return normCity(d.region)=="全台"}).length;
+  buildTiles(box,counts,state.deals.map(function(d){return d.category}),{label:CHAINC,n:chain,gold:false},function(n){state.category=n;state.shown=20;state.phase=3;render();top0()});
+}
+function dList(box){
+  var t=today(),vis=filtered(state.region,state.districts,state.category);
+  box.appendChild(backBar(state.category,vis.length,"筆",function(){state.phase=2;render();top0()}));
+  if(!vis.length){box.appendChild(emptyBox("這個類別目前沒有優惠"));return}
+  var local=vis.filter(function(d){return normCity(d.region)!="全台"}),chain=vis.filter(function(d){return normCity(d.region)=="全台"});
+  var lastSec="";
+  local.concat(chain).slice(0,state.shown).forEach(function(d){
+    var sec=normCity(d.region)=="全台"?"全台連鎖":"在地優惠";
+    if(sec!=lastSec&&state.category!=CHAINC){lastSec=sec;box.appendChild(el("div","sec big",sec+"　"+(sec=="在地優惠"?local.length:chain.length)))}
+    box.appendChild(dealCard(d,t));
+  });
+  if(vis.length>state.shown){var mb=el("button","more","顯示更多（再 "+Math.min(20,vis.length-state.shown)+" 筆）");mb.onclick=function(){state.shown+=20;render()};box.appendChild(mb)}
+  else box.appendChild(el("div","hint","點一筆看詳細資訊"));
 }
 function irow(label,value,tap,fn){
   var r=el(tap?"button":"div","irow"+(tap?" tap":""));
@@ -470,7 +523,7 @@ function onPop(){
 window.addEventListener("popstate",onPop);
 document.addEventListener("click",function(e){if(tabIdx==0){if(state.panel==2||(state.panel==1&&!document.getElementById("regpanel").contains(e.target))){state.panel=0;render()}}else if(nstate.panel){nstate.panel=0;nbRender()}});
 document.getElementById("rclear").onclick=function(e){e.stopPropagation();state.pendCity="全台";state.pendDs=[];renderRegion()};
-document.getElementById("rapply").onclick=function(e){e.stopPropagation();state.region=state.pendCity;state.districts=state.pendDs.slice();state.panel=0;render()};
+document.getElementById("rapply").onclick=function(e){e.stopPropagation();state.region=state.pendCity;state.districts=state.pendDs.slice();state.panel=0;state.phase=0;render()};
 document.getElementById("regpanel").onclick=function(e){e.stopPropagation()};
 document.getElementById("sheetbk").onclick=closeSheet;
 var picks=[],picksReady=false,picksUpdated="",userLoc=null,nbStop=false,nbCoords={},nbBusy=false,nbChecked=0,userCity="",nbStarted=false,nbErr="";
@@ -515,8 +568,8 @@ function nbStart(){
   navigator.geolocation.getCurrentPosition(function(p){
     gpsLoc=[p.coords.latitude,p.coords.longitude];
     if(centerName)return;
-    userLoc=gpsLoc;updateMap(true);
-    osmLoad();loadPicks(false).then(function(){reverseCity(function(){nbRender();nbGeocode()})});
+    userLoc=gpsLoc;osmCache={};nbCond();
+    loadPicks(false).then(function(){reverseCity(function(){nbRender();nbGeocode()})});
   },function(){nbStarted=false;nbErr="取不到你的位置。也可以在上面直接打地址或地標。\n要用目前位置，請在瀏覽器允許「位置」，並開啟手機的定位服務。";nbRender()},{enableHighAccuracy:false,timeout:15000,maximumAge:300000});
 }
 function reverseCity(done){
@@ -540,7 +593,7 @@ function nbGeocode(){
   })();
 }
 function nbNote(t){return el("div","note",t)}
-var osmCache={},osmLoading=false,osmFailed=false,nshown=20,widened=-1;
+var osmCache={},osmLoading=false,osmFailed=false,nshown=20;
 var OSMEP=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://overpass.private.coffee/api/interpreter"];
 function mapCat(t,name){
   var cu=(t.cuisine||"").toLowerCase(),am=t.amenity||"";
@@ -583,23 +636,51 @@ function osmParse(j){
   return out;
 }
 var osmGen=0;
+function ckeyOf(idx){return "deals-osm-"+userLoc[0].toFixed(3)+"-"+userLoc[1].toFixed(3)+"-"+RADII[idx]}
+function readCache(idx){try{var cc=JSON.parse(localStorage.getItem(ckeyOf(idx))||"null");if(cc&&Date.now()-cc.t<6*3600e3)return cc}catch(e){}return null}
+/* 條件（中心、範圍）一改，舊結果作廢，回到第 1 步；6 小時內查過同一處就直接顯示上次的類別 */
+function nbCond(){
+  osmGen++;osmLoading=false;osmFailed=false;nstate.err=0;nstate.category=ALL;nshown=20;
+  clearInterval(nbTick);nstate.phase=0;nstate.panel=0;
+  if(userLoc){var idx=nstate.radius,cc=readCache(idx);
+    if(cc){osmCache[idx]=cc.l;nstate.searchedAt=cc.t;if(mergedList(idx).length)nstate.phase=2}}
+  updateMap(true);nbRender();
+}
+function nbSearch(force){
+  if(!userLoc)return;var idx=nstate.radius;
+  if(force){delete osmCache[idx];try{localStorage.removeItem(ckeyOf(idx))}catch(e){}}
+  nstate.err=0;nstate.category=ALL;nshown=20;
+  if(osmCache[idx]){nbFinish();return}
+  nstate.phase=1;nstate.stage=0;nstate.started=Date.now();
+  clearInterval(nbTick);nbTick=setInterval(function(){if(nstate.phase==1)nbRender();else clearInterval(nbTick)},1000);
+  osmLoad();nbRender();
+}
+function nbCancel(){osmGen++;osmLoading=false;clearInterval(nbTick);nstate.phase=0;nbRender()}
+function nbFinish(){
+  clearInterval(nbTick);var idx=nstate.radius,all=mergedList(idx);
+  nstate.searchedAt=Date.now();nstate.category=ALL;nshown=20;
+  if(osmFailed&&!all.length){nstate.phase=0;nstate.err=1}
+  else if(!all.length){nstate.phase=0;nstate.err=2}
+  else{nstate.phase=2;nstate.err=osmFailed?1:0}
+  updateMap(true);nbRender();top0();
+}
 function osmLoad(){
   if(!userLoc)return;var idx=nstate.radius;
-  if(osmCache[idx]){osmGen++;osmLoading=false;osmFailed=false;nbRender();return}
-  var ckey="deals-osm-"+userLoc[0].toFixed(3)+"-"+userLoc[1].toFixed(3)+"-"+RADII[idx];
-  try{var cc=JSON.parse(localStorage.getItem(ckey)||"null");if(cc&&Date.now()-cc.t<6*3600e3){osmGen++;osmLoading=false;osmCache[idx]=cc.l;osmFailed=false;nbRender();return}}catch(e){}
-  osmLoading=true;osmFailed=false;var gen=++osmGen;nbRender();
-  var r=RADII[idx],am="restaurant|fast_food|cafe|food_court|pub|bar";
+  osmLoading=true;osmFailed=false;var gen=++osmGen;
+  var ckey=ckeyOf(idx),r=RADII[idx],am="restaurant|fast_food|cafe|food_court|pub|bar";
   var q='[out:json][timeout:25][maxsize:100000000];(node(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];way(around:'+r+','+userLoc[0]+','+userLoc[1]+')["amenity"~"^('+am+')$"]["name"];);out center 600;';
+  setTimeout(function(){if(gen==osmGen&&nstate.phase==1&&nstate.stage<1){nstate.stage=1;nbRender()}},900);
   function tryEp(i){
     if(gen!=osmGen)return;
-    if(i>=OSMEP.length){osmLoading=false;osmFailed=true;nbRender();return}
+    if(i>=OSMEP.length){osmLoading=false;osmFailed=true;nbFinish();return}
+    if(nstate.stage>0&&i>0){nstate.stage=0;nbRender()}
     fetch(OSMEP[i],{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)})
      .then(function(x){if(!x.ok)throw 0;return x.json()}).then(function(j){
        if(j.remark&&/error|timed out|out of memory/i.test(j.remark))throw 0;
        if(gen!=osmGen)return;
+       nstate.stage=2;
        osmCache[idx]=osmParse(j);osmLoading=false;try{localStorage.setItem(ckey,JSON.stringify({t:Date.now(),l:osmCache[idx]}))}catch(e){}
-       if(idx==nstate.radius&&idx<RADII.length-1&&!mergedList(idx).length&&!nbBusy){widened=idx;nstate.radius=idx+1;updateMap(true);osmLoad()}else nbRender();
+       nbFinish();
      }).catch(function(){tryEp(i+1)});
   }
   tryEp(0);
@@ -621,22 +702,40 @@ function placeTier(p){return p.pick?tierOf(p.pick):3}
 function nbRender(){
   if(tabIdx!=1)return;
   setCap();
-  var lb=document.getElementById("nlist"),cd=document.getElementById("ncond");
-  var rp=document.getElementById("rngpanel"),cp=document.getElementById("ncatpanel");
-  filterBtn("rngbtn","範圍",(RADII[nstate.radius]/1000)+" 公里",nstate.panel==1,function(){nstate.panel=nstate.panel==1?0:1;nbRender()});
-  filterBtn("ncatbtn","類別",nstate.category==ALL?"全部":nstate.category,nstate.panel==2,function(){nstate.panel=nstate.panel==2?0:2;nbRender()});
-  rp.textContent="";rp.style.display=nstate.panel==1?"block":"none";
-  RADII.forEach(function(r,i){var b=el("button","rngopt"+(i==nstate.radius?" on":""));b.appendChild(el("span",null,(r/1000)+" 公里內"));if(i==nstate.radius)b.appendChild(el("span",null,"✓"));b.onclick=function(e){e.stopPropagation();nstate.radius=i;nstate.panel=0;widened=-1;nshown=20;updateMap(true);osmLoad()};rp.appendChild(b)});
-  cp.textContent="";cp.style.display=nstate.panel==2?"block":"none";
-  if(nstate.panel==2)buildCats(cp,lastCounts,picks.map(function(k){return k.category||"其他"}),nstate.category,function(n){nstate.category=n;nstate.panel=0;nshown=20;nbRender()});
-  lb.textContent="";cd.textContent="";
-  function msg(t){lb.appendChild(emptyBox(t))}
+  var lb=document.getElementById("nlist");lb.textContent="";
   document.getElementById("ctext").textContent="中心："+(centerName||(userLoc?"我的位置":"我的位置（定位中）"));
-  if(!userLoc){nbOrdered=[];msg(nbErr||"正在取得你的位置…");return}
-  var idx=nstate.radius,all=mergedList(idx);
-  if(!all.length&&(osmLoading||(!osmCache[idx]&&!osmFailed))){nbOrdered=[];updateMap(false);msg("正在查附近的餐廳…");return}
-  var withCat=nstate.category==ALL?all:all.filter(function(o){return o[0].category==nstate.category});
-  lastCounts={};all.forEach(function(o){lastCounts[o[0].category]=(lastCounts[o[0].category]||0)+1});
+  var ph=nstate.phase,rp=document.getElementById("rngpanel");
+  document.getElementById("nfilter").style.display=ph==0&&userLoc?"block":"none";
+  if(ph==0&&userLoc){
+    filterBtn("rngbtn","範圍",(RADII[nstate.radius]/1000)+" 公里內",nstate.panel==1,function(){nstate.panel=nstate.panel==1?0:1;nbRender()});
+    rp.textContent="";rp.style.display=nstate.panel==1?"block":"none";
+    RADII.forEach(function(r,i){var b=el("button","rngopt"+(i==nstate.radius?" on":""));b.appendChild(el("span",null,(r/1000)+" 公里內"));if(i==nstate.radius)b.appendChild(el("span",null,"✓"));b.onclick=function(e){e.stopPropagation();nstate.radius=i;nbCond()};rp.appendChild(b)});
+  }
+  if(!userLoc){nbOrdered=[];lb.appendChild(emptyBox(nbErr||"正在取得你的位置…"));return}
+  var idx=nstate.radius,km=RADII[idx]/1000;
+  if(ph==0){
+    nbOrdered=[];updateMap(false);
+    if(nstate.err==1)lb.appendChild(noticeCard("查詢逾時","開放地圖的免費伺服器現在比較忙。\n這不代表附近沒有店，請再試一次。","再試一次",function(){nbSearch(true)}));
+    else if(nstate.err==2)lb.appendChild(noticeCard(km+" 公里內找不到餐廳","開放地圖在這個範圍沒有資料。"+(idx<RADII.length-1?"可以把範圍放大再找。":""),idx<RADII.length-1?"範圍擴大到 "+(RADII[idx+1]/1000)+" 公里，再搜尋":null,function(){nstate.radius=idx+1;nbCond();nbSearch()}));
+    else lb.appendChild(startCard("準備搜尋附近餐廳",["中心："+(centerName||"我的位置"),"範圍："+km+" 公里內"],"開始搜尋",function(){nbSearch(false)}));
+    return;
+  }
+  if(ph==1){
+    nbOrdered=[];updateMap(false);
+    var sec=Math.floor((Date.now()-nstate.started)/1000);
+    lb.appendChild(progressCard("正在搜尋附近餐廳",["連線伺服器","查詢附近餐廳","整理分類"],nstate.stage,"已等 "+sec+" 秒"+(sec>=15?"　伺服器比較忙，請再等一下":""),nbCancel));
+    return;
+  }
+  var all=mergedList(idx);
+  if(ph==2){
+    nbOrdered=all.slice().sort(function(a,b){return a[1]-b[1]});updateMap(false);
+    lb.appendChild(infoStrip((centerName||"我的位置")+"　·　"+km+" 公里內共 "+all.length+" 家\n上次搜尋："+ago(nstate.searchedAt),"改條件",function(){nstate.phase=0;nstate.err=0;nbRender()}));
+    if(nstate.err==1)lb.appendChild(nbNote("開放地圖查詢逾時，目前只有我們整理的名單。按「改條件」再搜尋一次。"));
+    var counts={},good=0;all.forEach(function(o){counts[o[0].category]=(counts[o[0].category]||0)+1;if(placeTier(o[0])<3)good++});
+    buildTiles(lb,counts,picks.map(function(k){return k.category||"其他"}),{label:GOODC,n:good,gold:true},function(n){nstate.category=n;nshown=20;nstate.phase=3;nbRender();top0()});
+    return;
+  }
+  var withCat=nstate.category==GOODC?all.filter(function(o){return placeTier(o[0])<3}):all.filter(function(o){return o[0].category==nstate.category});
   withCat.sort(function(a,b){
     var ta=placeTier(a[0]),tb=placeTier(b[0]);if(ta!=tb)return ta-tb;
     if(ta<3){var ra=(a[0].pick&&a[0].pick.rating&&a[0].pick.rating.score)||0,rb=(b[0].pick&&b[0].pick.rating&&b[0].pick.rating.score)||0;if(ra!=rb)return rb-ra}
@@ -644,22 +743,8 @@ function nbRender(){
   });
   nbOrdered=withCat;updateMap(false);
   var tc={1:0,2:0,3:0};withCat.forEach(function(o){tc[placeTier(o[0])]++});
-  var km=RADII[idx]/1000;
-  var parts=[1,2,3].filter(function(t){return tc[t]}).map(function(t){return TIERN[t]+" "+tc[t]}).join("、");
-  var conds=[];
-  if(nstate.radius>0)conds.push([km+" 公里",function(){nstate.radius=0;widened=-1;nshown=20;osmLoad()}]);
-  if(nstate.category!=ALL)conds.push([nstate.category,function(){nstate.category=ALL;nshown=20;nbRender()}]);
-  condBox(cd,conds,"符合 "+withCat.length+" 家"+(withCat.length?"（"+parts+"）":"")+(nbBusy?"　· 正在比對名單地址":""));
-  if(osmLoading)lb.appendChild(nbNote("正在查更多附近的餐廳…先顯示我們整理的名單。"));
-  if(osmFailed)lb.appendChild(nbNote("查詢逾時，暫時只有我們整理的名單。請按右上角「更新」再試一次。"));
-  if(widened>=0)lb.appendChild(nbNote(RADII[widened]/1000+" 公里內沒有餐廳，已自動擴大到 "+km+" 公里。"));
-  if(!withCat.length){
-    if(osmFailed)lb.appendChild(emptyBox("查詢逾時，暫時查不到附近餐廳。\n這不代表附近沒有店。","再試一次",function(){delete osmCache[idx];osmLoad()}));
-    else if(nstate.category!=ALL&&all.length)lb.appendChild(emptyBox(km+" 公里內沒有「"+nstate.category+"」的店","移除"+nstate.category+"，看全部 "+all.length+" 家",function(){nstate.category=ALL;nshown=20;nbRender()}));
-    else if(idx<RADII.length-1)lb.appendChild(emptyBox(km+" 公里內找不到餐廳","範圍擴大到 "+(RADII[idx+1]/1000)+" 公里",function(){nstate.radius=idx+1;widened=-1;osmLoad()}));
-    else msg(km+" 公里內找不到餐廳。\n開放地圖在這個地區可能還沒有資料。");
-    return;
-  }
+  lb.appendChild(backBar(nstate.category,withCat.length,"家",function(){nstate.phase=2;nbRender();top0()}));
+  if(!withCat.length){lb.appendChild(emptyBox("這個類別目前沒有店"));return}
   var lastT=0;
   withCat.slice(0,nshown).forEach(function(o){
     var p=o[0],t=placeTier(p);
@@ -673,7 +758,6 @@ function nbRender(){
     var tg=el("div","tags");tg.style.marginTop="8px";tg.appendChild(el("span","tag",p.category));a.appendChild(tg);lb.appendChild(a);
   });
   if(withCat.length>nshown){var mb=el("button","more","顯示更多（再 "+Math.min(20,withCat.length-nshown)+" 家）");mb.onclick=function(){nshown+=20;nbRender()};lb.appendChild(mb)}
-  else if(idx<RADII.length-1){var mb2=el("button","more","範圍擴大到 "+(RADII[idx+1]/1000)+" 公里");mb2.onclick=function(){nstate.radius=idx+1;widened=-1;nshown=20;osmLoad()};lb.appendChild(mb2)}
 }
 function openPick(k,dist){
   var w=document.getElementById("dwrap");w.textContent="";
@@ -766,9 +850,9 @@ function applySpot(sp){
   setCenter(sp.lat,sp.lng,sp.name);
 }
 function setCenter(lat,lng,name){
-  centerName=name;userLoc=[lat,lng];osmCache={};nshown=20;widened=-1;nbErr="";
+  centerName=name;userLoc=[lat,lng];osmCache={};nbErr="";
   document.getElementById("selbar").style.display="none";
-  updateMap(true);osmLoad();
+  nbCond();
   if(!picksReady)loadPicks(false).then(function(){nbRender();nbGeocode()});else{nbRender();nbGeocode()}
 }
 function useMyLoc(){
@@ -825,7 +909,7 @@ function setTab(i){
   tabIdx=i;state.panel=0;nstate.panel=0;
   document.getElementById("tab0").className="tab"+(i==0?" on":"");document.getElementById("tab1").className="tab"+(i==1?" on":"");
   document.getElementById("vdeals").className="view"+(i==0?" on":"");document.getElementById("vnear").className="view"+(i==1?" on":"");
-  document.getElementById("rule").textContent=i==0?"30 天內有效的優惠，依到期日排序":"中心周圍的餐廳：好餐廳在前，其他依距離";
+  document.getElementById("rule").textContent=i==0?"30 天內有效的優惠，依到期日排序":"";
   if(i==0)render();else nbStart();
 }
 document.getElementById("tab0").onclick=function(){setTab(0)};
@@ -837,7 +921,7 @@ function load(manual){
   fetch("data.json?t="+Date.now()).then(function(r){return r.json()}).then(function(j){
     state.updated=j.updated||"";markFetched("deals");
     state.deals=(j.deals||[]).map(function(d){d._until=parse(d.until);d.category=d.category||"其他";return d});
-    render();if(manual)toast("已更新");
+    state.loaded=true;render();if(manual)toast("已更新");
   }).catch(function(){if(manual)toast("無法更新，請檢查網路")});
 }
 function a2hs(){
@@ -855,8 +939,8 @@ function a2hs(){
   document.getElementById("a2hs").style.display="block";
 }
 document.getElementById("a2bk").onclick=function(){document.getElementById("a2hs").style.display="none"};
-document.getElementById("refresh").onclick=function(){if(tabIdx==0)load(true);else{osmCache={};try{Object.keys(localStorage).filter(function(k){return k.indexOf("deals-osm-")==0}).forEach(function(k){localStorage.removeItem(k)})}catch(e){}osmLoad();loadPicks(true).then(function(){nbRender()})}};
-setTab(0);loadRegions();load(false);
+document.getElementById("refresh").onclick=function(){if(tabIdx==0)load(true);else{osmCache={};try{Object.keys(localStorage).filter(function(k){return k.indexOf("deals-osm-")==0}).forEach(function(k){localStorage.removeItem(k)})}catch(e){}loadPicks(true).then(function(){if(nstate.phase!=0)nbSearch(true);else nbRender()})}};
+restoreLastD();setTab(0);loadRegions();load(false);
 setTimeout(a2hs,1400);
 setTimeout(function(){var s=document.getElementById("splash");s.className="out";setTimeout(function(){s.style.display="none"},400)},800);
 </script>
